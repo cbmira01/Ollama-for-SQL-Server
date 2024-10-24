@@ -19,7 +19,7 @@ namespace ApiCommandLineApp
             //string apiUrl = args[0];
             //string requestBody = args[1];
 
-            string apiUrl = args[0];
+            string apiUrl = "http://localhost:11434";
             string requestBody = "{}";
 
             try
@@ -77,20 +77,36 @@ namespace ApiCommandLineApp
             catch (WebException webEx)
             {
                 // Capture any HTTP-level errors
-                using (var response = webEx.Response as HttpWebResponse)
+                //using (var response = webEx.Response as HttpWebResponse)
+                //{
+                //    if (response != null)
+                //    {
+                //        return $"Error: {response.StatusCode}";
+                //    }
+                //    return $"Error: {webEx.Message}";
+                //}
+
+
+                Console.WriteLine($"WebException: {webEx.Message}");
+                if (webEx.Response is HttpWebResponse response)
                 {
-                    if (response != null)
-                    {
-                        return $"Error: {response.StatusCode}";
-                    }
-                    return $"Error: {webEx.Message}";
+                    Console.WriteLine($"HTTP Status: {response.StatusCode}");
                 }
+                else
+                {
+                    Console.WriteLine("No response received");
+                }
+                Console.WriteLine(webEx.StackTrace);
+
+                return null;
+
             }
             catch (NotSupportedException ex)
             {
-                Console.WriteLine($"NotSupportedException: {ex.Message}");
+                var msg = $"Not Supported Exception: {ex.Message}";
+                Console.WriteLine(msg);
                 Console.WriteLine(ex.StackTrace);
-                return $"Not Supported Exception: {ex.Message}";
+                return msg;
             }
             catch (Exception ex)
             {
