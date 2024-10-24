@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace ApiCommandLineApp
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
+            // Command-line app logic here.
         }
     }
 }
+
