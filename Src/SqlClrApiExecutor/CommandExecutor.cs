@@ -97,12 +97,12 @@ namespace SqlClrApiExecutor
                 {
                     string output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
-                    return new SqlString(output);
+                    return null; // new SqlString(output);
                 }
             }
             catch (Exception ex)
             {
-                return new SqlString($"Error: {ex.Message}");
+                return null; // new SqlString($"Error: {ex.Message}");
             }
         }
 
