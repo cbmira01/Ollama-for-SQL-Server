@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using Microsoft.SqlServer.Server;
@@ -17,15 +18,7 @@ public class CommandExecutor
     {
         try
         {
-            // Prepare the process to execute the external command
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = @"C:\path\to\ApiCommandLineApp.exe",
-                Arguments = $"\"{apiUrl.Value}\" \"{requestBody.Value}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+            ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody.Value);
 
             // Execute the command and capture the output
             using (Process process = Process.Start(psi))
@@ -56,15 +49,8 @@ public class CommandExecutor
     {
         try
         {
-            // Prepare the process to execute the external command
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = @"C:\path\to\ApiCommandLineApp.exe",
-                Arguments = $"\"{apiUrl.Value}\" \"{requestBody.Value}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+            var prompt = $"{ask.Value} {body.Value}";
+            ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt);
 
             // Execute the command and capture the output
             using (Process process = Process.Start(psi))
@@ -101,15 +87,8 @@ public class CommandExecutor
     {
         try
         {
-            // Prepare the process to execute the external command
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = @"C:\path\to\ApiCommandLineApp.exe",
-                Arguments = $"\"{apiUrl.Value}\" \"{requestBody.Value}\"",
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+            var prompt = $"{ask.Value} {body.Value}";
+            ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt);
 
             // Execute the command and capture the output
             using (Process process = Process.Start(psi))
@@ -136,6 +115,21 @@ public class CommandExecutor
         completion = new SqlString(completionObj.ToString());
     }
 
-        // private method
-
+    /// <summary>
+    /// Creates and configures a ProcessStartInfo instance for executing the external API command.
+    /// </summary>
+    /// <param name="apiUrl">The URL to be used in the process arguments.</param>
+    /// <param name="requestBody">The request body to be passed to the process.</param>
+    /// <returns>Configured ProcessStartInfo instance.</returns>
+    private static ProcessStartInfo CreateProcessStartInfo(string apiUrl, string requestBody)
+    {
+        return new ProcessStartInfo
+        {
+            FileName = @"C:\path\to\ApiCommandLineApp.exe",
+            Arguments = $"\"{apiUrl}\" \"{requestBody}\"",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+    }
 } 
