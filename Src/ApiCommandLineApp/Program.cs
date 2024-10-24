@@ -2,6 +2,7 @@
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ApiCommandLineApp
 {
@@ -85,9 +86,14 @@ namespace ApiCommandLineApp
                     return $"Error: {webEx.Message}";
                 }
             }
+            catch (NotSupportedException ex)
+            {
+                Console.WriteLine($"NotSupportedException: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                return $"Not Supported Exception: {ex.Message}";
+            }
             catch (Exception ex)
             {
-                // Catch any other exceptions
                 return $"Exception: {ex.Message}";
             }
         }
