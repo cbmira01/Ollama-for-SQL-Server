@@ -20,7 +20,7 @@ namespace ApiCommandLineApp
             //string requestBody = args[1];
 
             string apiUrl = "http://localhost:11434";
-            string requestBody = "{}";
+            string requestBody = ""; // blank requestBody for now
 
             try
             {
@@ -46,16 +46,10 @@ namespace ApiCommandLineApp
                 request.ReadWriteTimeout = 10000;  // 10 seconds for read/write
 
                 // Write request body
-                //using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                //{
-                //    streamWriter.Write(jsonContent);
-                //    streamWriter.Flush();  // Ensure the data is fully written
-                //}
-
-                // No need to write anything to the request body for a null or empty body.
                 using (var streamWriter = new StreamWriter(request.GetRequestStream()))
                 {
-                    streamWriter.Write(""); // Sending an empty body
+                    streamWriter.Write(jsonContent);
+                    streamWriter.Flush();  // Ensure the data is fully written
                 }
 
                 // Get the response
@@ -76,18 +70,9 @@ namespace ApiCommandLineApp
             }
             catch (WebException webEx)
             {
-                // Capture any HTTP-level errors
-                //using (var response = webEx.Response as HttpWebResponse)
-                //{
-                //    if (response != null)
-                //    {
-                //        return $"Error: {response.StatusCode}";
-                //    }
-                //    return $"Error: {webEx.Message}";
-                //}
+                var msg = $"Web Exception: {webEx.Message}";
+                Console.WriteLine(msg);
 
-
-                Console.WriteLine($"WebException: {webEx.Message}");
                 if (webEx.Response is HttpWebResponse response)
                 {
                     Console.WriteLine($"HTTP Status: {response.StatusCode}");
@@ -98,7 +83,7 @@ namespace ApiCommandLineApp
                 }
                 Console.WriteLine(webEx.StackTrace);
 
-                return null;
+                return msg;
 
             }
             catch (NotSupportedException ex)
