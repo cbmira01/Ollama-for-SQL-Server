@@ -46,8 +46,8 @@ namespace ApiCommandLineApp
                 request.ContentType = "application/json";
 
                 // Add timeouts to prevent indefinite blocking
-                request.Timeout = 20000;  // 20 seconds timeout
-                request.ReadWriteTimeout = 20000;  // 20 seconds for read/write
+                request.Timeout = 300000;  // 5 minute timeout
+                request.ReadWriteTimeout = 300000;  // 5 minutes for read/write
 
                 // Write request body
                 using (var streamWriter = new StreamWriter(request.GetRequestStream()))
