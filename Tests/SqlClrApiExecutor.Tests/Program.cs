@@ -29,10 +29,10 @@ namespace SqlClrApiExecutor.Tests
             // Test 1: ExecuteApiCommand
             try
             {
-                var apiUrl = new SqlStringWrapper("https://api.example.com");
-                var requestBody = new SqlStringWrapper("{\"key\":\"value\"}");
+                var apiUrl = new SqlStringWrapper("https://httpbin.org/anything");
+                var requestBody = new SqlStringWrapper("{\"key\":\"value of the key field\"}");
 
-                var result = CommandExecutor.ExecuteApiCommand(apiUrl, requestBody);
+                var result = CommandExecutor.ExecuteApiCommand(apiUrl, requestBody, "full");
                 Console.WriteLine($"Test 1 - ExecuteApiCommand: {result.Value}");
             }
             catch (Exception ex)

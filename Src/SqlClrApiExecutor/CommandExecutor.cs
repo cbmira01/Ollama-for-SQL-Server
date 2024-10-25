@@ -16,11 +16,11 @@ namespace SqlClrApiExecutor
         /// <param name="requestBody">Optional request body.</param>
         /// <returns>Response body as a <see cref="SqlString"/>.</returns>
         [SqlFunction(DataAccess = DataAccessKind.None)]
-        public static SqlString ExecuteApiCommand(SqlString apiUrl, SqlString requestBody)
+        public static SqlString ExecuteApiCommand(SqlString apiUrl, SqlString requestBody, SqlString requestSize)
         {
             try
             {
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody.Value);
+                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody.Value, requestSize.Value);
                 return new SqlString(ExecuteProcess(psi));
             }
             catch (Exception ex)
@@ -42,7 +42,7 @@ namespace SqlClrApiExecutor
             try
             {
                 var prompt = $"{ask.Value} {body.Value}";
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt);
+                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt, "brief");
                 return new SqlString(ExecuteProcess(psi));
             }
             catch (Exception ex)
@@ -68,7 +68,7 @@ namespace SqlClrApiExecutor
             try
             {
                 var prompt = $"{ask.Value} {body.Value}";
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt);
+                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt, "brief");
                 string output = ExecuteProcess(psi);
 
                 // Logic to split the output into multiple rows can be added here
@@ -97,8 +97,9 @@ namespace SqlClrApiExecutor
         /// </summary>
         /// <param name="apiUrl">The URL to be used in the process arguments.</param>
         /// <param name="requestBody">The request body to be passed to the process.</param>
+        /// <param name="requestBody">The reqest size, brief or full.</param>
         /// <returns>Configured ProcessStartInfo instance.</returns>
-        private static ProcessStartInfo CreateProcessStartInfo(string apiUrl, string requestBody)
+        private static ProcessStartInfo CreateProcessStartInfo(string apiUrl, string requestBody, string requestSize)
         {
 
 #if DEBUG
@@ -110,7 +111,7 @@ namespace SqlClrApiExecutor
             return new ProcessStartInfo
             {
                 FileName = fileName,
-                Arguments = $"\"{apiUrl}\" \"{requestBody}\" \"brief\"",
+                Arguments = $"\"{apiUrl}\" \"{requestBody}\" \"{requestSize}\" ",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
