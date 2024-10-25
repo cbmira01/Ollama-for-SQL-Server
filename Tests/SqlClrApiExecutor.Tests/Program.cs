@@ -1,31 +1,10 @@
 ﻿using System;
 using System.Data.SqlTypes;
-using SqlClrApiExecutor;
-
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace SqlClrApiExecutor.Tests
 {
-    // Wrapper classes for testing purposes
-    public class SqlStringWrapper
-    {
-        public string Value { get; set; }
-
-        public SqlStringWrapper(string value)
-        {
-            Value = value;
-        }
-
-        public SqlString ToSqlString()
-        {
-            return new SqlString(Value);
-        }
-
-        public override string ToString()
-        {
-            return Value;
-        }
-    }
-
     class Program
     {
         static void Main(string[] args)
@@ -37,16 +16,23 @@ namespace SqlClrApiExecutor.Tests
             try
             {
                 var apiUrl = new SqlStringWrapper("https://httpbin.org/anything").ToSqlString();
-                var requestBody = new SqlStringWrapper("{\"key\":\"value of the key field\"}").ToSqlString();
+
+                // Build the request body using a C# object
+                var requestBodyObject = new { 
+                    key1 = "value of the key field",
+                    key2 = "another value of a key field"
+                };
+
+                // Serialize the object to JSON
+                var requestBody = new SqlStringWrapper(JsonConvert.SerializeObject(requestBodyObject)).ToSqlString();
                 var escapedRequestBody = requestBody.Value.Replace("\"", "\\\""); // Escape double quotes
 
-
                 var result = CommandExecutor.ExecuteApiCommand(apiUrl, escapedRequestBody, "full");
-                Console.WriteLine($"Test 1 - ExecuteApiCommand: {result.Value}");
+                Debug.WriteLine($"Test 1 - ExecuteApiCommand: {result.Value}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Test 1 Failed: {ex.Message}");
+                Debug.WriteLine($"Test 1 Failed: {ex.Message}");
                 allTestsPassed = false;
             }
 
@@ -88,15 +74,36 @@ namespace SqlClrApiExecutor.Tests
             // Determine if all tests passed and exit with appropriate status code
             if (allTestsPassed)
             {
-                Console.WriteLine("All tests passed successfully.");
+                Debug.WriteLine("All tests passed successfully.");
                 Environment.Exit(0);  // Exit code 0 means success
             }
             else
             {
-                Console.WriteLine("Some tests failed.");
+                Debug.WriteLine("Some tests failed.");
                 Environment.Exit(1);  // Exit code 1 indicates failure
             }
         }
 
     } // end class
+
+    // Wrapper classes for testing purposes
+    public class SqlStringWrapper
+    {
+        public string Value { get; set; }
+
+        public SqlStringWrapper(string value)
+        {
+            Value = value;
+        }
+
+        public SqlString ToSqlString()
+        {
+            return new SqlString(Value);
+        }
+
+        public override string ToString()
+        {
+            return Value;
+        }
+    } // end class 
 } // end namespace

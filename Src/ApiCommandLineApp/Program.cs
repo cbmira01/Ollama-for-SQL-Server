@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http;
