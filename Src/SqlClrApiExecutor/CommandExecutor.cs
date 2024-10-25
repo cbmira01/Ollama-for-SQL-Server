@@ -130,9 +130,6 @@ namespace SqlClrApiExecutor
             {
                 process.StartInfo = psi;
 
-                // Enter debug mode for the process
-                Process.EnterDebugMode();
-
                 // Start the process
                 process.Start();
 
@@ -141,9 +138,6 @@ namespace SqlClrApiExecutor
 
                 // Capture the output after the process has exited
                 string output = process.StandardOutput.ReadToEnd();
-
-                // Leave debug mode once the process has exited
-                Process.LeaveDebugMode();
 
                 return output;
             }

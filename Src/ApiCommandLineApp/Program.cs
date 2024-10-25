@@ -3,12 +3,14 @@ using System.Net;
 using System.IO;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ApiCommandLineApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 #if DEBUG
             // This will prompt to attach a debugger when the process starts
@@ -28,7 +30,7 @@ namespace ApiCommandLineApp
 
             try
             {
-                string response = PostToApi(apiUrl, json, responseSize);
+                string response = await PostToApiAsync(apiUrl, json, responseSize);
                 Console.WriteLine(response);
             }
             catch (Exception ex)
@@ -37,100 +39,62 @@ namespace ApiCommandLineApp
             }
         }
 
-        private static string PostToApi(string apiUrl, string jsonContent, string responseSize)
+        private static async Task<string> PostToApiAsync(string apiUrl, string jsonContent, string responseSize)
         {
-            try
+            using (var client = new HttpClient())
             {
-                var request = (HttpWebRequest)WebRequest.Create(apiUrl);
-                request.Method = "POST";
-                request.ContentType = "application/json";
-
-                // Add timeouts to prevent indefinite blocking
-                request.Timeout = 300000;  // 5 minute timeout
-                request.ReadWriteTimeout = 300000;  // 5 minutes for read/write
-
-                // Write request body
-                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                try
                 {
-                    streamWriter.Write(jsonContent);
-                    streamWriter.Flush();  // Ensure the data is fully written
-                }
+                    client.Timeout = TimeSpan.FromSeconds(30); // Set timeout
 
-                // Get the response
-                using (var response = (HttpWebResponse)request.GetResponse())
-                {
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+
+                    // Ensure the response is successful (throws if not)
+                    response.EnsureSuccessStatusCode();
+
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    var parsedJson = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                    // Check the responseSize argument and return accordingly
+                    if (responseSize.Equals("brief", StringComparison.OrdinalIgnoreCase))
                     {
-                        using (var streamReader = new StreamReader(response.GetResponseStream()))
+                        var briefResponse = new
                         {
-                            string jsonResponse = streamReader.ReadToEnd();
-
-                            // Parse the JSON response
-                            var parsedJson = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
-
-                            // Check the responseSize argument and return accordingly
-                            if (responseSize.Equals("brief", StringComparison.OrdinalIgnoreCase))
-                            {
-                                // Create a new JSON object with only the 'response' field
-                                var briefResponse = new
-                                {
-                                    response = parsedJson.response != null ? parsedJson.response.ToString() : "Field 'response' not found"
-                                };
-
-                                // Return the brief response as a JSON string
-                                return JsonConvert.SerializeObject(briefResponse);
-                            }
-                            else
-                            {
-                                // Return full JSON response for 'full'
-                                return jsonResponse;
-                            }
-                        }
+                            response = parsedJson.response != null ? parsedJson.response.ToString() : "Field 'response' not found"
+                        };
+                        return JsonConvert.SerializeObject(briefResponse);
                     }
                     else
                     {
-                        return $"Error: {response.StatusCode}";
+                        return jsonResponse; // Return full JSON response for 'full'
                     }
                 }
-            }
-            catch (WebException webEx)
-            {
-                var msg = $"WebException Message: {webEx.Message}";
-                Console.WriteLine(msg);
-
-                if (webEx.InnerException != null)
+                catch (HttpRequestException httpEx)
                 {
-                    Console.WriteLine($"Inner Exception: {webEx.InnerException.Message}");
+                    var msg = $"HttpRequestException: {httpEx.Message}";
+                    Console.WriteLine(msg);
+                    if (httpEx.InnerException != null)
+                    {
+                        Console.WriteLine($"Inner Exception: {httpEx.InnerException.Message}");
+                    }
+                    return msg;
                 }
-
-                if (webEx.Status == WebExceptionStatus.ConnectFailure)
+                catch (TaskCanceledException taskEx) when (taskEx.InnerException is TimeoutException)
                 {
-                    Console.WriteLine("Connection failed. Check if the API is running and accessible.");
+                    var msg = $"Request timed out: {taskEx.Message}";
+                    Console.WriteLine(msg);
+                    return msg;
                 }
-
-                if (webEx.Response is HttpWebResponse response)
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"HTTP Status Code: {response.StatusCode}");
+                    var msg = $"Exception: {ex.Message}";
+                    Console.WriteLine(msg);
+                    return msg;
                 }
-                else
-                {
-                    Console.WriteLine("No response received from the server.");
-                }
-
-                return msg;
-            }
-            catch (NotSupportedException ex)
-            {
-                var msg = $"NotSupportedException: {ex.Message}";
-                Console.WriteLine(msg);
-                Console.WriteLine(ex.StackTrace);
-                return msg;
-            }
-            catch (Exception ex)
-            {
-                return $"Exception: {ex.Message}";
             }
         }
 
-    }
-}
+
+    } // end class
+} // end namespace
