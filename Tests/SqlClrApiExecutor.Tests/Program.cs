@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using SqlClrApiExecutor;
+
 
 namespace SqlClrApiExecutor.Tests
 {
@@ -11,6 +13,11 @@ namespace SqlClrApiExecutor.Tests
         public SqlStringWrapper(string value)
         {
             Value = value;
+        }
+
+        public SqlString ToSqlString()
+        {
+            return new SqlString(Value);
         }
 
         public override string ToString()
@@ -29,8 +36,8 @@ namespace SqlClrApiExecutor.Tests
             // Test 1: ExecuteApiCommand
             try
             {
-                var apiUrl = new SqlStringWrapper("https://httpbin.org/anything");
-                var requestBody = new SqlStringWrapper("{\"key\":\"value of the key field\"}");
+                var apiUrl = new SqlStringWrapper("https://httpbin.org/anything").ToSqlString();
+                var requestBody = new SqlStringWrapper("{\"key\":\"value of the key field\"}").ToSqlString();
 
                 var result = CommandExecutor.ExecuteApiCommand(apiUrl, requestBody, "full");
                 Console.WriteLine($"Test 1 - ExecuteApiCommand: {result.Value}");

@@ -77,7 +77,7 @@ namespace SqlClrApiExecutor
             }
             catch (Exception ex)
             {
-                return null; // Placeholder for error handling
+                return ex.Message; // Placeholder for error handling
             }
         }
 
