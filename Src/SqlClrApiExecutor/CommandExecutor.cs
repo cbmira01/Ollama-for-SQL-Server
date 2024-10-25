@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.SqlServer.Server;
 using Newtonsoft.Json;
 
@@ -52,9 +53,9 @@ namespace SqlClrApiExecutor
                 };
 
                 var requestBody = JsonConvert.SerializeObject(requestBodyObject);
-                var escapedRequestBody = requestBody.Replace("\"", "\\\"");
+                Debug.WriteLine("Serialized JSON Request Body: " + requestBody);
 
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt, "brief");
+                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody, "brief");
                 return new SqlString(ExecuteProcess(psi));
             }
             catch (Exception ex)
@@ -80,16 +81,28 @@ namespace SqlClrApiExecutor
             try
             {
                 var prompt = $"{ask.Value} {body.Value}";
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt, "brief");
-                string output = ExecuteProcess(psi);
+
+                var requestBodyObject = new
+                {
+                    model = "llama3.2",
+                    prompt,
+                    stream = false,
+                    n = (int)numCompletions
+                };
+
+                var requestBody = JsonConvert.SerializeObject(requestBodyObject);
+                Debug.WriteLine("Serialized JSON Request Body: " + requestBody);
+
+                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody, "brief");
+                var output = new SqlString(ExecuteProcess(psi));
 
                 // Logic to split the output into multiple rows can be added here
 
-                return output; // Placeholder for actual implementation
+                return new[] { output };
             }
             catch (Exception ex)
             {
-                return ex.Message; // Placeholder for error handling
+                return new[] { ex.Message };
             }
         }
 
@@ -119,14 +132,18 @@ namespace SqlClrApiExecutor
             var fileName = @"C:\Users\cmirac2\Source\PrivateRepos\ApiCommandSqlExecutor\Src\ApiCommandLineApp\bin\Release\ApiCommandLineApp.exe";
 #endif
 
-            return new ProcessStartInfo
+            var escapedRequestBody = requestBody.Replace("\"", "\\\"");
+
+            var psi = new ProcessStartInfo
             {
                 FileName = fileName,
-                Arguments = $"\"{apiUrl}\" \"{requestBody}\" \"{requestSize}\" ",
+                Arguments = $"\"{apiUrl}\" \"{escapedRequestBody}\" \"{requestSize}\" ",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
+
+            return psi;
         }
 
         /// <summary>

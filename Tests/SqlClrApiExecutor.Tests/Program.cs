@@ -25,9 +25,8 @@ namespace SqlClrApiExecutor.Tests
 
                 // Serialize the object to JSON
                 var requestBody = new SqlStringWrapper(JsonConvert.SerializeObject(requestBodyObject)).ToSqlString();
-                var escapedRequestBody = requestBody.Value.Replace("\"", "\\\""); // Escape double quotes
 
-                var result = CommandExecutor.ExecuteApiCommand(apiUrl, escapedRequestBody, "full");
+                var result = CommandExecutor.ExecuteApiCommand(apiUrl, requestBody, "full");
                 Debug.WriteLine($"Test 1 - ExecuteApiCommand: {result.Value}");
             }
             catch (Exception ex)
@@ -63,10 +62,12 @@ namespace SqlClrApiExecutor.Tests
                 var results = CommandExecutor.CompleteMultiplePrompts(apiUrl, ask, body, numCompletions);
 
                 Debug.WriteLine("Test 3 - CompleteMultiplePrompts:");
-                foreach (string result in results)
-                {
-                    Debug.WriteLine(result);
-                }
+                Debug.WriteLine(results);
+
+                //foreach (string result in results)
+                //{
+                //    Debug.WriteLine(result);
+                //}
             }
             catch (Exception ex)
             {
