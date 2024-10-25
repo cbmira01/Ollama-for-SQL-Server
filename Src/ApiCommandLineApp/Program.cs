@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace ApiCommandLineApp
 {
@@ -10,26 +9,39 @@ namespace ApiCommandLineApp
     {
         static void Main(string[] args)
         {
-            //if (args.Length < 2)
+            if (args.Length < 2)
+            {
+                Console.WriteLine("Usage: ApiCommandLineApp <url> <requestBody>");
+                return;
+            }
+
+            string apiUrl = args[0];
+            string requestBody = args[1];
+
+            //string apiUrl = "http://localhost:11434/api/generate";
+            //string apiUrl = "https://dogapi.dog/api/facts?number=5";
+
+            //var requestBody = new
             //{
-            //    Console.WriteLine("Usage: ApiCommandLineApp <url> <requestBody>");
-            //    return;
-            //}
+            //    model = "llama3.2",
+            //    prompt = "Why is the sky blue?",
+            //    stream =  false,
+            //    n = 1
+            //};
 
-            //string apiUrl = args[0];
-            //string requestBody = args[1];
+            //string json = JsonConvert.SerializeObject(requestBody);
 
-            string apiUrl = "http://localhost:11434";
-            string requestBody = ""; // blank requestBody for now
+            string json = requestBody.Replace("\\\"", "\"");
 
             try
             {
-                string response = PostToApi(apiUrl, requestBody);
+                string response = PostToApi(apiUrl, json);
                 Console.WriteLine(response);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                //Console.ReadKey();
             }
         }
 
@@ -42,8 +54,8 @@ namespace ApiCommandLineApp
                 request.ContentType = "application/json";
 
                 // Add timeouts to prevent indefinite blocking
-                request.Timeout = 10000;  // 10 seconds timeout
-                request.ReadWriteTimeout = 10000;  // 10 seconds for read/write
+                request.Timeout = 20000;  // 20 seconds timeout
+                request.ReadWriteTimeout = 20000;  // 20 seconds for read/write
 
                 // Write request body
                 using (var streamWriter = new StreamWriter(request.GetRequestStream()))
@@ -70,25 +82,33 @@ namespace ApiCommandLineApp
             }
             catch (WebException webEx)
             {
-                var msg = $"Web Exception: {webEx.Message}";
+                var msg = $"WebException Message: {webEx.Message}";
                 Console.WriteLine(msg);
+
+                if (webEx.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {webEx.InnerException.Message}");
+                }
+
+                if (webEx.Status == WebExceptionStatus.ConnectFailure)
+                {
+                    Console.WriteLine("Connection failed. Check if the API is running and accessible.");
+                }
 
                 if (webEx.Response is HttpWebResponse response)
                 {
-                    Console.WriteLine($"HTTP Status: {response.StatusCode}");
+                    Console.WriteLine($"HTTP Status Code: {response.StatusCode}");
                 }
                 else
                 {
-                    Console.WriteLine("No response received");
+                    Console.WriteLine("No response received from the server.");
                 }
-                Console.WriteLine(webEx.StackTrace);
 
                 return msg;
-
             }
             catch (NotSupportedException ex)
             {
-                var msg = $"Not Supported Exception: {ex.Message}";
+                var msg = $"NotSupportedException: {ex.Message}";
                 Console.WriteLine(msg);
                 Console.WriteLine(ex.StackTrace);
                 return msg;
