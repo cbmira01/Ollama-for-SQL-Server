@@ -9,33 +9,21 @@ namespace ApiCommandLineApp
     {
         static void Main(string[] args)
         {
-            if (args.Length < 2)
+            if (args.Length < 3)
             {
-                Console.WriteLine("Usage: ApiCommandLineApp <url> <requestBody>");
+                Console.WriteLine("Usage: ApiCommandLineApp <url> <requestBody> <brief/full>");
                 return;
             }
 
             string apiUrl = args[0];
             string requestBody = args[1];
-
-            //string apiUrl = "http://localhost:11434/api/generate";
-            //string apiUrl = "https://dogapi.dog/api/facts?number=5";
-
-            //var requestBody = new
-            //{
-            //    model = "llama3.2",
-            //    prompt = "Why is the sky blue?",
-            //    stream =  false,
-            //    n = 1
-            //};
-
-            //string json = JsonConvert.SerializeObject(requestBody);
+            string responseSize = args[2];
 
             string json = requestBody.Replace("\\\"", "\"");
 
             try
             {
-                string response = PostToApi(apiUrl, json);
+                string response = PostToApi(apiUrl, json, responseSize);
                 Console.WriteLine(response);
 #if DEBUG
                 Console.ReadKey();
@@ -50,7 +38,7 @@ namespace ApiCommandLineApp
             }
         }
 
-        private static string PostToApi(string apiUrl, string jsonContent)
+        private static string PostToApi(string apiUrl, string jsonContent, string responseSize)
         {
             try
             {
@@ -76,7 +64,28 @@ namespace ApiCommandLineApp
                     {
                         using (var streamReader = new StreamReader(response.GetResponseStream()))
                         {
-                            return streamReader.ReadToEnd();
+                            string jsonResponse = streamReader.ReadToEnd();
+
+                            // Parse the JSON response
+                            var parsedJson = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                            // Check the responseSize argument and return accordingly
+                            if (responseSize.Equals("brief", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Create a new JSON object with only the 'response' field
+                                var briefResponse = new
+                                {
+                                    response = parsedJson.response != null ? parsedJson.response.ToString() : "Field 'response' not found"
+                                };
+
+                                // Return the brief response as a JSON string
+                                return JsonConvert.SerializeObject(briefResponse);
+                            }
+                            else
+                            {
+                                // Return full JSON response for 'full'
+                                return jsonResponse;
+                            }
                         }
                     }
                     else
@@ -123,5 +132,6 @@ namespace ApiCommandLineApp
                 return $"Exception: {ex.Message}";
             }
         }
+
     }
 }
