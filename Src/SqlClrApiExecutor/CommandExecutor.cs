@@ -102,7 +102,7 @@ namespace SqlClrApiExecutor
         {
             return new ProcessStartInfo
             {
-                FileName = @"C:\path\to\ApiCommandLineApp.exe",
+                FileName = @"C:\Users\cmirac2\Source\PrivateRepos\ApiCommandSqlExecutor\Src\ApiCommandLineApp\bin\Release\ApiCommandLineApp.exe",
                 Arguments = $"\"{apiUrl}\" \"{requestBody}\" \"brief\"",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
