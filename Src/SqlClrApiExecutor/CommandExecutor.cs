@@ -100,9 +100,16 @@ namespace SqlClrApiExecutor
         /// <returns>Configured ProcessStartInfo instance.</returns>
         private static ProcessStartInfo CreateProcessStartInfo(string apiUrl, string requestBody)
         {
+
+#if DEBUG
+            var fileName = @"C:\Users\cmirac2\Source\PrivateRepos\ApiCommandSqlExecutor\Src\ApiCommandLineApp\bin\Debug\ApiCommandLineApp.exe";
+#else
+            var fileName = @"C:\Users\cmirac2\Source\PrivateRepos\ApiCommandSqlExecutor\Src\ApiCommandLineApp\bin\Release\ApiCommandLineApp.exe";
+#endif
+
             return new ProcessStartInfo
             {
-                FileName = @"C:\Users\cmirac2\Source\PrivateRepos\ApiCommandSqlExecutor\Src\ApiCommandLineApp\bin\Release\ApiCommandLineApp.exe",
+                FileName = fileName,
                 Arguments = $"\"{apiUrl}\" \"{requestBody}\" \"brief\"",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,

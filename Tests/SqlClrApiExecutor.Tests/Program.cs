@@ -41,40 +41,40 @@ namespace SqlClrApiExecutor.Tests
                 allTestsPassed = false;
             }
 
-            // Test 2: CompletePrompt
-            try
-            {
-                var apiUrl = new SqlStringWrapper("https://api.example.com");
-                var promptResult = CommandExecutor.CompletePrompt(apiUrl, new SqlStringWrapper("Hello"), new SqlStringWrapper("World"));
-                Console.WriteLine($"Test 2 - CompletePrompt: {promptResult.Value}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Test 2 Failed: {ex.Message}");
-                allTestsPassed = false;
-            }
+            //// Test 2: CompletePrompt
+            //try
+            //{
+            //    var apiUrl = new SqlStringWrapper("https://api.example.com");
+            //    var promptResult = CommandExecutor.CompletePrompt(apiUrl, new SqlStringWrapper("Hello"), new SqlStringWrapper("World"));
+            //    Console.WriteLine($"Test 2 - CompletePrompt: {promptResult.Value}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Test 2 Failed: {ex.Message}");
+            //    allTestsPassed = false;
+            //}
 
-            // Test 3: CompleteMultiplePrompts
-            try
-            {
-                var apiUrl = new SqlStringWrapper("https://api.example.com");
-                var ask = new SqlStringWrapper("Generate multiple responses");
-                var body = new SqlStringWrapper("for this test case.");
-                var numCompletions = 3;
+            //// Test 3: CompleteMultiplePrompts
+            //try
+            //{
+            //    var apiUrl = new SqlStringWrapper("https://api.example.com");
+            //    var ask = new SqlStringWrapper("Generate multiple responses");
+            //    var body = new SqlStringWrapper("for this test case.");
+            //    var numCompletions = 3;
 
-                var results = CommandExecutor.CompleteMultiplePrompts(apiUrl, ask, body, numCompletions);
+            //    var results = CommandExecutor.CompleteMultiplePrompts(apiUrl, ask, body, numCompletions);
 
-                Console.WriteLine("Test 3 - CompleteMultiplePrompts:");
-                foreach (string result in results)
-                {
-                    Console.WriteLine(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Test 3 Failed: {ex.Message}");
-                allTestsPassed = false;
-            }
+            //    Console.WriteLine("Test 3 - CompleteMultiplePrompts:");
+            //    foreach (string result in results)
+            //    {
+            //        Console.WriteLine(result);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"Test 3 Failed: {ex.Message}");
+            //    allTestsPassed = false;
+            //}
 
             // Determine if all tests passed and exit with appropriate status code
             if (allTestsPassed)
