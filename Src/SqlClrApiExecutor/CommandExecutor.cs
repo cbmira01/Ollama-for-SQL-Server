@@ -21,14 +21,7 @@ namespace SqlClrApiExecutor
             try
             {
                 ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody.Value);
-
-                // Execute the command and capture the output
-                using (Process process = Process.Start(psi))
-                {
-                    string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                    return new SqlString(output);
-                }
+                return new SqlString(ExecuteProcess(psi));
             }
             catch (Exception ex)
             {
@@ -44,30 +37,19 @@ namespace SqlClrApiExecutor
         /// <param name="body">Additional context or content for the prompt.</param>
         /// <returns>A single prompt completion result as a <see cref="SqlString"/>.</returns>
         [SqlFunction(DataAccess = DataAccessKind.None)]
-        public static SqlString CompletePrompt(
-            SqlString apiUrl,
-            SqlString ask,
-            SqlString body)
+        public static SqlString CompletePrompt(SqlString apiUrl, SqlString ask, SqlString body)
         {
             try
             {
                 var prompt = $"{ask.Value} {body.Value}";
                 ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt);
-
-                // Execute the command and capture the output
-                using (Process process = Process.Start(psi))
-                {
-                    string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                    return new SqlString(output);
-                }
+                return new SqlString(ExecuteProcess(psi));
             }
             catch (Exception ex)
             {
                 return new SqlString($"Error: {ex.Message}");
             }
         }
-
 
         /// <summary>
         /// Sends a request to the API for multiple prompt completions and returns them as a table.
@@ -81,31 +63,23 @@ namespace SqlClrApiExecutor
             FillRowMethodName = "FillRow",
             TableDefinition = "Completion NVARCHAR(MAX)"
         )]
-        public static IEnumerable CompleteMultiplePrompts(
-                SqlString apiUrl,
-                SqlString ask,
-                SqlString body,
-                SqlInt32 numCompletions)
+        public static IEnumerable CompleteMultiplePrompts(SqlString apiUrl, SqlString ask, SqlString body, SqlInt32 numCompletions)
         {
             try
             {
                 var prompt = $"{ask.Value} {body.Value}";
                 ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt);
+                string output = ExecuteProcess(psi);
 
-                // Execute the command and capture the output
-                using (Process process = Process.Start(psi))
-                {
-                    string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                    return null; // new SqlString(output);
-                }
+                // Logic to split the output into multiple rows can be added here
+
+                return null; // Placeholder for actual implementation
             }
             catch (Exception ex)
             {
-                return null; // new SqlString($"Error: {ex.Message}");
+                return null; // Placeholder for error handling
             }
         }
-
 
         /// <summary>
         /// Fills a row in the result set with a single prompt completion result.
@@ -116,6 +90,7 @@ namespace SqlClrApiExecutor
         {
             completion = new SqlString(completionObj.ToString());
         }
+
 
         /// <summary>
         /// Creates and configures a ProcessStartInfo instance for executing the external API command.
@@ -128,11 +103,27 @@ namespace SqlClrApiExecutor
             return new ProcessStartInfo
             {
                 FileName = @"C:\path\to\ApiCommandLineApp.exe",
-                Arguments = $"\"{apiUrl}\" \"{requestBody}\"",
+                Arguments = $"\"{apiUrl}\" \"{requestBody}\" \"brief\"",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
+        }
+
+
+        /// <summary>
+        /// Executes a process based on the given ProcessStartInfo and captures the output.
+        /// </summary>
+        /// <param name="psi">The ProcessStartInfo to start the process.</param>
+        /// <returns>The output from the process.</returns>
+        private static string ExecuteProcess(ProcessStartInfo psi)
+        {
+            using (Process process = Process.Start(psi))
+            {
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                return output;
+            }
         }
     } // end class
 } // end namespace
