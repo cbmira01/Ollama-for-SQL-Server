@@ -38,8 +38,10 @@ namespace SqlClrApiExecutor.Tests
             {
                 var apiUrl = new SqlStringWrapper("https://httpbin.org/anything").ToSqlString();
                 var requestBody = new SqlStringWrapper("{\"key\":\"value of the key field\"}").ToSqlString();
+                var escapedRequestBody = requestBody.Value.Replace("\"", "\\\""); // Escape double quotes
 
-                var result = CommandExecutor.ExecuteApiCommand(apiUrl, requestBody, "full");
+
+                var result = CommandExecutor.ExecuteApiCommand(apiUrl, escapedRequestBody, "full");
                 Console.WriteLine($"Test 1 - ExecuteApiCommand: {result.Value}");
             }
             catch (Exception ex)

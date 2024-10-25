@@ -2,6 +2,7 @@
 using System.Net;
 using System.IO;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace ApiCommandLineApp
 {
@@ -9,6 +10,10 @@ namespace ApiCommandLineApp
     {
         static void Main(string[] args)
         {
+#if DEBUG
+            // This will prompt to attach a debugger when the process starts
+            Debugger.Launch();
+#endif
             if (args.Length < 3)
             {
                 Console.WriteLine("Usage: ApiCommandLineApp <url> <requestBody> <brief/full>");
@@ -25,16 +30,10 @@ namespace ApiCommandLineApp
             {
                 string response = PostToApi(apiUrl, json, responseSize);
                 Console.WriteLine(response);
-#if DEBUG
-                Console.ReadKey();
-#endif
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-#if DEBUG
-                Console.ReadKey();
-#endif
             }
         }
 

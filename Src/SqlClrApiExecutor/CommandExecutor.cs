@@ -120,18 +120,34 @@ namespace SqlClrApiExecutor
 
 
         /// <summary>
-        /// Executes a process based on the given ProcessStartInfo and captures the output.
+        /// Executes a process based on the given ProcessStartInfo, enters debug mode, waits for the process to exit, and captures the output.
         /// </summary>
         /// <param name="psi">The ProcessStartInfo to start the process.</param>
         /// <returns>The output from the process.</returns>
         private static string ExecuteProcess(ProcessStartInfo psi)
         {
-            using (Process process = Process.Start(psi))
+            using (Process process = new Process())
             {
-                string output = process.StandardOutput.ReadToEnd();
+                process.StartInfo = psi;
+
+                // Enter debug mode for the process
+                Process.EnterDebugMode();
+
+                // Start the process
+                process.Start();
+
+                // Wait for the process to exit
                 process.WaitForExit();
+
+                // Capture the output after the process has exited
+                string output = process.StandardOutput.ReadToEnd();
+
+                // Leave debug mode once the process has exited
+                Process.LeaveDebugMode();
+
                 return output;
             }
         }
+
     } // end class
 } // end namespace
