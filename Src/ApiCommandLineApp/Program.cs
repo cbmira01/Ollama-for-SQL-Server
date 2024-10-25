@@ -37,11 +37,16 @@ namespace ApiCommandLineApp
             {
                 string response = PostToApi(apiUrl, json);
                 Console.WriteLine(response);
+#if DEBUG
+                Console.ReadKey();
+#endif
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                //Console.ReadKey();
+#if DEBUG
+                Console.ReadKey();
+#endif
             }
         }
 
