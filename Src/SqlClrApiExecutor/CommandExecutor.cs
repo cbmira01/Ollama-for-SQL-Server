@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using Microsoft.SqlServer.Server;
+using Newtonsoft.Json;
 
 namespace SqlClrApiExecutor
 {
@@ -19,7 +20,7 @@ namespace SqlClrApiExecutor
         {
             try
             {
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody.Value, requestSize.Value);
+                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody.Value, "full");
                 return new SqlString(ExecuteProcess(psi));
             }
             catch (Exception ex)
@@ -41,6 +42,18 @@ namespace SqlClrApiExecutor
             try
             {
                 var prompt = $"{ask.Value} {body.Value}";
+
+                var requestBodyObject = new
+                {
+                    model = "llama3.2",
+                    prompt,
+                    stream = false,
+                    n = 1   // number of completions
+                };
+
+                var requestBody = JsonConvert.SerializeObject(requestBodyObject);
+                var escapedRequestBody = requestBody.Replace("\"", "\\\"");
+
                 ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, prompt, "brief");
                 return new SqlString(ExecuteProcess(psi));
             }
@@ -72,7 +85,7 @@ namespace SqlClrApiExecutor
 
                 // Logic to split the output into multiple rows can be added here
 
-                return null; // Placeholder for actual implementation
+                return output; // Placeholder for actual implementation
             }
             catch (Exception ex)
             {
@@ -89,7 +102,6 @@ namespace SqlClrApiExecutor
         {
             completion = new SqlString(completionObj.ToString());
         }
-
 
         /// <summary>
         /// Creates and configures a ProcessStartInfo instance for executing the external API command.
@@ -116,7 +128,6 @@ namespace SqlClrApiExecutor
                 CreateNoWindow = true
             };
         }
-
 
         /// <summary>
         /// Executes a process based on the given ProcessStartInfo, enters debug mode, waits for the process to exit, and captures the output.
