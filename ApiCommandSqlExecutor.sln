@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlClrApiExecutor", "Src\SqlClrApiExecutor\SqlClrApiExecutor.csproj", "{E6F702FB-05ED-4B2B-8058-2DF844609F9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlClrApiExecutor.Tests", "Tests\SqlClrApiExecutor.Tests\SqlClrApiExecutor.Tests.csproj", "{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{E6F702FB-05ED-4B2B-8058-2DF844609F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6F702FB-05ED-4B2B-8058-2DF844609F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6F702FB-05ED-4B2B-8058-2DF844609F9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E4AAFC3A-DB16-4F70-96CB-E1A87DFE2CD1} = {83575C05-E240-402E-815A-2BD58757771C}
 		{E6F702FB-05ED-4B2B-8058-2DF844609F9B} = {83575C05-E240-402E-815A-2BD58757771C}
+		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F} = {1953EB01-2AF3-4CC2-9812-61A516641640}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD4CE94F-7ED2-4950-9FF5-7696F87D990E}
