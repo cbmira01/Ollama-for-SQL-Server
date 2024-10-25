@@ -49,5 +49,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\SqlClrApiExecutor\SqlClrApiExecutor.csproj">
+      <Project>{e6f702fb-05ed-4b2b-8058-2df844609f9b}</Project>
+      <Name>SqlClrApiExecutor</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
