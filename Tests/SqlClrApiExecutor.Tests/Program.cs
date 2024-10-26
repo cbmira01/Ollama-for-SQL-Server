@@ -31,7 +31,7 @@ namespace SqlClrApiExecutor.Tests
             try
             {
                 var ask = new SqlStringWrapper("Tell me the name of a plant.").ToSqlString();
-                var additional = new SqlStringWrapper("It must be fruit-bearing.").ToSqlString();
+                var additional = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
                 var numCompletions = new SqlInt32(5); 
 
                 var results = ApiExecutor.CompleteMultiplePrompts(ask, additional, numCompletions);
