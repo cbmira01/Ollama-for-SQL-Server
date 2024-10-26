@@ -49,8 +49,7 @@ namespace SqlClrApiExecutor
                 {
                     model = "llama3.2",
                     prompt,
-                    stream = false,
-                    n = 1   // number of completions
+                    stream = false
                 };
 
                 var requestBody = JsonConvert.SerializeObject(requestBodyObject);
