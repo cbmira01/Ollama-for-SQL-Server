@@ -62,12 +62,11 @@ namespace SqlClrApiExecutor.Tests
                 var results = CommandExecutor.CompleteMultiplePrompts(apiUrl, ask, body, numCompletions);
 
                 Debug.WriteLine("Test 3 - CompleteMultiplePrompts:");
-                Debug.WriteLine(results);
 
-                //foreach (string result in results)
-                //{
-                //    Debug.WriteLine(result);
-                //}
+                foreach (string result in results)
+                {
+                    Debug.WriteLine(result);
+                }
             }
             catch (Exception ex)
             {

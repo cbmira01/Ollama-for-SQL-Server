@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
@@ -65,7 +66,8 @@ namespace SqlClrApiExecutor
         }
 
         /// <summary>
-        /// Sends a request to the API for multiple prompt completions and returns them as a table.
+        /// Sends a request to the API for multiple prompt completions and returns them as a table,
+        /// feeding back the context array from each previous request to the next one to improve iterated responses.
         /// </summary>
         /// <param name="apiUrl">The URL of the API that will process the request.</param>
         /// <param name="ask">The initial prompt or question to be completed.</param>
@@ -76,34 +78,63 @@ namespace SqlClrApiExecutor
             FillRowMethodName = "FillRow",
             TableDefinition = "Completion NVARCHAR(MAX)"
         )]
-        public static IEnumerable CompleteMultiplePrompts(SqlString apiUrl, SqlString ask, SqlString body, SqlInt32 numCompletions)
+        public static IEnumerable<string> CompleteMultiplePrompts(SqlString apiUrl, SqlString ask, SqlString body, SqlInt32 numCompletions)
         {
             try
             {
+                var completions = new List<string>();
+                int[] contextArray = null; 
                 var prompt = $"{ask.Value} {body.Value}";
 
-                var requestBodyObject = new
+                Debug.WriteLine($"Number of completions: {(int)numCompletions}, Prompt: {prompt}");
+
+                for (int i = 0; i < numCompletions.Value; i++)
                 {
-                    model = "llama3.2",
-                    prompt,
-                    stream = false,
-                    n = (int)numCompletions
-                };
+                    var requestBodyObject = new
+                    {
+                        model = "llama3.2",
+                        prompt,
+                        stream = false,
+                        context = contextArray ?? new int[0]  // Use an empty array for the first request
+                    };
 
-                var requestBody = JsonConvert.SerializeObject(requestBodyObject);
-                Debug.WriteLine("Serialized JSON Request Body: " + requestBody);
+                    // Create and run a process for the API call
+                    var requestBody = JsonConvert.SerializeObject(requestBodyObject);
+                    ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody, "full");
+                    var response = ExecuteProcess(psi);
 
-                ProcessStartInfo psi = CreateProcessStartInfo(apiUrl.Value, requestBody, "brief");
-                var output = new SqlString(ExecuteProcess(psi));
+                    // Extract the new context array from the response for the next request
+                    var parsedResponse = ParseResponse(response);
+                    contextArray = parsedResponse.Context;
 
-                // Logic to split the output into multiple rows can be added here
+                    // Add the completion text to the list
+                    completions.Add(parsedResponse.Completion);
+                }
 
-                return new[] { output };
+                // Return the list of completions
+                return completions;
             }
             catch (Exception ex)
             {
+                // In case of an error, return the exception message
                 return new[] { ex.Message };
             }
+        }
+
+        /// <summary>
+        /// A hypothetical method that parses the API response to extract the completion and the context.
+        /// </summary>
+        /// <param name="response">The raw response from the API call.</param>
+        /// <returns>A structure containing the completion text and context array.</returns>
+        private static (string Completion, int[] Context) ParseResponse(string response)
+        {
+            // Parse the response to extract the completion and context array
+            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response);
+
+            string completion = jsonResponse.response;
+            int[] context = jsonResponse.context?.ToObject<int[]>() ?? new int[0];
+
+            return (completion, context);
         }
 
         /// <summary>

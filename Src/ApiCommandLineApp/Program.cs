@@ -12,7 +12,7 @@ namespace ApiCommandLineApp
         {
 #if DEBUG
             // This will prompt to attach a debugger when the process starts
-            Debugger.Launch();
+//            Debugger.Launch();
 #endif
             if (args.Length < 3)
             {
