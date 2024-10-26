@@ -10,29 +10,17 @@ namespace SqlClrApiExecutor
     public class ApiExecutor
     {
         [SqlFunction(DataAccess = DataAccessKind.None)]
-        public static SqlString GetCompletionOnPrompt(SqlString prompt)
+        public static SqlString CompletePrompt(
+            SqlString askPrompt, 
+            SqlString additionalPrompt)
         {
+            var prompt = askPrompt + additionalPrompt;
+
             try
             {
                 string result = CallOllamaService(prompt.Value);
 
-                string response = ExtractResponseField(result);
-                return new SqlString(response);
-            }
-            catch (Exception ex)
-            {
-                return new SqlString($"Error: {ex.Message}");
-            }
-        }
-
-        [SqlFunction(DataAccess = DataAccessKind.None)]
-        public static SqlString CompletePrompt(SqlString apiUrl, SqlString ask, SqlString body)
-        {
-            try
-            {
-                string result = CallOllamaService(prompt.Value);
-
-                string response = ExtractResponseField(result);
+                string response = ExtractField(result, "response");
                 return new SqlString(response);
             }
             catch (Exception ex)
@@ -43,20 +31,25 @@ namespace SqlClrApiExecutor
 
         [SqlFunction(
             FillRowMethodName = "FillRow",
-            TableDefinition = "Completion NVARCHAR(MAX)"
+            TableDefinition = "OllamaCompletion NVARCHAR(MAX)"
         )]
-        public static IEnumerable<string> CompleteMultiplePrompts(SqlString apiUrl, SqlString ask, SqlString body, SqlInt32 numCompletions)
+        public static IEnumerable<string> CompleteMultiplePrompts(
+            SqlString askPrompt, 
+            SqlString additionalPrompt, 
+            SqlInt32 numCompletions)
         {
+            var prompt = askPrompt + additionalPrompt;
+
             try
             {
                 string result = CallOllamaService(prompt.Value);
 
-                string response = ExtractResponseField(result);
-                return new SqlString(response);
+                string response = ExtractField(result, "response");
+                return null; // new SqlString(response);
             }
             catch (Exception ex)
             {
-                return new SqlString($"Error: {ex.Message}");
+                return new[] { ex.Message };
             }
         }
 
@@ -65,27 +58,24 @@ namespace SqlClrApiExecutor
             completion = new SqlString(completionObj.ToString());
         }
 
-        private static string ExtractResponseField(string json)
+        private static string ExtractField(string json, string fieldName)
         {
-            // Simple parsing logic to extract the value of "response"
-            string responseKey = "\"response\":";
-            int responseKeyIndex = json.IndexOf(responseKey);
+            // Construct the search key based on the specified field name
+            string key = $"\"{fieldName}\":";
+            int keyIndex = json.IndexOf(key);
 
-            if (responseKeyIndex == -1)
+            if (keyIndex == -1)
             {
-                return "Error: 'response' field not found";
+                throw new ArgumentException($"Field '{fieldName}' not found in JSON.");
             }
 
             // Move index to the start of the value after the key
-            int startIndex = responseKeyIndex + responseKey.Length;
-
-            // Find the start of the value, handling potential spaces
-            startIndex = json.IndexOf('"', startIndex) + 1;
+            int startIndex = json.IndexOf('"', keyIndex + key.Length) + 1;
             int endIndex = json.IndexOf('"', startIndex);
 
             if (startIndex == -1 || endIndex == -1)
             {
-                return "Error: Malformed JSON";
+                throw new FormatException("Malformed JSON: Could not locate the field value.");
             }
 
             return json.Substring(startIndex, endIndex - startIndex);
