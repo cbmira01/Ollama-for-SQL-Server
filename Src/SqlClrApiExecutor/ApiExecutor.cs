@@ -18,7 +18,7 @@ namespace SqlClrApiExecutor
 
             try
             {
-                string result = CallOllamaService(prompt.Value);
+                string result = CallOllamaService(prompt.Value, null);
 
                 string response = ExtractField(result, "response");
                 return new SqlString(response);
@@ -34,22 +34,32 @@ namespace SqlClrApiExecutor
             TableDefinition = "OllamaCompletion NVARCHAR(MAX)"
         )]
         public static IEnumerable<string> CompleteMultiplePrompts(
-            SqlString askPrompt, 
-            SqlString additionalPrompt, 
+            SqlString askPrompt,
+            SqlString additionalPrompt,
             SqlInt32 numCompletions)
         {
             var prompt = askPrompt + additionalPrompt;
+            var completions = new List<string>();
+            int[] contextArray = null; // Placeholder for context tracking between calls
 
             try
             {
-                string result = CallOllamaService(prompt.Value);
+                for (int i = 0; i < numCompletions.Value; i++)
+                {
+                    string result = CallOllamaService(prompt.Value, contextArray);
+                    string completion = ExtractField(result, "completion");
 
-                string response = ExtractField(result, "response");
-                return null; // new SqlString(response);
+                    completions.Add(completion);
+
+                    // Update context for next iteration if needed (assumes `context` field is in the response)
+                    contextArray = ExtractContextArray(result);
+                }
+
+                return completions;
             }
             catch (Exception ex)
             {
-                return new[] { ex.Message };
+                return new[] { $"Error: {ex.Message}" };
             }
         }
 
@@ -81,25 +91,45 @@ namespace SqlClrApiExecutor
             return json.Substring(startIndex, endIndex - startIndex);
         }
 
-        private static string CallOllamaService(string prompt)
+        private static int[] ExtractContextArray(string json)
+        {
+            string key = "\"context\":";
+            int keyIndex = json.IndexOf(key);
+
+            if (keyIndex == -1)
+                return null;
+
+            int startIndex = json.IndexOf('[', keyIndex) + 1;
+            int endIndex = json.IndexOf(']', startIndex);
+
+            if (startIndex == -1 || endIndex == -1)
+            {
+                throw new FormatException("Malformed JSON: Could not locate the context array.");
+            }
+
+            string arrayStr = json.Substring(startIndex, endIndex - startIndex);
+            string[] elements = arrayStr.Split(',');
+            int[] contextArray = Array.ConvertAll(elements, int.Parse);
+
+            return contextArray;
+        }
+
+        private static string CallOllamaService(string prompt, int[] contextArray)
         {
             string apiUrl = "http://localhost:11434/api/generate";
+            string context = contextArray != null ? $"[{string.Join(",", contextArray)}]" : "[]";
+            string jsonPayload = $"{{\"prompt\": \"{prompt}\", \"model\":\"llama3.2\",\"stream\":false, \"context\": {context}}}";
 
-            // Manually build the JSON string
-            string jsonPayload = $"{{\"prompt\": \"{prompt}\", \"model\":\"llama3.2\",\"stream\":false}}";
-
-            // Create the request
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(apiUrl);
+            request.Timeout = 100000; // Use default timeout of 100 seconds
             request.Method = "POST";
             request.ContentType = "application/json";
 
-            // Write the JSON payload to the request body
             using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
             {
                 writer.Write(jsonPayload);
             }
 
-            // Read and return the response
             using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
