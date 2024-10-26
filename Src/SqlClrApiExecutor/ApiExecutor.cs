@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Net;
@@ -13,9 +14,8 @@ namespace SqlClrApiExecutor
         {
             try
             {
-                string result = CallProxyService(prompt.Value);
+                string result = CallOllamaService(prompt.Value);
 
-                // Manually extract the "response" field from the JSON result
                 string response = ExtractResponseField(result);
                 return new SqlString(response);
             }
@@ -23,6 +23,46 @@ namespace SqlClrApiExecutor
             {
                 return new SqlString($"Error: {ex.Message}");
             }
+        }
+
+        [SqlFunction(DataAccess = DataAccessKind.None)]
+        public static SqlString CompletePrompt(SqlString apiUrl, SqlString ask, SqlString body)
+        {
+            try
+            {
+                string result = CallOllamaService(prompt.Value);
+
+                string response = ExtractResponseField(result);
+                return new SqlString(response);
+            }
+            catch (Exception ex)
+            {
+                return new SqlString($"Error: {ex.Message}");
+            }
+        }
+
+        [SqlFunction(
+            FillRowMethodName = "FillRow",
+            TableDefinition = "Completion NVARCHAR(MAX)"
+        )]
+        public static IEnumerable<string> CompleteMultiplePrompts(SqlString apiUrl, SqlString ask, SqlString body, SqlInt32 numCompletions)
+        {
+            try
+            {
+                string result = CallOllamaService(prompt.Value);
+
+                string response = ExtractResponseField(result);
+                return new SqlString(response);
+            }
+            catch (Exception ex)
+            {
+                return new SqlString($"Error: {ex.Message}");
+            }
+        }
+
+        public static void FillRow(object completionObj, out SqlString completion)
+        {
+            completion = new SqlString(completionObj.ToString());
         }
 
         private static string ExtractResponseField(string json)
@@ -51,7 +91,7 @@ namespace SqlClrApiExecutor
             return json.Substring(startIndex, endIndex - startIndex);
         }
 
-        private static string CallProxyService(string prompt)
+        private static string CallOllamaService(string prompt)
         {
             string apiUrl = "http://localhost:11434/api/generate";
 
@@ -76,6 +116,7 @@ namespace SqlClrApiExecutor
                 return reader.ReadToEnd();
             }
         }
+
     } // end class
 } // end namespace
 
