@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1953EB01
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", "{1D6C3F81-3588-492A-979A-D3FCCA8FA15E}"
 	ProjectSection(SolutionItems) = preProject
-		DBscripts\Create_function_calls.sql = DBscripts\Create_function_calls.sql
 		DBscripts\Enable_CLR_and_link_CLR_assembly.sql = DBscripts\Enable_CLR_and_link_CLR_assembly.sql
 		DBscripts\Sample_function_calls.sql = DBscripts\Sample_function_calls.sql
 	EndProjectSection
