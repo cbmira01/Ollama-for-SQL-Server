@@ -33,13 +33,13 @@ namespace SqlClrApiExecutor
             FillRowMethodName = "FillRow",
             TableDefinition = "OllamaCompletion NVARCHAR(MAX)"
         )]
-        public static IEnumerable<string> CompleteMultiplePrompts(
+        public static IEnumerable<SqlString> CompleteMultiplePrompts(
             SqlString askPrompt,
             SqlString additionalPrompt,
             SqlInt32 numCompletions)
         {
             var prompt = askPrompt + " " + additionalPrompt;
-            var completions = new List<string>();
+            var completions = new List<SqlString>();
             int[] contextArray = null; // Placeholder for context tracking between calls
 
             try
@@ -59,7 +59,7 @@ namespace SqlClrApiExecutor
             }
             catch (Exception ex)
             {
-                return new[] { $"Error: {ex.Message}" };
+                return new List<SqlString>() { $"Error: {ex.Message}" };
             }
         }
 
