@@ -33,10 +33,11 @@ AS EXTERNAL NAME SqlClrApiExecutor.[SqlClrApiExecutor.ApiExecutor].CompletePromp
 GO
 
 CREATE FUNCTION dbo.CompleteMultiplePrompts(
-  @askPrompt NVARCHAR(MAX), 
-  @additionalPrompt NVARCHAR(MAX)
+    @askPrompt NVARCHAR(MAX), 
+    @additionalPrompt NVARCHAR(MAX),
+    @numCompletions INT
 )
-RETURNS NVARCHAR(MAX)
+RETURNS TABLE (OllamaCompletion NVARCHAR(MAX))
 AS EXTERNAL NAME SqlClrApiExecutor.[SqlClrApiExecutor.ApiExecutor].CompleteMultiplePrompts;
 GO
 
