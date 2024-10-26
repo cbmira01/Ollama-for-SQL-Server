@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.SqlTypes;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace SqlClrApiExecutor.Tests
