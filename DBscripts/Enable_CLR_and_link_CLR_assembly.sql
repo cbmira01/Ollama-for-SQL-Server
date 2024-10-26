@@ -1,20 +1,26 @@
 
--- Enable CLR, drop and re-create functions and assembly link, and run a short test
--- Must be done everytime the SQL CLR project is rebuilt
--- These functions depend on the Ollama API service running on localhost
+-- Enable CLR, drop and re-create functions and assembly link, and run a short test.
+-- Must be done everytime the SQL CLR project is rebuilt.
+-- These functions depend on the Ollama API service running on localhost.
 
 sp_configure 'clr enabled', 1;
 RECONFIGURE;
 GO
 
--- Drop functions from the assembly
 SELECT * FROM sys.assemblies WHERE name = 'SqlClrApiExecutor';
 GO
 
-DROP FUNCTION dbo.CompletePrompt;
-DROP FUNCTION dbo.CompleteMultiplePrompts;
+-- Drop functions from the assembly, then the assembly link
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.CompletePrompt') AND type IN (N'FN', N'IF', N'TF'))
+    DROP FUNCTION dbo.CompletePrompt;
+GO
 
-Drop ASSEMBLY SqlClrApiExecutor;
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.CompleteMultiplePrompts') AND type IN (N'FN', N'IF', N'TF'))
+    DROP FUNCTION dbo.CompleteMultiplePrompts;
+GO
+
+IF EXISTS (SELECT * FROM sys.assemblies WHERE name = N'SqlClrApiExecutor')
+    DROP ASSEMBLY SqlClrApiExecutor;
 GO
 
 -- Create the assembly link
