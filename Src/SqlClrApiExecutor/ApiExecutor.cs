@@ -14,7 +14,7 @@ namespace SqlClrApiExecutor
             SqlString askPrompt, 
             SqlString additionalPrompt)
         {
-            var prompt = askPrompt + additionalPrompt;
+            var prompt = askPrompt + " " +additionalPrompt;
 
             try
             {
@@ -38,7 +38,7 @@ namespace SqlClrApiExecutor
             SqlString additionalPrompt,
             SqlInt32 numCompletions)
         {
-            var prompt = askPrompt + additionalPrompt;
+            var prompt = askPrompt + " " + additionalPrompt;
             var completions = new List<string>();
             int[] contextArray = null; // Placeholder for context tracking between calls
 
