@@ -33,13 +33,13 @@ namespace SqlClrApiExecutor
             FillRowMethodName = "FillRow",
             TableDefinition = "OllamaCompletion NVARCHAR(MAX)"
         )]
-        public static IEnumerable<SqlString> CompleteMultiplePrompts(
+        public static IEnumerable<object> CompleteMultiplePrompts(
             SqlString askPrompt,
             SqlString additionalPrompt,
             SqlInt32 numCompletions)
         {
             var prompt = askPrompt + " " + additionalPrompt;
-            var completions = new List<SqlString>();
+            var completions = new List<object>();
             int[] contextArray = null; // Placeholder for context tracking between calls
 
             try
@@ -59,13 +59,13 @@ namespace SqlClrApiExecutor
             }
             catch (Exception ex)
             {
-                return new List<SqlString>() { $"Error: {ex.Message}" };
+                return new List<object>() { $"Error: {ex.Message}" };
             }
         }
 
-        public static void FillRow(object completionObj, out SqlString completion)
+        public static void FillRow(object completionObj, out SqlString OllamaCompletion)
         {
-            completion = new SqlString(completionObj.ToString());
+            OllamaCompletion = new SqlString(completionObj.ToString());
         }
 
         private static string ExtractField(string json, string fieldName)
