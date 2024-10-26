@@ -47,9 +47,9 @@ namespace SqlClrApiExecutor
                 for (int i = 0; i < numCompletions.Value; i++)
                 {
                     string result = CallOllamaService(prompt.Value, contextArray);
-                    string completion = ExtractField(result, "completion");
+                    string response = ExtractField(result, "response");
 
-                    completions.Add(completion);
+                    completions.Add(response);
 
                     // Update context for next iteration if needed (assumes `context` field is in the response)
                     contextArray = ExtractContextArray(result);
