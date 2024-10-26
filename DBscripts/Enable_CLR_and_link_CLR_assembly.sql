@@ -1,6 +1,7 @@
 
 -- Enable CLR, drop and re-create functions and assembly link, and run a short test
 -- Must be done everytime the SQL CLR project is rebuilt
+-- These functions depend on the Ollama API service running on localhost
 
 sp_configure 'clr enabled', 1;
 RECONFIGURE;
