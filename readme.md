@@ -23,7 +23,7 @@ targeted is llama3.2.
 ### Clone the repository
 
 ```
-more about this later
+git clone https://calmiracle.visualstudio.com/OllamaCompletionsForSqlServer/_git/OllamaCompletionsForSqlServer
 ```
 
 ### Open the project in Visual Studio
