@@ -20,7 +20,7 @@ GO
 
 -- Create the assembly link
 CREATE ASSEMBLY SqlClrApiExecutor
-FROM 'C:\Users\cmirac2\Source\PrivateRepos\ApiCommandSqlExecutor\Src\SqlClrApiExecutor\bin\Release\SqlClrApiExecutor.dll'
+FROM 'C:\Users\cmirac2\Source\PrivateRepos\OllamaCompletionsForSqlServer\Src\SqlClrApiExecutor\bin\Release\SqlClrApiExecutor.dll'
 WITH PERMISSION_SET = UNSAFE;
 GO
 
