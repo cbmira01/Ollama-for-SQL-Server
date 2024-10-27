@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", 
 	ProjectSection(SolutionItems) = preProject
 		DBscripts\Enable_CLR_and_link_CLR_assembly.sql = DBscripts\Enable_CLR_and_link_CLR_assembly.sql
 		DBscripts\Sample_function_calls.sql = DBscripts\Sample_function_calls.sql
+		DBscripts\Sentiment_analysis.sql = DBscripts\Sentiment_analysis.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlClrApiExecutor", "Src\SqlClrApiExecutor\SqlClrApiExecutor.csproj", "{E6F702FB-05ED-4B2B-8058-2DF844609F9B}"
