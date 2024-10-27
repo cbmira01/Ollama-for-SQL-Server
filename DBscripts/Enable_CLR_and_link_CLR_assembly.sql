@@ -11,16 +11,11 @@ SELECT * FROM sys.assemblies WHERE name = 'SqlClrApiExecutor';
 GO
 
 -- Drop functions from the assembly, then the assembly link
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.CompletePrompt') AND type IN (N'FN', N'IF', N'TF'))
-    DROP FUNCTION dbo.CompletePrompt;
+DROP FUNCTION dbo.CompletePrompt;
+DROP FUNCTION dbo.CompleteMultiplePrompts;
 GO
 
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'dbo.CompleteMultiplePrompts') AND type IN (N'FN', N'IF', N'TF'))
-    DROP FUNCTION dbo.CompleteMultiplePrompts;
-GO
-
-IF EXISTS (SELECT * FROM sys.assemblies WHERE name = N'SqlClrApiExecutor')
-    DROP ASSEMBLY SqlClrApiExecutor;
+DROP ASSEMBLY SqlClrApiExecutor;
 GO
 
 -- Create the assembly link
@@ -43,7 +38,10 @@ CREATE FUNCTION dbo.CompleteMultiplePrompts(
     @additionalPrompt NVARCHAR(MAX),
     @numCompletions INT
 )
-RETURNS TABLE (OllamaCompletion NVARCHAR(MAX))
+RETURNS TABLE (
+    CompletionGuid UNIQUEIDENTIFIER,
+    OllamaCompletion NVARCHAR(MAX)
+)
 AS EXTERNAL NAME SqlClrApiExecutor.[SqlClrApiExecutor.ApiExecutor].CompleteMultiplePrompts;
 GO
 
@@ -58,7 +56,7 @@ SELECT
 FROM sys.assembly_modules mod
 JOIN sys.objects obj ON mod.object_id = obj.object_id
 JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
-WHERE obj.type IN ('FN', 'TF', 'IF'); -- FN = Scalar function, TF = Table-valued function, IF = Inline function
+--WHERE obj.type IN ('FN', 'TF', 'IF'); -- FN = Scalar function, TF = Table-valued function, IF = Inline function
 GO
 
 -- Example of calling the CompletePrompt function in SQL Server:

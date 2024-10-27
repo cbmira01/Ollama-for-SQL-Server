@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.IO;
@@ -29,17 +30,14 @@ namespace SqlClrApiExecutor
             }
         }
 
-        [SqlFunction(
-            FillRowMethodName = "FillRow",
-            TableDefinition = "OllamaCompletion NVARCHAR(MAX)"
-        )]
-        public static IEnumerable<object> CompleteMultiplePrompts(
+        [SqlFunction(FillRowMethodName = "FillRow")]
+        public static IEnumerable CompleteMultiplePrompts(
             SqlString askPrompt,
             SqlString additionalPrompt,
             SqlInt32 numCompletions)
         {
             var prompt = askPrompt + " " + additionalPrompt;
-            var completions = new List<object>();
+            var completions = new List<(Guid, string)>();
             int[] contextArray = null; // Placeholder for context tracking between calls
 
             try
@@ -49,9 +47,11 @@ namespace SqlClrApiExecutor
                     string result = CallOllamaService(prompt.Value, contextArray);
                     string response = ExtractField(result, "response");
 
-                    completions.Add(response);
+                    // Generate a unique GUID for each completion
+                    Guid completionGuid = Guid.NewGuid();
+                    completions.Add((completionGuid, response));
 
-                    // Update context for next iteration if needed (assumes `context` field is in the response)
+                    // Update context for next iteration if needed
                     contextArray = ExtractContextArray(result);
                 }
 
@@ -59,13 +59,16 @@ namespace SqlClrApiExecutor
             }
             catch (Exception ex)
             {
-                return new List<object>() { $"Error: {ex.Message}" };
+                return new List<(Guid, string)> { (Guid.Empty, $"Error: {ex.Message}") };
             }
         }
 
-        public static void FillRow(object completionObj, out SqlString OllamaCompletion)
+        // Updated FillRow method to output both a GUID and the completion string
+        public static void FillRow(object completionObj, out SqlGuid completionGuid, out SqlString ollamaCompletion)
         {
-            OllamaCompletion = new SqlString(completionObj.ToString());
+            var (guid, completion) = ((Guid, string))completionObj;
+            completionGuid = new SqlGuid(guid);
+            ollamaCompletion = new SqlString(completion);
         }
 
         private static string ExtractField(string json, string fieldName)
