@@ -37,10 +37,12 @@ namespace SqlClrApiExecutor.Tests
 
                 Debug.WriteLine("Test 2 - CompleteMultiplePrompts:");
 
-                foreach (string result in results)
+                foreach (var result in results)
                 {
-                    Debug.WriteLine(result);
+                    var (completionGuid, ollamaCompletion) = ((Guid, string))result;
+                    Debug.WriteLine($"{completionGuid}: {ollamaCompletion}");
                 }
+
             }
             catch (Exception ex)
             {
