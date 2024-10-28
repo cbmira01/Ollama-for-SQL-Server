@@ -54,5 +54,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\OllamaSqlClr\OllamaSqlClr.csproj">
+      <Project>{e6f702fb-05ed-4b2b-8058-2df844609f9b}</Project>
+      <Name>OllamaSqlClr</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
