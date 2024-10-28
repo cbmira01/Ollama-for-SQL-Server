@@ -1,8 +1,8 @@
 
 -- Demonstration of LLM completion in SQL Server
 
-
-DECLARE @ask NVARCHAR(MAX) = 'Replying only yes or no, is the sentiment generally happy?';
+-- Example of calling CompletePrompt to get completions as projections:
+DECLARE @ask NVARCHAR(MAX) = 'Replying only ''happy'' or ''not happy'', is the sentiment generally happy?';
 
 SELECT     
     dbo.CompletePrompt(@ask, Sentence) AS Response,
@@ -22,12 +22,12 @@ FROM
     ) AS Sentences(Sentence);
 GO
 
--- Example of calling the CompleteMultiplePrompts function to get the completions as rows:
+-- Example of calling CompleteMultiplePrompts to get completions in a table:
 DECLARE @numCompletions INT = 10;
 
 SELECT * 
 FROM dbo.CompleteMultiplePrompts(
-    N'Give me the name of a tree.', 
-    N'It must be fruit-bearing', 
+    N'Give me the name of a tree. It must be fruit-bearing. ', 
+    N'Answer in 20 words or less.', 
     @numCompletions);
 GO
