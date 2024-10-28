@@ -10,6 +10,8 @@ namespace OllamaSqlClr
 {
     public class SqlClrFunctions
     {
+        #region "Complete Prompt"
+
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(
             SqlString askPrompt, 
@@ -29,6 +31,10 @@ namespace OllamaSqlClr
                 return new SqlString($"Error: {ex.Message}");
             }
         }
+
+        #endregion
+
+        #region "CompleteMultiplePrompts"
 
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
         public static IEnumerable CompleteMultiplePrompts(
@@ -73,6 +79,8 @@ namespace OllamaSqlClr
             completionGuid = new SqlGuid(guid);
             ollamaCompletion = new SqlString(completion);
         }
+
+        #endregion
 
         private static string ExtractField(string json, string fieldName)
         {
