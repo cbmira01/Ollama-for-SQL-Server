@@ -7,8 +7,8 @@
     <ProjectGuid>{D6E3BDCB-AAA6-4A2A-A006-9495210685E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OllamaApiLibrary</RootNamespace>
-    <AssemblyName>OllamaApiLibrary</AssemblyName>
+    <RootNamespace>OllamaSupportLibrary</RootNamespace>
+    <AssemblyName>OllamaSupportLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

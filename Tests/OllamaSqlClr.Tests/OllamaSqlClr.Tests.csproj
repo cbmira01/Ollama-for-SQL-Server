@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SqlClrApiExecutor.Tests</RootNamespace>
-    <AssemblyName>SqlClrApiExecutor.Tests</AssemblyName>
+    <RootNamespace>OllamaSqlClr.Tests</RootNamespace>
+    <AssemblyName>OllamaSqlClr.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>OllamaSqlClr.Tests.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
