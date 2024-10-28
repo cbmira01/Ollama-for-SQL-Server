@@ -30,7 +30,7 @@ namespace OllamaSqlClr
             }
         }
 
-        [SqlFunction(FillRowMethodName = "FillRow")]
+        [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
         public static IEnumerable CompleteMultiplePrompts(
             SqlString askPrompt,
             SqlString additionalPrompt,
@@ -64,7 +64,7 @@ namespace OllamaSqlClr
         }
 
         // Updated FillRow method to output both a GUID and the completion string
-        public static void FillRow(object completionObj, 
+        public static void FillRow_CompleteMultiplePrompts(object completionObj, 
             out SqlGuid completionGuid, 
             out SqlString ollamaCompletion)
         {
