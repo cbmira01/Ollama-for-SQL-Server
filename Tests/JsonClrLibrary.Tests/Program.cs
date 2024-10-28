@@ -10,10 +10,16 @@ namespace JsonClrLibrary.Tests
         {
             public static void Main(string[] args)
             {
-                List<Action> tests = new List<Action> {
+                List<Action> tests = new List<Action> 
+                {
                         TestSimpleSerialization,
                         TestNestedSerialization,
-                        TestDateRecognition
+                        TestDateRecognition,
+                        TestOllamaRequestSerialization,
+                        TestOllamaResponseDeserialization,
+                        TestOllamaTagDeserialization,
+                                                TestOllamaSimpleFieldExtraction,
+                                                TestOllamaNestedFieldExtraction
                 };
 
                 foreach (var test in tests)
@@ -32,7 +38,8 @@ namespace JsonClrLibrary.Tests
 
             private static void TestSimpleSerialization()
             {
-                var data = new List<KeyValuePair<string, object>> {
+                var data = new List<KeyValuePair<string, object>> 
+                {
                     new KeyValuePair<string, object>("Name", "Test"),
                     new KeyValuePair<string, object>("IsActive", true),
                     new KeyValuePair<string, object>("Count", 10)
@@ -42,12 +49,15 @@ namespace JsonClrLibrary.Tests
 
                 // Expected: {"Name":"Test","IsActive":true,"Count":10}
                 if (json != "{\"Name\":\"Test\",\"IsActive\":true,\"Count\":10}")
+                {
                     throw new Exception("Simple serialization test failed.");
+                }
             }
 
             private static void TestNestedSerialization()
             {
-                var data = new List<KeyValuePair<string, object>> {
+                var data = new List<KeyValuePair<string, object>> 
+                {
                     new KeyValuePair<string, object>("Parent", new List<KeyValuePair<string, object>>
                     {
                         new KeyValuePair<string, object>("Child", "Value")
@@ -58,12 +68,15 @@ namespace JsonClrLibrary.Tests
 
                 // Expected: {"Parent":{"Child":"Value"}}
                 if (json != "{\"Parent\":{\"Child\":\"Value\"}}")
+                {
                     throw new Exception("Nested serialization test failed.");
+                }
             }
 
             private static void TestDateRecognition()
             {
-                var data = new List<KeyValuePair<string, object>> {
+                var data = new List<KeyValuePair<string, object>> 
+                {
                     new KeyValuePair<string, object>("Timestamp", new DateTime(2024, 10, 27, 12, 0, 0))
                 };
 
@@ -71,8 +84,29 @@ namespace JsonClrLibrary.Tests
 
                 // Expected: {"Timestamp":"2024-10-27T12:00:00"}
                 if (json != "{\"Timestamp\":\"2024-10-27T12:00:00\"}")
+                {
                     throw new Exception("Date recognition test failed.");
+                }
             }
+
+            private static void TestOllamaRequestSerialization() 
+            { 
+            
+            }
+
+            private static void TestOllamaResponseDeserialization()
+            {
+            }
+
+            private static void TestOllamaTagDeserialization()
+            {
+            }
+
+            private static void TestOllamaSimpleFieldExtraction() { }
+
+            private static void TestOllamaNestedFieldExtraction() { }
+
+            private static void TestOllamaModelInformationExtraction() { }
+
         }
-    }
 }
