@@ -15,7 +15,7 @@ namespace SqlClrApiExecutor
             SqlString askPrompt, 
             SqlString additionalPrompt)
         {
-            var prompt = askPrompt + " " +additionalPrompt;
+            var prompt = askPrompt + " " + additionalPrompt;
 
             try
             {
@@ -64,9 +64,12 @@ namespace SqlClrApiExecutor
         }
 
         // Updated FillRow method to output both a GUID and the completion string
-        public static void FillRow(object completionObj, out SqlGuid completionGuid, out SqlString ollamaCompletion)
+        public static void FillRow(object completionObj, 
+            out SqlGuid completionGuid, 
+            out SqlString ollamaCompletion)
         {
             var (guid, completion) = ((Guid, string))completionObj;
+
             completionGuid = new SqlGuid(guid);
             ollamaCompletion = new SqlString(completion);
         }

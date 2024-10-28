@@ -15,8 +15,8 @@ targeted is llama3.2.
 ## Requirements
 
 - .NET Framework (4.7.2, to target CLR 4 for SQL Server 2022)
-- SQL Server with CLR integration enabled
-- Ollama server hosting llama3.2 running on localhost
+- SQL Server 2022 Express, with CLR integration enabled
+- Ollama server on localhost:11434 hosting llama3.2
 
 ## Installation
 
