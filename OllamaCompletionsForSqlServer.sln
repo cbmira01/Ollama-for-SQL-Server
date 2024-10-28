@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", 
 		DBscripts\Sentiment_analysis.sql = DBscripts\Sentiment_analysis.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlClrApiExecutor", "Src\SqlClrApiExecutor\SqlClrApiExecutor.csproj", "{E6F702FB-05ED-4B2B-8058-2DF844609F9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaSqlClr", "Src\SqlClrApiExecutor\OllamaSqlClr.csproj", "{E6F702FB-05ED-4B2B-8058-2DF844609F9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlClrApiExecutor.Tests", "Tests\SqlClrApiExecutor.Tests\SqlClrApiExecutor.Tests.csproj", "{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}"
 EndProject

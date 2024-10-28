@@ -6,9 +6,9 @@ using System.IO;
 using System.Net;
 using Microsoft.SqlServer.Server;
 
-namespace SqlClrApiExecutor
+namespace OllamaSqlClr
 {
-    public class ApiExecutor
+    public class SqlClrFunctions
     {
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(
