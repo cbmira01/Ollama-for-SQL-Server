@@ -2,7 +2,7 @@
 using System.Data.SqlTypes;
 using System.Diagnostics;
 
-namespace SqlClrApiExecutor.Tests
+namespace OllamaSqlClr.Tests
 {
     class Program
     {
@@ -17,7 +17,7 @@ namespace SqlClrApiExecutor.Tests
                 var ask = new SqlStringWrapper("Why is the sky blue?").ToSqlString();
                 var additional = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
 
-                var result = ApiExecutor.CompletePrompt(ask, additional);
+                var result = SqlClrFunctions.CompletePrompt(ask, additional);
                 Debug.WriteLine($"Test 1 - CompletePrompt: {result.Value}");
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace SqlClrApiExecutor.Tests
                 var additional = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
                 var numCompletions = new SqlInt32(5); 
 
-                var results = ApiExecutor.CompleteMultiplePrompts(ask, additional, numCompletions);
+                var results = SqlClrFunctions.CompleteMultiplePrompts(ask, additional, numCompletions);
 
                 Debug.WriteLine("Test 2 - CompleteMultiplePrompts:");
 
