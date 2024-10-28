@@ -10,7 +10,7 @@ namespace JsonClrLibrary.Tests
         {
             public static void Main(string[] args)
             {
-                List<Action> tests = new List<Action> 
+                List<Action> tests = new List<Action>
                 {
                         TestSimpleSerialization,
                         TestNestedSerialization,
@@ -18,8 +18,8 @@ namespace JsonClrLibrary.Tests
                         TestOllamaRequestSerialization,
                         TestOllamaResponseDeserialization,
                         TestOllamaTagDeserialization,
-                                                TestOllamaSimpleFieldExtraction,
-                                                TestOllamaNestedFieldExtraction
+                        TestOllamaSimpleFieldExtraction,
+                        TestOllamaNestedFieldExtraction
                 };
 
                 foreach (var test in tests)
@@ -38,7 +38,7 @@ namespace JsonClrLibrary.Tests
 
             private static void TestSimpleSerialization()
             {
-                var data = new List<KeyValuePair<string, object>> 
+                var data = new List<KeyValuePair<string, object>>
                 {
                     new KeyValuePair<string, object>("Name", "Test"),
                     new KeyValuePair<string, object>("IsActive", true),
@@ -56,7 +56,7 @@ namespace JsonClrLibrary.Tests
 
             private static void TestNestedSerialization()
             {
-                var data = new List<KeyValuePair<string, object>> 
+                var data = new List<KeyValuePair<string, object>>
                 {
                     new KeyValuePair<string, object>("Parent", new List<KeyValuePair<string, object>>
                     {
@@ -75,7 +75,7 @@ namespace JsonClrLibrary.Tests
 
             private static void TestDateRecognition()
             {
-                var data = new List<KeyValuePair<string, object>> 
+                var data = new List<KeyValuePair<string, object>>
                 {
                     new KeyValuePair<string, object>("Timestamp", new DateTime(2024, 10, 27, 12, 0, 0))
                 };
@@ -89,24 +89,58 @@ namespace JsonClrLibrary.Tests
                 }
             }
 
-            private static void TestOllamaRequestSerialization() 
-            { 
-            
+            private static void TestOllamaRequestSerialization()
+            {
+
+                if (false)
+                {
+                    throw new Exception("Test of Ollama Request Serialization failed.");
+                }
             }
 
             private static void TestOllamaResponseDeserialization()
             {
+
+                if (false)
+                {
+                    throw new Exception("Test of Ollama Response Serialization failed.");
+                }
             }
 
             private static void TestOllamaTagDeserialization()
             {
+
+                if (false)
+                {
+                    throw new Exception("Test of Ollama Tag Deserialization failed.");
+                }
             }
 
-            private static void TestOllamaSimpleFieldExtraction() { }
+            private static void TestOllamaSimpleFieldExtraction()
+            {
 
-            private static void TestOllamaNestedFieldExtraction() { }
+                if (false)
+                {
+                    throw new Exception("Test of Ollama Simple Field Extraction failed.");
+                }
+            }
 
-            private static void TestOllamaModelInformationExtraction() { }
+            private static void TestOllamaNestedFieldExtraction()
+            {
+                if (false)
+                {
+                    throw new Exception("Test of Ollama Nested Field Extraction failed.");
+                }
+            }
+
+            private static void TestOllamaModelInformationExtraction()
+            {
+                if (false)
+                {
+                    throw new Exception("Test of Ollama Model Information Extraction failed.");
+                }
+            }
 
         }
+    }
 }
