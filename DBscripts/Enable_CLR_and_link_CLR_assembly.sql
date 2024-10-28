@@ -7,20 +7,20 @@ sp_configure 'clr enabled', 1;
 RECONFIGURE;
 GO
 
-SELECT * FROM sys.assemblies WHERE name = 'SqlClrApiExecutor';
+SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
--- Drop functions from the assembly, then the assembly link
+-- Drop functions from the assembly, then drop the assembly link
 DROP FUNCTION dbo.CompletePrompt;
 DROP FUNCTION dbo.CompleteMultiplePrompts;
 GO
 
-DROP ASSEMBLY SqlClrApiExecutor;
+DROP ASSEMBLY OllamaSqlClr;
 GO
 
 -- Create the assembly link
-CREATE ASSEMBLY SqlClrApiExecutor
-FROM 'C:\Users\cmirac2\Source\PrivateRepos\OllamaCompletionsForSqlServer\Src\SqlClrApiExecutor\bin\Release\SqlClrApiExecutor.dll'
+CREATE ASSEMBLY OllamaSqlClr
+FROM 'C:\Users\cmirac2\Source\PrivateRepos\OllamaCompletionsForSqlServer\Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll'
 WITH PERMISSION_SET = UNSAFE;
 GO
 
@@ -30,7 +30,7 @@ CREATE FUNCTION dbo.CompletePrompt(
   @additionalPrompt NVARCHAR(MAX)
 )
 RETURNS NVARCHAR(MAX)
-AS EXTERNAL NAME SqlClrApiExecutor.[SqlClrApiExecutor.ApiExecutor].CompletePrompt;
+AS EXTERNAL NAME OllamaSqlClr.[OllamaSqlClr.SqlClrFunctions].CompletePrompt;
 GO
 
 CREATE FUNCTION dbo.CompleteMultiplePrompts(
@@ -42,10 +42,13 @@ RETURNS TABLE (
     CompletionGuid UNIQUEIDENTIFIER,
     OllamaCompletion NVARCHAR(MAX)
 )
-AS EXTERNAL NAME SqlClrApiExecutor.[SqlClrApiExecutor.ApiExecutor].CompleteMultiplePrompts;
+AS EXTERNAL NAME OllamaSqlClr.[OllamaSqlClr.SqlClrFunctions].CompletePrompt;
 GO
 
--- List all CLR functions and their associated assemblies
+-- List all user-defined assemblies and all CLR functions
+SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
+GO
+
 SELECT 
     asm.name AS AssemblyName,
     asm.permission_set_desc AS AssemblyPermissionSet,
