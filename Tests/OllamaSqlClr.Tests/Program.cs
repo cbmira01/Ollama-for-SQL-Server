@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 
@@ -6,64 +7,51 @@ namespace OllamaSqlClr.Tests
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            // Initialize test result flag
-            bool allTestsPassed = true;
+            List<Action> tests = new List<Action> {
+                        TestCompletePrompt,
+                        TestCompleteMultiplePrompts
+                };
 
-            //// Test 1: CompletePrompt
-            try
+            foreach (var test in tests)
             {
-                var ask = new SqlStringWrapper("Why is the sky blue?").ToSqlString();
-                var additional = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
-
-                var result = SqlClrFunctions.CompletePrompt(ask, additional);
-                Debug.WriteLine($"Test 1 - CompletePrompt: {result.Value}");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Test 1 Failed: {ex.Message}");
-                allTestsPassed = false;
-            }
-
-            //// Test 2: CompleteMultiplePrompts
-            try
-            {
-                var ask = new SqlStringWrapper("Tell me the name of a plant.").ToSqlString();
-                var additional = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
-                var numCompletions = new SqlInt32(5); 
-
-                var results = SqlClrFunctions.CompleteMultiplePrompts(ask, additional, numCompletions);
-
-                Debug.WriteLine("Test 2 - CompleteMultiplePrompts:");
-
-                foreach (var result in results)
+                try
                 {
-                    var (completionGuid, ollamaCompletion) = ((Guid, string))result;
-                    Debug.WriteLine($"{completionGuid}: {ollamaCompletion}");
+                    test.Invoke();
+                    Debug.WriteLine($"{test.Method.Name} passed.");
                 }
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Test 2 Failed: {ex.Message}");
-                allTestsPassed = false;
-            }
-
-            // Determine if all tests passed and exit with appropriate status code
-            if (allTestsPassed)
-            {
-                Debug.WriteLine("All tests passed successfully.");
-                Environment.Exit(0);  // Exit code 0 means success
-            }
-            else
-            {
-                Debug.WriteLine("Some tests failed.");
-                Environment.Exit(1);  // Exit code 1 indicates failure
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"{test.Method.Name} failed: {ex.Message}");
+                }
             }
         }
 
-    } // end class
+        private static void TestCompletePrompt()
+        {
+            var ask = new SqlStringWrapper("Why is the sky blue?").ToSqlString();
+            var additional = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
+
+            var result = SqlClrFunctions.CompletePrompt(ask, additional);
+            Debug.WriteLine($"Test 1 - CompletePrompt: {result.Value}");
+        }
+
+        private static void TestCompleteMultiplePrompts()
+        {
+            var ask = new SqlStringWrapper("Tell me the name of a plant.").ToSqlString();
+            var additional = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
+            var numCompletions = new SqlInt32(5);
+
+            var results = SqlClrFunctions.CompleteMultiplePrompts(ask, additional, numCompletions);
+
+            foreach (var result in results)
+            {
+                var (completionGuid, ollamaCompletion) = ((Guid, string))result;
+                Debug.WriteLine($"{completionGuid}: {ollamaCompletion}");
+            }
+        }
+    }
 
     // Wrapper classes for testing purposes
     public class SqlStringWrapper
@@ -84,5 +72,6 @@ namespace OllamaSqlClr.Tests
         {
             return Value;
         }
-    } // end class 
-} // end namespace
+    }
+
+}
