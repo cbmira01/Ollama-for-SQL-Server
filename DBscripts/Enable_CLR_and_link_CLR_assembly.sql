@@ -42,7 +42,7 @@ RETURNS TABLE (
     CompletionGuid UNIQUEIDENTIFIER,
     OllamaCompletion NVARCHAR(MAX)
 )
-AS EXTERNAL NAME OllamaSqlClr.[OllamaSqlClr.SqlClrFunctions].CompletePrompt;
+AS EXTERNAL NAME OllamaSqlClr.[OllamaSqlClr.SqlClrFunctions].CompleteMultiplePrompts;
 GO
 
 -- List all user-defined assemblies and all CLR functions
