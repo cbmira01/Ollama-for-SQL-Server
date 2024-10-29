@@ -10,9 +10,8 @@ namespace JsonClrLibrary
         {
 
             // TODO: Testing reveals that the serialization routine here allows
-            //          multiple JSON tags under the same name. Some sort of 
-            //          dictionary should be maintained to so that an error is
-            //          produced.
+            //          multiple JSON tags under the same name. That should not
+            //          occur, and an error should be produced.
 
             StringBuilder json = new StringBuilder();
             json.Append("{");
@@ -22,20 +21,31 @@ namespace JsonClrLibrary
                 var kvp = data[i];
                 json.Append($"\"{kvp.Key}\":");
 
-                if (kvp.Value is string)
-                    json.Append($"\"{EscapeString((string)kvp.Value)}\"");
-                else if (kvp.Value is bool)
-                    json.Append((bool)kvp.Value ? "true" : "false");
-                else if (kvp.Value is int || kvp.Value is double)
-                    json.Append(kvp.Value.ToString());
-                else if (kvp.Value is DateTime)
-                    json.Append($"\"{((DateTime)kvp.Value).ToString("yyyy-MM-ddTHH:mm:ss")}\"");
-                else if (kvp.Value is List<KeyValuePair<string, object>> nestedObj)
-                    json.Append(Serialize(nestedObj)); // Recursive call for nested objects
-                else if (kvp.Value is List<object> array)
-                    json.Append(SerializeArray(array));
-                else
-                    json.Append("null");
+                switch (kvp.Value)
+                {
+                    case string strVal:
+                        json.Append($"\"{EscapeString(strVal)}\"");
+                        break;
+                    case bool boolVal:
+                        json.Append(boolVal ? "true" : "false");
+                        break;
+                    case int intVal:
+                    case double doubleVal:
+                        json.Append(kvp.Value.ToString());
+                        break;
+                    case DateTime dateTimeVal:
+                        json.Append($"\"{dateTimeVal:yyyy-MM-ddTHH:mm:ss}\"");
+                        break;
+                    case List<KeyValuePair<string, object>> nestedObj:
+                        json.Append(Serialize(nestedObj)); // Recursive call for nested objects
+                        break;
+                    case List<object> array:
+                        json.Append(SerializeArray(array));
+                        break;
+                    default:
+                        json.Append("null");
+                        break;
+                }
 
                 if (i < data.Count - 1) json.Append(",");
             }
