@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Remoting.Contexts;
 
 namespace JsonClrLibrary.Tests
 {
@@ -19,7 +20,8 @@ namespace JsonClrLibrary.Tests
                         TestOllamaResponseDeserialization,
                         TestOllamaTagDeserialization,
                         TestOllamaSimpleFieldExtraction,
-                        TestOllamaNestedFieldExtraction
+                        TestOllamaNestedFieldExtraction,
+                        TestOllamaModelInformationExtraction
                 };
 
                 foreach (var test in tests)
@@ -91,6 +93,21 @@ namespace JsonClrLibrary.Tests
 
             private static void TestOllamaRequestSerialization()
             {
+                var numberArray = new List<object> { 1, 2, 3 };
+                var stringArray = new List<object> { "one", "two", "three" };
+                var booleanArray = new List<object> { true, false, false };
+
+                var data = new List<KeyValuePair<string, object>>
+                {
+                    new KeyValuePair<string, object>("model", "nameofmodel"),
+                    new KeyValuePair<string, object>("prompt", "Why is the sky blue?"),
+                    new KeyValuePair<string, object>("stream", false),
+                    new KeyValuePair<string, object>("context1", numberArray),
+                    new KeyValuePair<string, object>("context2", stringArray),
+                    new KeyValuePair<string, object>("context3", booleanArray)
+                };
+
+                string json = JsonSerializerDeserializer.Serialize(data);
 
                 if (false)
                 {
@@ -103,7 +120,7 @@ namespace JsonClrLibrary.Tests
 
                 if (false)
                 {
-                    throw new Exception("Test of Ollama Response Serialization failed.");
+                    throw new Exception("Test of Ollama Response Deserialization failed.");
                 }
             }
 

@@ -8,6 +8,12 @@ namespace JsonClrLibrary
     {
         public static string Serialize(List<KeyValuePair<string, object>> data)
         {
+
+            // TODO: Testing reveals that the serialization routine here allows
+            //          multiple JSON tags under the same name. Some sort of 
+            //          dictionary should be maintained to so that an error is
+            //          produced.
+
             StringBuilder json = new StringBuilder();
             json.Append("{");
 
