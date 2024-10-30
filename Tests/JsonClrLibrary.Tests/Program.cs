@@ -109,7 +109,9 @@ namespace JsonClrLibrary.Tests
 
                 string json = JsonSerializerDeserializer.Serialize(data);
 
-                if (false)
+                string shouldBe = "{\"model\":\"nameofmodel\",\"prompt\":\"Why is the sky blue?\",\"stream\":false,\"context1\":[1,2,3],\"context2\":[\"one\",\"two\",\"three\"],\"context3\":[true,false,false]}";
+
+                if (json != shouldBe)
                 {
                     throw new Exception("Test of Ollama Request Serialization failed.");
                 }
