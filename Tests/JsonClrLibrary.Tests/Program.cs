@@ -332,46 +332,40 @@ namespace JsonClrLibrary.Tests
 
                 var shouldBe = new List<KeyValuePair<string, object>>
                 {
-                    JsonBuilder.CreateObject(
-                        "models",
-                        JsonBuilder.CreateArray(
-                            "models",
-                            JsonBuilder.CreateObject(
-                                "details",
-                                JsonBuilder.CreateField("name", "zephyr:latest"),
-                                JsonBuilder.CreateField("model", "zephyr:latest"),
-                                JsonBuilder.CreateField("modified_at", DateTime.Parse("2024-10-27T11:51:03.5321962-04:00")),
-                                JsonBuilder.CreateField("size", 4109854934L),
-                                JsonBuilder.CreateField("digest", "bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354"),
-                                JsonBuilder.CreateObject(
-                                    "details",
-                                    JsonBuilder.CreateField("parent_model", ""),
-                                    JsonBuilder.CreateField("format", "gguf"),
-                                    JsonBuilder.CreateField("family", "llama"),
-                                    JsonBuilder.CreateArray("families", "llama"),
-                                    JsonBuilder.CreateField("parameter_size", "7B"),
-                                    JsonBuilder.CreateField("quantization_level", "Q4_0")
-                                )
-                            ),
-                            JsonBuilder.CreateObject(
-                                "details",
-                                JsonBuilder.CreateField("name", "llama3.2:latest"),
-                                JsonBuilder.CreateField("model", "llama3.2:latest"),
-                                JsonBuilder.CreateField("modified_at", DateTime.Parse("2024-09-30T10:37:15.6276545-04:00")),
-                                JsonBuilder.CreateField("size", 2019393189L),
-                                JsonBuilder.CreateField("digest", "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"),
-                                JsonBuilder.CreateObject(
-                                    "details",
-                                    JsonBuilder.CreateField("parent_model", ""),
-                                    JsonBuilder.CreateField("format", "gguf"),
-                                    JsonBuilder.CreateField("family", "llama"),
-                                    JsonBuilder.CreateArray("families", "llama"),
-                                    JsonBuilder.CreateField("parameter_size", "3.2B"),
-                                    JsonBuilder.CreateField("quantization_level", "Q4_K_M")
-                                )
+                    JsonBuilder.CreateField("models", JsonBuilder.CreateArray(
+                        // First model object
+                        JsonBuilder.CreateAnonymousObject(
+                            JsonBuilder.CreateField("name", "zephyr:latest"),
+                            JsonBuilder.CreateField("model", "zephyr:latest"),
+                            JsonBuilder.CreateField("modified_at", DateTime.Parse("2024-10-27T11:51:03.5321962-04:00")),
+                            JsonBuilder.CreateField("size", 4109854934L),
+                            JsonBuilder.CreateField("digest", "bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354"),
+                            JsonBuilder.CreateObject("details",
+                                JsonBuilder.CreateField("parent_model", ""),
+                                JsonBuilder.CreateField("format", "gguf"),
+                                JsonBuilder.CreateField("family", "llama"),
+                                JsonBuilder.CreateArray("families", "llama"),
+                                JsonBuilder.CreateField("parameter_size", "7B"),
+                                JsonBuilder.CreateField("quantization_level", "Q4_0")
+                            )
+                        ),
+                        // Second model object
+                        JsonBuilder.CreateAnonymousObject(
+                            JsonBuilder.CreateField("name", "llama3.2:latest"),
+                            JsonBuilder.CreateField("model", "llama3.2:latest"),
+                            JsonBuilder.CreateField("modified_at", DateTime.Parse("2024-09-30T10:37:15.6276545-04:00")),
+                            JsonBuilder.CreateField("size", 2019393189L),
+                            JsonBuilder.CreateField("digest", "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"),
+                            JsonBuilder.CreateObject("details",
+                                JsonBuilder.CreateField("parent_model", ""),
+                                JsonBuilder.CreateField("format", "gguf"),
+                                JsonBuilder.CreateField("family", "llama"),
+                                JsonBuilder.CreateArray("families", "llama"),
+                                JsonBuilder.CreateField("parameter_size", "3.2B"),
+                                JsonBuilder.CreateField("quantization_level", "Q4_K_M")
                             )
                         )
-                    )
+                    ))
                 };
 
                 if (!JsonTestHelpers.DeepCompare(data, shouldBe, out string difference))

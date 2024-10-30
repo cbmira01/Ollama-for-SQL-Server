@@ -16,4 +16,15 @@ public static class JsonBuilder
     {
         return new KeyValuePair<string, object>(key, new List<object>(items));
     }
+
+    public static List<object> CreateArray(params object[] items)
+    {
+        return new List<object>(items);
+    }
+
+    public static List<KeyValuePair<string, object>> CreateAnonymousObject(params KeyValuePair<string, object>[] fields)
+    {
+        return new List<KeyValuePair<string, object>>(fields);
+    }
+
 }
