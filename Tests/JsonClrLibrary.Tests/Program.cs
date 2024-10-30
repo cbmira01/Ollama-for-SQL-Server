@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Remoting.Contexts;
+using System.Security.Policy;
 
 namespace JsonClrLibrary.Tests
 {
@@ -176,14 +178,14 @@ namespace JsonClrLibrary.Tests
 
             private static void TestOllamaResponseDeserialization()
             {
-                string json = "{\"model\": \"zephyr\", \"created_at\": \"2024-10-29T19:43:45.7743388Z\", \"response\": \"The grass appears green because it reflects more of the green wavelengths of light (450-570 nanometers) from the sun than it absorbs. This phenomenon is known as chlorophyll, a pigment found in plants that enables them to convert sunlight into energy through photosynthesis.\", \"done\": true, \"done_reason\": \"stop\", \"context\": [28705, 13, 28789, 28766, 1838, 28766, 28767, 13, 7638, 349, 272, 10109, 5344, 28804, 26307, 1215, 15643, 28723, 13, 2, 28705, 13, 28789, 28766, 489, 11143, 28766, 28767, 13, 1014, 10109, 8045, 5344, 1096, 378, 24345, 680, 302, 272, 5344, 275, 26795, 28713, 302, 2061, 325, 28781, 28782, 28734, 28733, 28782, 28787, 28734, 23693, 300, 2612, 28731, 477, 272, 4376, 821, 378, 10612, 1816, 28723, 851, 20757, 349, 2651, 390, 484, 5638, 3126, 19530, 28725, 264, 18958, 466, 1419, 297, 9923, 369, 18156, 706, 298, 6603, 22950, 778, 3408, 1059, 8886, 28724, 448, 21537, 28723], \"total_duration\": 21070342000, \"load_duration\": 7924431300, \"prompt_eval_count\": 30, \"prompt_eval_duration\": 2666814000, \"eval_count\": 67, \"eval_duration\": 10474129000}";
+                string json = "{\"model\": \"zephyr\", \"created_at\": \"2024-10-29T19:43:45.7743388Z\", \"response\": \"The grass appears green...\", \"done\": true, \"done_reason\": \"stop\", \"context\": [28705, 13, 28789, 28766, 1838, 28766, 28767, 13, 7638, 349, 272, 10109, 5344, 28804, 26307, 1215, 15643, 28723, 13, 2, 28705, 13, 28789, 28766, 489, 11143, 28766, 28767, 13, 1014, 10109, 8045, 5344, 1096, 378, 24345, 680, 302, 272, 5344, 275, 26795, 28713, 302, 2061, 325, 28781, 28782, 28734, 28733, 28782, 28787, 28734, 23693, 300, 2612, 28731, 477, 272, 4376, 821, 378, 10612, 1816, 28723, 851, 20757, 349, 2651, 390, 484, 5638, 3126, 19530, 28725, 264, 18958, 466, 1419, 297, 9923, 369, 18156, 706, 298, 6603, 22950, 778, 3408, 1059, 8886, 28724, 448, 21537, 28723], \"total_duration\": 21070342000, \"load_duration\": 7924431300, \"prompt_eval_count\": 30, \"prompt_eval_duration\": 2666814000, \"eval_count\": 67, \"eval_duration\": 10474129000}";
                 var data = JsonSerializerDeserializer.Deserialize(json);
 
                 var shouldBe = new List<KeyValuePair<string, object>>
                 {
                     new KeyValuePair<string, object>("model", "zephyr"),
                     new KeyValuePair<string, object>("created_at", DateTime.Parse("2024-10-29T19:43:45.7743388Z")),
-                    new KeyValuePair<string, object>("response", "The grass appears green because it reflects more of the green wavelengths of light (450-570 nanometers) from the sun than it absorbs. This phenomenon is known as chlorophyll, a pigment found in plants that enables them to convert sunlight into energy through photosynthesis."),
+                    new KeyValuePair<string, object>("response", "The grass appears green..."),
                     new KeyValuePair<string, object>("done", true),
                     new KeyValuePair<string, object>("done_reason", "stop"),
                     new KeyValuePair<string, object>("context", new List<object>
@@ -211,17 +213,69 @@ namespace JsonClrLibrary.Tests
 
             private static void TestOllamaTagDeserialization()
             {
+                string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";
+                var data = JsonSerializerDeserializer.Deserialize(json);
 
-                if (false)
+                var shouldBe = new List<KeyValuePair<string, object>>
                 {
-                    throw new Exception("Test of Ollama Tag Deserialization failed.");
+                    new KeyValuePair<string, object>("models", new List<object>
+                    {
+                        new List<KeyValuePair<string, object>>
+                        {
+                            new KeyValuePair<string, object>("name", "zephyr:latest"),
+                            new KeyValuePair<string, object>("model", "zephyr:latest"),
+                            new KeyValuePair<string, object>("modified_at", DateTime.Parse("2024-10-27T11:51:03.5321962-04:00")),
+                            new KeyValuePair<string, object>("size", 4109854934L),
+                            new KeyValuePair<string, object>("digest", "bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354"),
+                            new KeyValuePair<string, object>("details", new List<KeyValuePair<string, object>>
+                            {
+                                new KeyValuePair<string, object>("parent_model", ""),
+                                new KeyValuePair<string, object>("format", "gguf"),
+                                new KeyValuePair<string, object>("family", "llama"),
+                                new KeyValuePair<string, object>("families", new List<object> { "llama" }),
+                                new KeyValuePair<string, object>("parameter_size", "7B"),
+                                new KeyValuePair<string, object>("quantization_level", "Q4_0")
+                            })
+                        },
+                        new List<KeyValuePair<string, object>>
+                        {
+                            new KeyValuePair<string, object>("name", "llama3.2:latest"),
+                            new KeyValuePair<string, object>("model", "llama3.2:latest"),
+                            new KeyValuePair<string, object>("modified_at", DateTime.Parse("2024-09-30T10:37:15.6276545-04:00")),
+                            new KeyValuePair<string, object>("size", 2019393189L),
+                            new KeyValuePair<string, object>("digest", "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"),
+                            new KeyValuePair<string, object>("details", new List<KeyValuePair<string, object>>
+                            {
+                                new KeyValuePair<string, object>("parent_model", ""),
+                                new KeyValuePair<string, object>("format", "gguf"),
+                                new KeyValuePair<string, object>("family", "llama"),
+                                new KeyValuePair<string, object>("families", new List<object> { "llama" }),
+                                new KeyValuePair<string, object>("parameter_size", "3.2B"),
+                                new KeyValuePair<string, object>("quantization_level", "Q4_K_M")
+                            })
+                        }
+                    })
+                };
+
+                if (!JsonTestHelpers.DeepCompare(data, shouldBe, out string difference))
+                {
+                    throw new DeserializationMismatchException($"Test Ollama Tag Deserialization failed. difference: {difference}");
                 }
             }
 
             private static void TestOllamaSimpleFieldExtraction()
             {
+                string json = "{\"model\": \"zephyr\", \"created_at\": \"2024-10-29T19:43:45.7743388Z\", \"response\": \"The grass appears green...\", \"done\": true, \"done_reason\": \"stop\", \"context\": [28705, 13, 28789, 28766, 1838, 28766, 28767, 13, 7638, 349, 272, 10109, 5344, 28804, 26307, 1215, 15643, 28723, 13, 2, 28705, 13, 28789, 28766, 489, 11143, 28766, 28767, 13, 1014, 10109, 8045, 5344, 1096, 378, 24345, 680, 302, 272, 5344, 275, 26795, 28713, 302, 2061, 325, 28781, 28782, 28734, 28733, 28782, 28787, 28734, 23693, 300, 2612, 28731, 477, 272, 4376, 821, 378, 10612, 1816, 28723, 851, 20757, 349, 2651, 390, 484, 5638, 3126, 19530, 28725, 264, 18958, 466, 1419, 297, 9923, 369, 18156, 706, 298, 6603, 22950, 778, 3408, 1059, 8886, 28724, 448, 21537, 28723], \"total_duration\": 21070342000, \"load_duration\": 7924431300, \"prompt_eval_count\": 30, \"prompt_eval_duration\": 2666814000, \"eval_count\": 67, \"eval_duration\": 10474129000}";
+                var data = JsonSerializerDeserializer.Deserialize(json);
 
-                if (false)
+                // Extract specific fields
+                var model = JsonSerializerDeserializer.GetField(data, "model") as string;
+                var createdAt = JsonSerializerDeserializer.GetField(data, "created_at") as DateTime?;
+                var response = JsonSerializerDeserializer.GetField(data, "response") as string;
+                var done = JsonSerializerDeserializer.GetField(data, "done") as bool?;
+
+                // Validate extracted fields (optional for the test)
+                if (model != "zephyr" || createdAt == null || response == null || done == null)
                 {
                     throw new Exception("Test of Ollama Simple Field Extraction failed.");
                 }
@@ -229,17 +283,79 @@ namespace JsonClrLibrary.Tests
 
             private static void TestOllamaNestedFieldExtraction()
             {
-                if (false)
+                string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";
+                var data = JsonSerializerDeserializer.Deserialize(json);
+
+                // Extract the 'models' list
+                var models = JsonSerializerDeserializer.GetField(data, "models") as List<object>;
+                if (models == null)
                 {
-                    throw new Exception("Test of Ollama Nested Field Extraction failed.");
+                    throw new Exception("Failed to extract models list.");
+                }
+
+                foreach (var model in models)
+                {
+                    if (model is List<KeyValuePair<string, object>> modelData)
+                    {
+                        // Extract fields using GetField
+                        var name = JsonSerializerDeserializer.GetField(modelData, "name") as string;
+                        var modifiedAt = JsonSerializerDeserializer.GetField(modelData, "modified_at") as DateTime?;
+                        var family = JsonSerializerDeserializer.GetField(JsonSerializerDeserializer.GetField(modelData, "details") as List<KeyValuePair<string, object>>, "family") as string;
+                        var quantizationLevel = JsonSerializerDeserializer.GetField(JsonSerializerDeserializer.GetField(modelData, "details") as List<KeyValuePair<string, object>>, "quantization_level") as string;
+                        var parameterSize = JsonSerializerDeserializer.GetField(JsonSerializerDeserializer.GetField(modelData, "details") as List<KeyValuePair<string, object>>, "parameter_size") as string;
+
+                        // Validation for testing (checking against expected values)
+                        if (name == null || modifiedAt == null || family == null || quantizationLevel == null || parameterSize == null)
+                        {
+                            throw new Exception($"Test failed for model '{name ?? "unknown"}': missing required fields.");
+                        }
+
+                        // Output for validation (or assertions in real test)
+                        Console.WriteLine($"Model: {name}");
+                        Console.WriteLine($"Modified At: {modifiedAt}");
+                        Console.WriteLine($"Family: {family}");
+                        Console.WriteLine($"Quantization Level: {quantizationLevel}");
+                        Console.WriteLine($"Parameter Size: {parameterSize}");
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        throw new Exception("Model data format is invalid.");
+                    }
                 }
             }
 
             private static void TestOllamaModelInformationExtraction()
             {
-                if (false)
+                string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";
+                var data = JsonSerializerDeserializer.Deserialize(json);
+
+                // Get the count of models in the "models" list
+                int modelCount = (int)JsonSerializerDeserializer.GetFieldByPath(data, "models.length");
+                Console.WriteLine($"Total Models: {modelCount}");
+
+                // Loop through each model
+                for (var i = 0; i < modelCount; i++)
                 {
-                    throw new Exception("Test of Ollama Model Information Extraction failed.");
+                    var name = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].name") as string;
+                    var modifiedAt = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].modified_at") as DateTime?;
+                    var family = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.family") as string;
+                    var quantizationLevel = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.quantization_level") as string;
+                    var parameterSize = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.parameter_size") as string;
+
+                    // Validation for testing (checking against expected values)
+                    if (name == null || modifiedAt == null || family == null || quantizationLevel == null || parameterSize == null)
+                    {
+                        throw new Exception($"Test failed for model '{name ?? "unknown"}': missing required fields.");
+                    }
+
+                    // Output for validation (or assertions in real test)
+                    Console.WriteLine($"Model: {name}");
+                    Console.WriteLine($"Modified At: {modifiedAt}");
+                    Console.WriteLine($"Family: {family}");
+                    Console.WriteLine($"Quantization Level: {quantizationLevel}");
+                    Console.WriteLine($"Parameter Size: {parameterSize}");
+                    Console.WriteLine();
                 }
             }
 

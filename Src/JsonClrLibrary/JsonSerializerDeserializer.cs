@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JsonClrLibrary
@@ -116,6 +117,90 @@ namespace JsonClrLibrary
         {
             int index = 0;
             return ParseObject(json, ref index);
+        }
+
+        public static object GetField(List<KeyValuePair<string, object>> data, string key)
+        {
+            foreach (var kvp in data)
+            {
+                if (kvp.Key == key)
+                {
+                    // Check if the value is a string that could be a date-time
+                    if (kvp.Value is string strValue && DateTime.TryParse(strValue, out DateTime dateTimeValue))
+                    {
+                        return dateTimeValue; // Return as DateTime if it successfully parses
+                    }
+                    return kvp.Value; // Return the original value if not a date-time string
+                }
+
+                // If the value is a nested object, search recursively
+                if (kvp.Value is List<KeyValuePair<string, object>> nestedData)
+                {
+                    var result = GetField(nestedData, key);
+                    if (result != null) return result;
+                }
+            }
+
+            return null; // Return null if the key is not found
+        }
+
+        public static object GetFieldByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var parts = path.Split('.');
+            object current = data;
+
+            foreach (var part in parts)
+            {
+                if (current is List<KeyValuePair<string, object>> currentData)
+                {
+                    var match = part;
+                    int? index = null;
+
+                    // Handle array length request
+                    if (match == "length" && current is List<object> list)
+                    {
+                        return list.Count;
+                    }
+
+                    // Handle array indexing, e.g., "models[0]"
+                    if (part.Contains("["))
+                    {
+                        var bracketIndex = part.IndexOf('[');
+                        match = part.Substring(0, bracketIndex);
+                        index = int.Parse(part.Substring(bracketIndex + 1, part.Length - bracketIndex - 2));
+                    }
+
+                    // Find the matching key-value pair safely
+                    var kvp = currentData.FirstOrDefault(k => k.Key == match);
+                    if (kvp.Equals(default(KeyValuePair<string, object>)))
+                    {
+                        throw new Exception($"Key '{match}' not found.");
+                    }
+                    current = kvp.Value;
+
+                    // Apply index if it's a list of objects (array)
+                    if (index.HasValue && current is List<object> listData)
+                    {
+                        current = listData.ElementAtOrDefault(index.Value);
+                    }
+                }
+                else if (part == "length" && current is List<object> array)
+                {
+                    return array.Count; // Return count of items if ".length" is found
+                }
+                else
+                {
+                    throw new Exception($"Invalid path segment '{part}': cannot access '{current?.GetType()}' with '{part}'.");
+                }
+            }
+
+            // Attempt to parse the final value as a DateTime if it's a string
+            if (current is string stringValue && DateTime.TryParse(stringValue, out DateTime dateTimeValue))
+            {
+                return dateTimeValue;
+            }
+
+            return current;
         }
 
         public static void DumpJson(string json)
