@@ -62,20 +62,33 @@ namespace JsonClrLibrary
             for (int i = 0; i < array.Count; i++)
             {
                 var item = array[i];
-                if (item is string)
-                    jsonArray.Append($"\"{EscapeString((string)item)}\"");
-                else if (item is bool)
-                    jsonArray.Append((bool)item ? "true" : "false");
-                else if (item is int || item is double)
-                    jsonArray.Append(item.ToString());
-                else if (item is DateTime)
-                    jsonArray.Append($"\"{((DateTime)item).ToString("yyyy-MM-ddTHH:mm:ss")}\"");
-                else if (item is List<KeyValuePair<string, object>> nestedObj)
-                    jsonArray.Append(Serialize(nestedObj)); // Recursive call for nested objects
-                else if (item is List<object> nestedArray)
-                    jsonArray.Append(SerializeArray(nestedArray)); // Recursive call for arrays
-                else
-                    jsonArray.Append("null");
+                switch (item)
+                {
+                    case string strVal:
+                        jsonArray.Append($"\"{EscapeString(strVal)}\"");
+                        break;
+                    case bool boolVal:
+                        jsonArray.Append(boolVal ? "true" : "false");
+                        break;
+                    case int intVal:
+                        jsonArray.Append(intVal.ToString());
+                        break;
+                    case double doubleVal:
+                        jsonArray.Append(doubleVal.ToString());
+                        break;
+                    case DateTime dateTimeVal:
+                        jsonArray.Append($"\"{dateTimeVal:yyyy-MM-ddTHH:mm:ss}\"");
+                        break;
+                    case List<KeyValuePair<string, object>> nestedObj:
+                        jsonArray.Append(Serialize(nestedObj)); // Recursive call for nested objects
+                        break;
+                    case List<object> nestedArray:
+                        jsonArray.Append(SerializeArray(nestedArray)); // Recursive call for arrays
+                        break;
+                    default:
+                        jsonArray.Append("null");
+                        break;
+                }
 
                 if (i < array.Count - 1) jsonArray.Append(",");
             }
@@ -208,14 +221,24 @@ namespace JsonClrLibrary
             SkipWhitespace(json, ref index);
             char currentChar = json[index];
 
-            if (currentChar == '"') return ParseString(json, ref index);
-            if (currentChar == '{') return ParseObject(json, ref index);
-            if (currentChar == '[') return ParseArray(json, ref index);
-            if (char.IsDigit(currentChar) || currentChar == '-') return ParseNumber(json, ref index);
-            if (currentChar == 't' || currentChar == 'f') return ParseBoolean(json, ref index);
-            if (currentChar == 'n') return ParseNull(json, ref index);
-
-            throw new FormatException("Unexpected character in JSON.");
+            switch (currentChar)
+            {
+                case '"':
+                    return ParseString(json, ref index);
+                case '{':
+                    return ParseObject(json, ref index);
+                case '[':
+                    return ParseArray(json, ref index);
+                case var ch when char.IsDigit(ch) || ch == '-':
+                    return ParseNumber(json, ref index);
+                case 't':
+                case 'f':
+                    return ParseBoolean(json, ref index);
+                case 'n':
+                    return ParseNull(json, ref index);
+                default:
+                    throw new FormatException("Unexpected character in JSON.");
+            }
         }
 
         private static string ParseString(string json, ref int index)
@@ -274,5 +297,6 @@ namespace JsonClrLibrary
         {
             while (index < json.Length && char.IsWhiteSpace(json[index])) index++;
         }
-    } // end class
-} // end namespace
+
+    }
+}

@@ -24,18 +24,21 @@ namespace JsonClrLibrary.Tests
                         TestOllamaModelInformationExtraction
                 };
 
+                int index = 1;
                 foreach (var test in tests)
                 {
                     try
                     {
                         test.Invoke();
-                        Debug.WriteLine($"{test.Method.Name} passed.");
+                        Debug.WriteLine($"Test {index}: {test.Method.Name} passed.");
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"{test.Method.Name} failed: {ex.Message}");
+                        Debug.WriteLine($"Test {index}: {test.Method.Name} failed: {ex.Message}");
                     }
+                    index++;
                 }
+
             }
 
             private static void TestSimpleSerialization()
