@@ -40,14 +40,14 @@ namespace JsonClrLibrary
                         json.Append(boolVal ? "true" : "false");
                         break;
                     case int intVal:
+                    case long longVal: // Added long case here
                     case double doubleVal:
                         json.Append(kvp.Value.ToString());
                         break;
                     case DateTime dateTimeVal:
-                        json.Append($"\"{dateTimeVal:yyyy-MM-ddTHH:mm:ss}\"");
+                        json.Append($"\"{dateTimeVal:o}\"");
                         break;
                     case List<KeyValuePair<string, object>> nestedObj:
-                        // Recursively call Serialize for nested objects, passing currentKeys to detect duplicates
                         json.Append(Serialize(nestedObj, currentKeys));
                         break;
                     case List<object> array:
@@ -404,12 +404,28 @@ namespace JsonClrLibrary
             return result.ToString();
         }
 
-        private static double ParseNumber(string json, ref int index)
+        private static object ParseNumber(string json, ref int index)
         {
             int start = index;
+            bool isInteger = true;
+
             while (index < json.Length && (char.IsDigit(json[index]) || json[index] == '.' || json[index] == '-'))
+            {
+                if (json[index] == '.') isInteger = false;
                 index++;
-            return double.Parse(json.Substring(start, index - start));
+            }
+
+            string numberStr = json.Substring(start, index - start);
+
+            // If the value is a whole number and fits in a long, parse as long; otherwise, parse as double
+            if (isInteger && long.TryParse(numberStr, out long longVal))
+            {
+                return longVal;
+            }
+            else
+            {
+                return double.Parse(numberStr);
+            }
         }
 
         private static bool ParseBoolean(string json, ref int index)
@@ -437,5 +453,5 @@ namespace JsonClrLibrary
             while (index < json.Length && char.IsWhiteSpace(json[index])) index++;
         }
 
-    }
-}
+    } // end public class JsonSerializerDeserializer
+} // end namespace JsonClrLibrary
