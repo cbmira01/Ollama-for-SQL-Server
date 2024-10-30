@@ -8,10 +8,12 @@ namespace JsonClrLibrary
     {
         public static string Serialize(List<KeyValuePair<string, object>> data)
         {
+            return Serialize(data, new HashSet<string>());
+        }
 
-            // TODO: Testing reveals that the serialization routine here allows
-            //          multiple JSON tags under the same name. That should not
-            //          occur, and an error should be produced.
+        private static string Serialize(List<KeyValuePair<string, object>> data, HashSet<string> parentKeys)
+        {
+            HashSet<string> currentKeys = new HashSet<string>(parentKeys); // Track keys at this level
 
             StringBuilder json = new StringBuilder();
             json.Append("{");
@@ -19,6 +21,13 @@ namespace JsonClrLibrary
             for (int i = 0; i < data.Count; i++)
             {
                 var kvp = data[i];
+
+                // Check for duplicate keys within the current level
+                if (!currentKeys.Add(kvp.Key))
+                {
+                    throw new ArgumentException($"Duplicate key detected in data: '{kvp.Key}'");
+                }
+
                 json.Append($"\"{kvp.Key}\":");
 
                 switch (kvp.Value)
@@ -37,7 +46,8 @@ namespace JsonClrLibrary
                         json.Append($"\"{dateTimeVal:yyyy-MM-ddTHH:mm:ss}\"");
                         break;
                     case List<KeyValuePair<string, object>> nestedObj:
-                        json.Append(Serialize(nestedObj)); // Recursive call for nested objects
+                        // Recursively call Serialize for nested objects, passing currentKeys to detect duplicates
+                        json.Append(Serialize(nestedObj, currentKeys));
                         break;
                     case List<object> array:
                         json.Append(SerializeArray(array));
@@ -186,18 +196,57 @@ namespace JsonClrLibrary
             var result = new List<KeyValuePair<string, object>>();
             index++; // Skip '{'
 
-            while (index < json.Length && json[index] != '}')
+            while (index < json.Length)
             {
-                var key = ParseString(json, ref index);
-                index++; // Skip ':'
+                SkipWhitespace(json, ref index);
 
-                object value = ParseValue(json, ref index);
+                // Check for closing '}' indicating end of object
+                if (json[index] == '}')
+                {
+                    index++; // Move past '}'
+                    return result;
+                }
+
+                // Parse the key, expecting it to be a string
+                if (json[index] != '"')
+                {
+                    throw new FormatException($"Expected '\"' at index {index} for key start, found '{json[index]}'.");
+                }
+                var key = ParseString(json, ref index);
+
+                SkipWhitespace(json, ref index);
+
+                // Expect a colon after the key
+                if (json[index] != ':')
+                {
+                    throw new FormatException($"Expected ':' at index {index} after key, found '{json[index]}'.");
+                }
+                index++; // Move past the colon
+
+                SkipWhitespace(json, ref index);
+
+                // Parse the value associated with the key
+                var value = ParseValue(json, ref index);
                 result.Add(new KeyValuePair<string, object>(key, value));
 
-                if (json[index] == ',') index++; // Skip ','
+                SkipWhitespace(json, ref index);
+
+                // Check for a comma or the end of the object
+                if (json[index] == ',')
+                {
+                    index++; // Move past comma
+                }
+                else if (json[index] == '}')
+                {
+                    index++; // Move past '}'
+                    return result;
+                }
+                else
+                {
+                    throw new FormatException($"Expected ',' or '}}' at index {index}, found '{json[index]}'.");
+                }
             }
-            index++; // Skip '}'
-            return result;
+            throw new FormatException("Unterminated object in JSON.");
         }
 
         private static List<object> ParseArray(string json, ref int index)
@@ -237,7 +286,12 @@ namespace JsonClrLibrary
                 case 'n':
                     return ParseNull(json, ref index);
                 default:
-                    throw new FormatException("Unexpected character in JSON.");
+                    // Capture 10 characters before and after the current index, handling boundaries
+                    int start = Math.Max(index - 10, 0);
+                    int end = Math.Min(index + 10, json.Length - 1);
+                    string context = json.Substring(start, end - start + 1);
+
+                    throw new FormatException($"Unexpected character in JSON. Context: '{context}' (index: {index})");
             }
         }
 
