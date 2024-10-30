@@ -38,6 +38,8 @@ namespace JsonClrLibrary.Tests
                 {
                     try
                     {
+                        Debug.WriteLine("");
+                        Debug.WriteLine($"Test {index}: {test.Method.Name} begins...");
                         test.Invoke();
                         Debug.WriteLine($"Test {index}: {test.Method.Name} passed.");
                     }
@@ -45,7 +47,7 @@ namespace JsonClrLibrary.Tests
                     {
                         Debug.WriteLine($"Test {index}: {test.Method.Name} failed: {ex.Message}");
                     }
-                    Debug.WriteLine("");
+
                     index++;
                 }
             }
@@ -330,11 +332,10 @@ namespace JsonClrLibrary.Tests
                 string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";
                 var data = JsonSerializerDeserializer.Deserialize(json);
 
-                // Get the count of models in the "models" list
                 int modelCount = (int)JsonSerializerDeserializer.GetFieldByPath(data, "models.length");
                 Console.WriteLine($"Total Models: {modelCount}");
+                Console.WriteLine();
 
-                // Loop through each model
                 for (var i = 0; i < modelCount; i++)
                 {
                     var name = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].name") as string;
@@ -342,6 +343,10 @@ namespace JsonClrLibrary.Tests
                     var family = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.family") as string;
                     var quantizationLevel = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.quantization_level") as string;
                     var parameterSize = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.parameter_size") as string;
+
+                    // Retrieve "families" as a List<string>
+                    var families = JsonSerializerDeserializer.GetFieldByPath(data, $"models[{i}].details.families") as List<object>;
+                    var familyList = families?.ConvertAll(f => f as string); // Convert List<object> to List<string>
 
                     // Validation for testing (checking against expected values)
                     if (name == null || modifiedAt == null || family == null || quantizationLevel == null || parameterSize == null)
@@ -353,6 +358,11 @@ namespace JsonClrLibrary.Tests
                     Console.WriteLine($"Model: {name}");
                     Console.WriteLine($"Modified At: {modifiedAt}");
                     Console.WriteLine($"Family: {family}");
+                    // Output the "families" list
+                    if (familyList != null)
+                    {
+                        Console.WriteLine("Families: " + string.Join(", ", familyList));
+                    }
                     Console.WriteLine($"Quantization Level: {quantizationLevel}");
                     Console.WriteLine($"Parameter Size: {parameterSize}");
                     Console.WriteLine();
