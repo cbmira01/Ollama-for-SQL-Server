@@ -130,7 +130,7 @@ namespace OllamaSqlClr
 
         private static string CallOllamaService(string prompt, int[] contextArray)
         {
-            string apiUrl = "http://localhost:11434/api/generate";
+            string apiUrl = "http://127.0.0.1:11434/api/generate";
             string context = contextArray != null ? $"[{string.Join(",", contextArray)}]" : "[]";
             string jsonPayload = $"{{\"prompt\": \"{prompt}\", \"model\":\"llama3.2\",\"stream\":false, \"context\": {context}}}";
 
