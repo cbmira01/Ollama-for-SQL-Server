@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace OllamaSqlClr.Tests
 {
@@ -14,42 +15,53 @@ namespace OllamaSqlClr.Tests
                         TestCompleteMultiplePrompts
                 };
 
+            int index = 1;
             foreach (var test in tests)
             {
                 try
                 {
+                    Debug.WriteLine("");
+                    Debug.WriteLine($"Test {index}: {test.Method.Name} begins...");
                     test.Invoke();
-                    Debug.WriteLine($"{test.Method.Name} passed.");
+                    Debug.WriteLine($"{test.Method.Name} PASSED");
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"{test.Method.Name} failed: {ex.Message}");
                 }
+                index++;
             }
+            Debug.WriteLine("");
         }
 
         private static void TestCompletePrompt()
         {
             var ask = new SqlStringWrapper("Why is the sky blue?").ToSqlString();
-            var additional = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
+            var addContext = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
 
-            var result = SqlClrFunctions.CompletePrompt(ask, additional);
-            Debug.WriteLine($"Test 1 - CompletePrompt: {result.Value}");
+            var result = SqlClrFunctions.CompletePrompt(ask, addContext);
+
+            Debug.WriteLine("");
+            Debug.WriteLine($"CompletePrompt(\"{ask}\", \"{addContext}\"): \n    Completion: {result.Value}");
+            Debug.WriteLine("");
         }
 
         private static void TestCompleteMultiplePrompts()
         {
             var ask = new SqlStringWrapper("Tell me the name of a plant.").ToSqlString();
-            var additional = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
+            var addContext = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
             var numCompletions = new SqlInt32(5);
+            
+            var results = SqlClrFunctions.CompleteMultiplePrompts(ask, addContext, numCompletions);
 
-            var results = SqlClrFunctions.CompleteMultiplePrompts(ask, additional, numCompletions);
-
+            Debug.WriteLine("");
+            Debug.WriteLine($"CompleteMultiplePrompt(\"{ask}\", \"{addContext}\", {numCompletions})");
             foreach (var result in results)
             {
                 var (completionGuid, ollamaCompletion) = ((Guid, string))result;
-                Debug.WriteLine($"{completionGuid}: {ollamaCompletion}");
+                Debug.WriteLine($"    Row: {completionGuid}, {ollamaCompletion}");
             }
+            Debug.WriteLine("");
         }
     }
 
