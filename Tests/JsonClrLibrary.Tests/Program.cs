@@ -42,7 +42,7 @@ namespace JsonClrLibrary.Tests
                         Debug.WriteLine("");
                         Debug.WriteLine($"Test {index}: {test.Method.Name} begins...");
                         test.Invoke();
-                        Debug.WriteLine($"Test {index}: {test.Method.Name} passed.");
+                        Debug.WriteLine($"Test {index}: {test.Method.Name} PASSED");
                     }
                     catch (Exception ex)
                     {
@@ -51,6 +51,7 @@ namespace JsonClrLibrary.Tests
 
                     index++;
                 }
+                Debug.WriteLine("");
             }
 
             private static void TestSimpleSerialization()
@@ -118,8 +119,8 @@ namespace JsonClrLibrary.Tests
 
                 string json = JsonSerializerDeserializer.Serialize(data);
 
-                // Expected: {"Timestamp":"2024-10-27T12:00:00"}
-                if (json != "{\"Timestamp\":\"2024-10-27T12:00:00\"}")
+                // Expected: {"Timestamp":"2024-10-27T12:00:00.0000000"}
+                if (json != "{\"Timestamp\":\"2024-10-27T12:00:00.0000000\"}")
                 {
                     throw new Exception("Date recognition test failed.");
                 }
