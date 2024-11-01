@@ -54,5 +54,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JsonClrLibrary\JsonClrLibrary.csproj">
+      <Project>{09c49120-5019-4b68-a16d-e44ea8f2b521}</Project>
+      <Name>JsonClrLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

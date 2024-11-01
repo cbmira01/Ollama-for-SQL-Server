@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using Microsoft.SqlServer.Server;
 using static OllamaSqlClr.OllamaHelper;
+using JsonClrLibrary;
 
 namespace OllamaSqlClr
 {
@@ -13,16 +14,17 @@ namespace OllamaSqlClr
 
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(
-            SqlString askPrompt, 
+            SqlString askPrompt,
             SqlString additionalPrompt)
         {
             var prompt = askPrompt + " " + additionalPrompt;
 
             try
             {
-                string result = CallOllamaService(prompt.Value, null);
+                var result = CallOllamaService(prompt.Value, "llama3.2", null);
 
-                string response = ExtractField(result, "response");
+                // Extract the response field
+                string response = (string)JsonSerializerDeserializer.GetField(result, "response");
                 return new SqlString(response);
             }
             catch (Exception ex)
@@ -43,21 +45,25 @@ namespace OllamaSqlClr
         {
             var prompt = askPrompt + " " + additionalPrompt;
             var completions = new List<(Guid, string)>();
-            int[] contextArray = null; // Placeholder for context tracking between calls
+            List<int> context = null;
 
             try
             {
                 for (int i = 0; i < numCompletions.Value; i++)
                 {
-                    string result = CallOllamaService(prompt.Value, contextArray);
-                    string response = ExtractField(result, "response");
+                    // Call the service and get the result
+                    var result = CallOllamaService(prompt.Value, "llama3.2", context);
+
+                    // Extract the response field
+                    string response = (string)JsonSerializerDeserializer.GetField(result, "response");
 
                     // Generate a unique GUID for each completion
                     Guid completionGuid = Guid.NewGuid();
                     completions.Add((completionGuid, response));
 
-                    // Update context for next iteration if needed
-                    contextArray = ExtractContextArray(result);
+                    // Retrieve and convert the context array from List<object> to List<int>
+                    var contextList = JsonSerializerDeserializer.GetField(result, "context") as List<object>;
+                    context = contextList?.ConvertAll(item => Convert.ToInt32(item));
                 }
 
                 return completions;
@@ -69,8 +75,8 @@ namespace OllamaSqlClr
         }
 
         // Updated FillRow method to output both a GUID and the completion string
-        public static void FillRow_CompleteMultiplePrompts(object completionObj, 
-            out SqlGuid completionGuid, 
+        public static void FillRow_CompleteMultiplePrompts(object completionObj,
+            out SqlGuid completionGuid,
             out SqlString ollamaCompletion)
         {
             var (guid, completion) = ((Guid, string))completionObj;
@@ -83,4 +89,3 @@ namespace OllamaSqlClr
 
     } // end class SqlClrFunctions
 } // end namespace OllamaSqlClr
-

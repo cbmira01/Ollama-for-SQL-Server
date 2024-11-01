@@ -48,6 +48,7 @@ namespace OllamaSqlClr.Tests
                 // Load frequently used assemblies
                 var dataType = typeof(System.Data.DataTable); // Ensures System.Data.dll is loaded
                 Assembly.Load("OllamaSqlClr"); // Load assembly under test
+                Assembly.Load("JsonClrLibrary"); // Load JSON support library
 
                 // Add any additional assemblies you expect to use
                 Debug.WriteLine("Warm-up completed successfully.");

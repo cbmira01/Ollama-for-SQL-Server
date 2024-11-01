@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
 
 public static class JsonBuilder
 {
@@ -16,6 +16,17 @@ public static class JsonBuilder
     public static KeyValuePair<string, object> CreateArray(string key, params object[] items)
     {
         return new KeyValuePair<string, object>(key, new List<object>(items));
+    }
+
+    // Overloaded CreateArray method to handle List<int>
+    public static KeyValuePair<string, object> CreateArray(string key, List<int> items)
+    {
+        // If items is null, create an empty List<object>
+        var objectList = items != null
+            ? new List<object>(items.ConvertAll(item => (object)item))
+            : new List<object>();
+
+        return new KeyValuePair<string, object>(key, objectList);
     }
 
     public static List<object> CreateArray(params object[] items)
@@ -57,5 +68,4 @@ public static class JsonBuilder
 
         throw new ArgumentException($"The value provided for '{key}' is not a recognized numeric type.");
     }
-
 }

@@ -11,6 +11,8 @@ namespace JsonClrLibrary.Tests
     {
         public class JsonTestFramework
         {
+            #region "Test harness"
+
             public class DeserializationMismatchException : Exception
             {
                 public DeserializationMismatchException(string message) : base(message) { }
@@ -18,6 +20,9 @@ namespace JsonClrLibrary.Tests
 
             public static void Main(string[] args)
             {
+                // Warm up by loading required assemblies
+                WarmUp();
+
                 List<Action> tests = new List<Action>
                 {
                         TestSimpleSerialization,
@@ -53,6 +58,26 @@ namespace JsonClrLibrary.Tests
                 }
                 Debug.WriteLine("");
             }
+
+            private static void WarmUp()
+            {
+                Debug.WriteLine("Starting warm-up...");
+
+                try
+                {
+                    // Load frequently used assemblies
+                    Assembly.Load("JsonClrLibrary"); // Load JSON support library
+
+                    // Add any additional assemblies you expect to use
+                    Debug.WriteLine("Warm-up completed successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Warm-up failed: {ex.Message}");
+                }
+            }
+
+            #endregion
 
             private static void TestSimpleSerialization()
             {
@@ -194,33 +219,23 @@ namespace JsonClrLibrary.Tests
 
             private static void TestOllamaRequestSerialization()
             {
-                //var numberArray = new List<object> { 1, 2, 3 };
-                //var stringArray = new List<object> { "one", "two", "three" };
-                //var booleanArray = new List<object> { true, false, false };
-
-                //var data = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("model", "nameofmodel"),
-                //    new KeyValuePair<string, object>("prompt", "Why is the sky blue?"),
-                //    new KeyValuePair<string, object>("stream", false),
-                //    new KeyValuePair<string, object>("context1", numberArray),
-                //    new KeyValuePair<string, object>("context2", stringArray),
-                //    new KeyValuePair<string, object>("context3", booleanArray)
-                //};
+                List<int> context1 = new List<int>() { 1, 2, 3 };
+                List<int> context4 = null;
 
                 var data = new List<KeyValuePair<string, object>>
                 {
                     JsonBuilder.CreateField("model", "nameofmodel"),
                     JsonBuilder.CreateField("prompt", "Why is the sky blue?"),
                     JsonBuilder.CreateField("stream", false),
-                    JsonBuilder.CreateArray("context1", 1, 2, 3),
+                    JsonBuilder.CreateArray("context1", context1),
                     JsonBuilder.CreateArray("context2", "one", "two", "three"),
-                    JsonBuilder.CreateArray("context3", true, false, false)
+                    JsonBuilder.CreateArray("context3", true, false, false),
+                    JsonBuilder.CreateArray("context4", context4)
                 };
 
                 string json = JsonSerializerDeserializer.Serialize(data);
 
-                string shouldBe = "{\"model\":\"nameofmodel\",\"prompt\":\"Why is the sky blue?\",\"stream\":false,\"context1\":[1,2,3],\"context2\":[\"one\",\"two\",\"three\"],\"context3\":[true,false,false]}";
+                string shouldBe = "{\"model\":\"nameofmodel\",\"prompt\":\"Why is the sky blue?\",\"stream\":false,\"context1\":[1,2,3],\"context2\":[\"one\",\"two\",\"three\"],\"context3\":[true,false,false],\"context4\":[]}";
 
                 if (json != shouldBe)
                 {
@@ -387,12 +402,17 @@ namespace JsonClrLibrary.Tests
                 var response = JsonSerializerDeserializer.GetField(data, "response") as string;
                 var done = JsonSerializerDeserializer.GetField(data, "done") as bool?;
 
+                // Extract the context field as a List<object> and convert to List<int>
+                var contextList = JsonSerializerDeserializer.GetField(data, "context") as List<object>;
+                List<int> context = contextList?.ConvertAll(item => Convert.ToInt32(item));
+
                 // Validate extracted fields (optional for the test)
-                if (model != "zephyr" || createdAt == null || response == null || done == null)
+                if (model != "zephyr" || createdAt == null || response == null || done == null || context == null)
                 {
                     throw new Exception("Test of Ollama Simple Field Extraction failed.");
                 }
             }
+
 
             private static void TestOllamaNestedFieldExtraction()
             {
