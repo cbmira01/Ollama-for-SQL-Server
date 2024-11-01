@@ -21,7 +21,7 @@ namespace OllamaSqlClr
 
             try
             {
-                var result = CallOllamaService(prompt.Value, "llama3.2", null);
+                var result = GetModelResponseToPrompt(prompt.Value, "llama3.2");
 
                 // Extract the response field
                 string response = (string)JsonSerializerDeserializer.GetField(result, "response");
@@ -52,7 +52,7 @@ namespace OllamaSqlClr
                 for (int i = 0; i < numCompletions.Value; i++)
                 {
                     // Call the service and get the result
-                    var result = CallOllamaService(prompt.Value, "llama3.2", context);
+                    var result = GetModelResponseToPrompt(prompt.Value, "llama3.2", context);
 
                     // Extract the response field
                     string response = (string)JsonSerializerDeserializer.GetField(result, "response");

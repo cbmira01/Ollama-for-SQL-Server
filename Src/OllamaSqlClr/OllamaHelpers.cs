@@ -12,7 +12,14 @@ namespace OllamaSqlClr
         public static string ApiTagsUrl { get; set; } = "http://127.0.0.1:11434/api/tags";
         public static int RequestTimeout { get; set; } = 100000; // Default timeout of 100 seconds
 
-        public static List<KeyValuePair<string, object>> CallOllamaService(
+        public static List<KeyValuePair<string, object>> GetModelResponseToPrompt(
+            string prompt,
+            string modelName)
+        {
+            return GetModelResponseToPrompt(prompt, modelName, null);
+        }
+
+        public static List<KeyValuePair<string, object>> GetModelResponseToPrompt(
             string prompt, 
             string modelName, 
             List<int> context)
