@@ -12,48 +12,6 @@ namespace OllamaSqlClr
         public static string ApiTagsUrl { get; set; } = "http://127.0.0.1:11434/api/tags";
         public static int RequestTimeout { get; set; } = 100000; // Default timeout of 100 seconds
 
-        public static string ExtractField(string json, string fieldName)
-        {
-            string key = $"\"{fieldName}\":";
-            int keyIndex = json.IndexOf(key);
-
-            if (keyIndex == -1)
-            {
-                throw new ArgumentException($"Field '{fieldName}' not found in JSON.");
-            }
-
-            int startIndex = json.IndexOf('"', keyIndex + key.Length) + 1;
-            int endIndex = json.IndexOf('"', startIndex);
-
-            if (startIndex == -1 || endIndex == -1)
-            {
-                throw new FormatException("Malformed JSON: Could not locate the field value.");
-            }
-
-            return json.Substring(startIndex, endIndex - startIndex);
-        }
-
-        public static int[] ExtractContextArray(string json)
-        {
-            string key = "\"context\":";
-            int keyIndex = json.IndexOf(key);
-
-            if (keyIndex == -1)
-                return null;
-
-            int startIndex = json.IndexOf('[', keyIndex) + 1;
-            int endIndex = json.IndexOf(']', startIndex);
-
-            if (startIndex == -1 || endIndex == -1)
-            {
-                throw new FormatException("Malformed JSON: Could not locate the context array.");
-            }
-
-            string arrayStr = json.Substring(startIndex, endIndex - startIndex);
-            string[] elements = arrayStr.Split(',');
-            return Array.ConvertAll(elements, int.Parse);
-        }
-
         public static List<KeyValuePair<string, object>> CallOllamaService(
             string prompt, 
             string modelName, 
