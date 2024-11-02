@@ -6,7 +6,7 @@ DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @ask NVARCHAR(MAX) = 'Replying only ''happy'' or ''not happy'', is the sentiment generally happy?';
 
 SELECT     
-    dbo.CompletePrompt(@ask, Sentence) AS Response,
+    dbo.CompletePrompt(@modelName, @ask, Sentence) AS Response,
 	Sentence
 FROM 
     (VALUES 
@@ -29,6 +29,7 @@ DECLARE @numCompletions INT = 10;
 
 SELECT * 
 FROM dbo.CompleteMultiplePrompts(
+    @modelName,
     N'Give me the name of a tree. It must be fruit-bearing. ', 
     N'Answer in 20 words or less.', 
     @numCompletions);

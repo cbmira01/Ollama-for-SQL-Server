@@ -37,7 +37,7 @@ SELECT
     id,
     email_content,
 	sentiment,
-    dbo.CompletePrompt(@prompt, email_content) AS sentiment_analysis
+    dbo.CompletePrompt(@modelName, @prompt, email_content) AS sentiment_analysis
 FROM 
     support_emails;
 GO
