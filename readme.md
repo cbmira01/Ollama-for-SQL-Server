@@ -3,7 +3,7 @@
 ## Overview
 
 Ollama Completions for SQL Server is an SQL/CLR module that allows SQL Server to send prompts to and
-get completions back from a large language model (LLM) hosted under Ollama. Multiple models hosted
+get completions back from large language models (LLMs) hosted under Ollama. Multiple models hosted
 by Ollama can be discovered and used, such as llama3.2, zephyr and mistral.
 
 ## Features
@@ -80,6 +80,7 @@ Make sure the deployment script knows where to find your release assembly.
 ## Usage
 
 Class SqlClrFunctions exposes three functions that can be used in SQL Server:
+
 `CompletePrompt`, `CompleteMultiplePrompts` and `GetAvailableModels`
 
 ### CompletePrompt
@@ -93,8 +94,8 @@ SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 ```
 
     Parameters:
-        @modelName: A hosted model name, such as 'llama3.2' or 'mistral'
-        @askPrompt: The main prompt or question
+        @modelName: Name of a hosted model, such as 'llama3.2' or 'mistral'
+        @askPrompt: Main prompt or question
         @morePrompt: Additional context or information for the prompt
 
 ### CompleteMultiplePrompts
@@ -109,14 +110,14 @@ SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCom
 ```
 
     Parameters:
-        @modelName: A hosted model name, such as 'llama3.2' or 'mistral'
-        @askPrompt: The main prompt or question
+        @modelName: Name of a hosted model, such as 'llama3.2' or 'mistral'
+        @askPrompt: Main prompt or question
         @morePrompt: Additional context or information for the prompt
-        @numCompletions: The number of prompt completions to retrieve
+        @numCompletions: Number of prompt completions to retrieve
 
 ### Error Handling
 
-In the event of an error or exception, the response will have an error code:
+In the event of an error or exception, the response will present an error message:
 
 ```
     Error: <HTTP Status Code>
@@ -125,25 +126,27 @@ In the event of an error or exception, the response will have an error code:
 
 ## Examples
 
-Here is an example of calling the CompletePrompt function:
+Example of the CompletePrompt function:
 
 ```sql
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @askPrompt NVARCHAR(MAX) = 'Hello, Llama3.2!.';
-DECLARE @additionalPrompt NVARCHAR(MAX) = 'Tell me about yourself, very briefly.';
+DECLARE @morePrompt NVARCHAR(MAX) = 'Tell me about yourself, very briefly.';
 
-SELECT dbo.CompletePrompt(@askPrompt, @additionalPrompt);
+SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 GO
 ```
 
-Here is an example of calling the CompleteMultiplePrompts function to get the completions in a table:
+Example of the CompleteMultiplePrompts function, to get completions in a table:
 
 ```sql
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @askPrompt NVARCHAR(MAX) = 'What are the benefits of a good credit score?';
-DECLARE @additionalPrompt NVARCHAR(MAX) = 'Please provide a very brief explanation of 10 words or less.';
+DECLARE @morePrompt NVARCHAR(MAX) = 'Please provide a very brief explanation of 10 words or less.';
 DECLARE @numCompletions INT = 3;
 
 SELECT * 
-FROM dbo.CompleteMultiplePrompts(@askPrompt, @additionalPrompt, @numCompletions);
+FROM dbo.CompleteMultiplePrompts(@modelName, @askPrompt, @morePrompt, @numCompletions);
 GO
 ```
 
