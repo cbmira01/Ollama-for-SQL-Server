@@ -18,121 +18,117 @@ namespace JsonClrLibrary
             return ParseObject(json, ref index);
         }
 
+        #region "DumpJson"
+
         public static void DumpJson(string json)
         {
-            int indentLevel = 0;
-            bool inQuotes = false;
-            bool isSimpleArray = false;
-            StringBuilder arrayContent = new StringBuilder();
-
-            for (int i = 0; i < json.Length; i++)
-            {
-                char ch = json[i];
-
-                if (ch == '"' && (i == 0 || json[i - 1] != '\\'))
-                {
-                    inQuotes = !inQuotes;
-                }
-
-                if (!inQuotes)
-                {
-                    if (ch == '[')
-                    {
-                        // Check if this is a simple array (e.g., numbers, booleans, strings)
-                        int j = i + 1;
-                        bool foundComplexType = false;
-                        while (j < json.Length && json[j] != ']')
-                        {
-                            if (json[j] == '{' || json[j] == '[')
-                            {
-                                foundComplexType = true;
-                                break;
-                            }
-                            j++;
-                        }
-                        isSimpleArray = !foundComplexType;
-
-                        if (isSimpleArray)
-                        {
-                            arrayContent.Clear();
-                            arrayContent.Append(ch);
-                            i++;
-                            while (i < json.Length && json[i] != ']')
-                            {
-                                arrayContent.Append(json[i]);
-                                i++;
-                            }
-                            arrayContent.Append(']');
-                            Console.Write(arrayContent.ToString());
-                        }
-                        else
-                        {
-                            Console.WriteLine(ch);
-                            indentLevel++;
-                            Console.Write(new string(' ', indentLevel * 2));
-                        }
-                    }
-                    else if (ch == ']' && !isSimpleArray)
-                    {
-                        indentLevel--;
-                        Console.WriteLine();
-                        Console.Write(new string(' ', indentLevel * 2) + ch);
-                    }
-                    else if (ch == '{' || ch == '}')
-                    {
-                        if (ch == '{')
-                        {
-                            Console.WriteLine(ch);
-                            indentLevel++;
-                            Console.Write(new string(' ', indentLevel * 2));
-                        }
-                        else
-                        {
-                            indentLevel--;
-                            Console.WriteLine();
-                            Console.Write(new string(' ', indentLevel * 2) + ch);
-                        }
-                    }
-                    else if (ch == ',')
-                    {
-                        if (!isSimpleArray)
-                        {
-                            Console.WriteLine(ch);
-                            Console.Write(new string(' ', indentLevel * 2));
-                        }
-                        else
-                        {
-                            Console.Write(ch);
-                        }
-                    }
-                    else
-                    {
-                        if (!isSimpleArray)
-                        {
-                            Console.Write(ch);
-                        }
-                    }
-                }
-                else
-                {
-                    if (isSimpleArray)
-                    {
-                        Console.Write(ch);
-                    }
-                    else
-                    {
-                        Console.Write(ch);
-                    }
-                }
-
-                // Reset simple array flag after closing bracket
-                if (ch == ']' && isSimpleArray)
-                {
-                    isSimpleArray = false;
-                }
-            }
-            Console.WriteLine();
+            int index = 0;
+            var deserializedData = ParseValue(json, ref index);
+            DumpValue(deserializedData, 0, inline: false);
+            Console.WriteLine(); // Ensures the console cursor moves to the next line
         }
+
+        private static void DumpValue(object value, int indentLevel, bool inline)
+        {
+            string indent = new string(' ', indentLevel * 2);
+
+            switch (value)
+            {
+                case List<KeyValuePair<string, object>> obj:
+                    Console.Write("{");
+                    if (!inline) Console.WriteLine();
+                    int count = obj.Count;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var kvp = obj[i];
+                        if (!inline) Console.Write(new string(' ', (indentLevel + 1) * 2));
+                        Console.Write("\"" + kvp.Key + "\": ");
+                        DumpValue(kvp.Value, indentLevel + 1, inline: false);
+                        if (i < count - 1)
+                        {
+                            Console.Write(",");
+                        }
+                        if (!inline) Console.WriteLine();
+                    }
+                    if (!inline) Console.Write(new string(' ', indentLevel * 2));
+                    Console.Write("}");
+                    break;
+
+                case List<object> array:
+                    if (IsSimpleArray(array) && array.Count <= 5)
+                    {
+                        // Print simple arrays with up to 5 elements on one line
+                        Console.Write("[");
+                        for (int i = 0; i < array.Count; i++)
+                        {
+                            DumpValue(array[i], indentLevel + 1, inline: true);
+                            if (i < array.Count - 1)
+                            {
+                                Console.Write(", ");
+                            }
+                        }
+                        Console.Write("]");
+                    }
+                    else
+                    {
+                        // Print complex arrays or large simple arrays vertically
+                        Console.Write("[");
+                        if (!inline) Console.WriteLine();
+                        int arrCount = array.Count;
+                        for (int i = 0; i < arrCount; i++)
+                        {
+                            if (!inline) Console.Write(new string(' ', (indentLevel + 1) * 2));
+                            DumpValue(array[i], indentLevel + 1, inline: false);
+                            if (i < arrCount - 1)
+                            {
+                                Console.Write(",");
+                            }
+                            if (!inline) Console.WriteLine();
+                        }
+                        if (!inline) Console.Write(new string(' ', indentLevel * 2));
+                        Console.Write("]");
+                    }
+                    break;
+
+                case string str:
+                    Console.Write("\"" + EscapeString(str) + "\"");
+                    break;
+
+                case bool boolVal:
+                    Console.Write(boolVal ? "true" : "false");
+                    break;
+
+                case int _:
+                case long _:
+                case double _:
+                    Console.Write(value.ToString());
+                    break;
+
+                case DateTime dateTimeVal:
+                    Console.Write("\"" + dateTimeVal.ToString("o") + "\"");
+                    break;
+
+                case null:
+                    Console.Write("null");
+                    break;
+
+                default:
+                    Console.Write("\"" + EscapeString(value.ToString()) + "\"");
+                    break;
+            }
+        }
+
+        private static bool IsSimpleType(object value)
+        {
+            return value is string || value is int || value is long || value is double || value is bool || value is null || value is DateTime;
+        }
+
+        private static bool IsSimpleArray(List<object> array)
+        {
+            return array.All(item => IsSimpleType(item));
+        }
+
+        #endregion
 
         #region "Get fields of object or simple type"
 

@@ -34,8 +34,10 @@ namespace OllamaSqlClr
 
             string json = JsonSerializerDeserializer.Serialize(data);
 
-            //Console.WriteLine("Request...");
-            //JsonSerializerDeserializer.DumpJson(json);
+#if DEBUG
+            Console.WriteLine("Request...");
+            JsonSerializerDeserializer.DumpJson(json);
+#endif
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ApiGenerateUrl);
             request.Timeout = RequestTimeout;
@@ -54,8 +56,10 @@ namespace OllamaSqlClr
                 responseJson = reader.ReadToEnd();
             }
 
-            //Console.WriteLine("Response...");
-            //JsonSerializerDeserializer.DumpJson(responseJson);
+#if DEBUG
+            Console.WriteLine("Response...");
+            JsonSerializerDeserializer.DumpJson(responseJson);
+#endif
 
             return JsonSerializerDeserializer.Deserialize(responseJson);
         }
@@ -73,8 +77,10 @@ namespace OllamaSqlClr
                 responseJson = reader.ReadToEnd();
             }
 
-            //Console.WriteLine("Response...");
-            //JsonSerializerDeserializer.DumpJson(responseJson);
+#if DEBUG
+            Console.WriteLine("Response...");
+            JsonSerializerDeserializer.DumpJson(responseJson);
+#endif
 
             return JsonSerializerDeserializer.Deserialize(responseJson);
         }
