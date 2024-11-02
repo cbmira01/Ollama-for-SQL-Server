@@ -3,15 +3,17 @@
 ## Overview
 
 Ollama Completions for SQL Server is an SQL/CLR module that allows SQL Server to send prompts to and
-get completions back from a large language model (LLM) hosted under Ollama. Currently, the only model 
-targeted is llama3.2.
+get completions back from a large language model (LLM) hosted under Ollama. Multiple models hosted
+by Ollama can be discovered and used, such as llama3.2, zephyr and mistral.
 
 ## Features
 
-- **Single Prompt Completion**: Sends a single prompt and returns the completion from Ollama.
-- **Multiple Prompt Completion**: Sends a prompt and requests multiple completions from Ollama, and returns them in a table.
-- **Extensive JSON support library for Ollama API**
-- **Exception Handling**: Provides error messages if the API request fails.
+- **Single prompt completion**: Sends a prompt and requests one completion to be returned as a projection.
+- **Multiple prompt completion**: Sends a prompt and requests multiple completions to be returned as a table.
+- **All Ollama hosted models can be discovered and used**
+- **Extensive JSON support library**: CLR 4 has support limitations that affect other JSON libraries
+- **Exception handling**: Provides error messages if the API request fails.
+- **Test suites for JSON library and SQL/CLR functions**
 
 ## Requirements
 
