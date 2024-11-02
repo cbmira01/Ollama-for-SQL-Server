@@ -31,6 +31,7 @@ INSERT INTO support_emails (email_content, sentiment, sentiment_level) VALUES ('
 INSERT INTO support_emails (email_content, sentiment, sentiment_level) VALUES ('My order arrived promptly. Appreciate the efficient service.', 'glad', 3);
 GO
 
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @prompt NVARCHAR(MAX) = 'Provide a single word sentiment label:';
 SELECT 
     id,

@@ -32,20 +32,23 @@ GO
 
 -- Create the functions
 CREATE FUNCTION dbo.CompletePrompt(
-  @askPrompt NVARCHAR(MAX), 
-  @additionalPrompt NVARCHAR(MAX)
+    @modelName NVARCHAR(MAX), 
+    @askPrompt NVARCHAR(MAX), 
+    @additionalPrompt NVARCHAR(MAX)
 )
 RETURNS NVARCHAR(MAX)
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[CompletePrompt];
 GO
 
 CREATE FUNCTION dbo.CompleteMultiplePrompts(
+    @modelName NVARCHAR(MAX), 
     @askPrompt NVARCHAR(MAX), 
     @additionalPrompt NVARCHAR(MAX),
     @numCompletions INT
 )
 RETURNS TABLE (
     [CompletionGuid] UNIQUEIDENTIFIER,
+    [CompletedBy] NVARCHAR(MAX),
     [OllamaCompletion] NVARCHAR(MAX)
 )
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[CompleteMultiplePrompts];
@@ -86,7 +89,8 @@ JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
 GO
 
 -- Example of calling the CompletePrompt function in SQL Server:
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @ask NVARCHAR(MAX) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
 
-SELECT dbo.CompletePrompt(@ask, N'Tell me in fourty words or less!');
+SELECT dbo.CompletePrompt(@modelName, @ask, N'Tell me in fourty words or less!');
 GO

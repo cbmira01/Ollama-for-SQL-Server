@@ -413,7 +413,6 @@ namespace JsonClrLibrary.Tests
                 }
             }
 
-
             private static void TestOllamaNestedFieldExtraction()
             {
                 string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";

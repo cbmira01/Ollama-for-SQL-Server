@@ -63,30 +63,33 @@ namespace OllamaSqlClr.Tests
 
         private static void TestCompletePrompt()
         {
+            var modelName = new SqlStringWrapper("llama3.2").ToSqlString();
             var ask = new SqlStringWrapper("Why is the sky blue?").ToSqlString();
             var addContext = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
 
-            var result = SqlClrFunctions.CompletePrompt(ask, addContext);
+            var result = SqlClrFunctions.CompletePrompt(modelName, ask, addContext);
 
             Debug.WriteLine("");
-            Debug.WriteLine($"CompletePrompt(\"{ask}\", \"{addContext}\"): \n    Completion: {result.Value}");
+            Debug.WriteLine($"CompletePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\"): \n    Completion: {result.Value}");
             Debug.WriteLine("");
         }
 
         private static void TestCompleteMultiplePrompts()
         {
+            var modelName = new SqlStringWrapper("llama3.2").ToSqlString();
             var ask = new SqlStringWrapper("Tell me the name of a plant.").ToSqlString();
             var addContext = new SqlStringWrapper("It must be fruit-bearing. Limit your answer to ten words.").ToSqlString();
             var numCompletions = new SqlInt32(5);
 
-            var results = SqlClrFunctions.CompleteMultiplePrompts(ask, addContext, numCompletions);
+            var results = SqlClrFunctions.CompleteMultiplePrompts(modelName, ask, addContext, numCompletions);
 
             Debug.WriteLine("");
-            Debug.WriteLine($"CompleteMultiplePrompt(\"{ask}\", \"{addContext}\", {numCompletions})");
+            Debug.WriteLine($"CompleteMultiplePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\", {numCompletions})");
             foreach (var result in results)
             {
-                var (completionGuid, ollamaCompletion) = ((Guid, string))result;
-                Debug.WriteLine($"    Row: {completionGuid}, {ollamaCompletion}");
+                var completionInfo = (CompletionInfo)result;
+
+                Debug.WriteLine($"    Row: {completionInfo.CompletionGuid}, {completionInfo.ModelName}, {completionInfo.OllamaCompletion}");
             }
             Debug.WriteLine("");
         }

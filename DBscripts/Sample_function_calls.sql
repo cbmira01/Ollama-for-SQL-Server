@@ -2,6 +2,7 @@
 -- Demonstration of LLM completion in SQL Server
 
 -- Example of calling CompletePrompt to get completions as projections:
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @ask NVARCHAR(MAX) = 'Replying only ''happy'' or ''not happy'', is the sentiment generally happy?';
 
 SELECT     
@@ -23,6 +24,7 @@ FROM
 GO
 
 -- Example of calling CompleteMultiplePrompts to get completions in a table:
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @numCompletions INT = 10;
 
 SELECT * 

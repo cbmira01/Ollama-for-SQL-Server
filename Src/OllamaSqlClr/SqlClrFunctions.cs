@@ -10,10 +10,11 @@ namespace OllamaSqlClr
 {
     public class SqlClrFunctions
     {
-        #region "Complete Prompt"
+        #region "CompletePrompt"
 
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(
+            SqlString modelName,
             SqlString askPrompt,
             SqlString morePrompt)
         {
@@ -21,7 +22,7 @@ namespace OllamaSqlClr
 
             try
             {
-                var result = GetModelResponseToPrompt(prompt, "llama3.2");
+                var result = GetModelResponseToPrompt(prompt, modelName.Value);
                 string response = JsonSerializerDeserializer.GetStringField(result, "response");
                 return new SqlString(response);
             }
@@ -35,27 +36,38 @@ namespace OllamaSqlClr
 
         #region "CompleteMultiplePrompts"
 
+        public class CompletionInfo
+        {
+            public Guid CompletionGuid { get; set; }
+            public string ModelName { get; set; } = string.Empty;
+            public string OllamaCompletion { get; set; } = string.Empty;
+        }
+
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
         public static IEnumerable CompleteMultiplePrompts(
+            SqlString modelName,
             SqlString askPrompt,
             SqlString morePrompt,
             SqlInt32 numCompletions)
         {
             var prompt = $"{askPrompt.Value} {morePrompt.Value}";
-            var completions = new List<(Guid, string)>();
+            var completions = new List<CompletionInfo>();
             List<int> context = null;
 
             try
             {
                 for (int i = 0; i < numCompletions.Value; i++)
                 {
-                    var result = GetModelResponseToPrompt(prompt, "llama3.2", context);
-
+                    var result = GetModelResponseToPrompt(prompt, modelName.Value, context);
                     string response = JsonSerializerDeserializer.GetStringField(result, "response");
 
-                    // Generate a unique GUID for each completion
-                    Guid completionGuid = Guid.NewGuid();
-                    completions.Add((completionGuid, response));
+                    var completion = new CompletionInfo
+                    {
+                        CompletionGuid = Guid.NewGuid(),
+                        ModelName = modelName.Value,
+                        OllamaCompletion = response
+                    };
+                    completions.Add(completion);
 
                     // Feed the current context into the next request
                     context = JsonSerializerDeserializer.GetIntegerArray(result, "context");
@@ -65,7 +77,14 @@ namespace OllamaSqlClr
             }
             catch (Exception ex)
             {
-                return new List<(Guid, string)> { (Guid.Empty, $"Error: {ex.Message}") };
+                var errorCompletion = new CompletionInfo
+                {
+                    CompletionGuid = Guid.Empty,
+                    ModelName = modelName.Value,
+                    OllamaCompletion = $"Error: {ex.Message}"
+                };
+
+                return new List<CompletionInfo> { errorCompletion };
             }
         }
 
@@ -73,12 +92,14 @@ namespace OllamaSqlClr
         public static void FillRow_CompleteMultiplePrompts(
             object completionObj,
             out SqlGuid completionGuid,
+            out SqlString modelName,
             out SqlString ollamaCompletion)
         {
-            var (guid, completion) = ((Guid, string))completionObj;
+            var completionInfo = (CompletionInfo)completionObj;
 
-            completionGuid = new SqlGuid(guid);
-            ollamaCompletion = new SqlString(completion);
+            completionGuid = new SqlGuid(completionInfo.CompletionGuid);
+            modelName = new SqlString(completionInfo.ModelName);
+            ollamaCompletion = new SqlString(completionInfo.OllamaCompletion);
         }
 
         #endregion
