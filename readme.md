@@ -77,17 +77,15 @@ Sample SQL code is provided to declare the functions and link the CLR assembly.
 
 Make sure the deployment script knows where to find your release assembly.
 
-## Usage
+## Using the SQL/CLR functions
 
-Class SqlClrFunctions exposes three functions that can be used in SQL Server:
+After deployment, three SQL/CLR functions can now be used in SQL Server:
 
 `CompletePrompt`, `CompleteMultiplePrompts` and `GetAvailableModels`
 
 ### CompletePrompt
 
-This function sends a prompt to Ollama and returns the completion.
-
-SQL Server Usage:
+Send a prompt to a model and have one completion returned as a projection.
 
 ```sql
 SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
@@ -100,12 +98,9 @@ SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 
 ### CompleteMultiplePrompts
 
-This function sends a prompt multiple times to Ollama and returns the completions in a table.
-
-SQL Server Usage:
+Send a prompt to a model and have multiple completions returned in a table.
 
 ```sql
-
 SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCompletions);
 ```
 
@@ -114,6 +109,14 @@ SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCom
         @askPrompt: Main prompt or question
         @morePrompt: Additional context or information for the prompt
         @numCompletions: Number of prompt completions to retrieve
+
+### GetAvailableModels
+
+Returns information about all Ollama-hosted LLM models in a table.
+
+```sql
+SELECT * FROM dbo.GetAvailableModels();
+```
 
 ### Error Handling
 
