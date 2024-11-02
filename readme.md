@@ -43,8 +43,11 @@ However Ollama is installed, make sure your instance will serve on `http://127.0
 Use the Windows command-line interface to interact with Ollama:
 
 `ollama help`
+
 `ollama pull <modelname>` - install an LLM from the Ollama Library
+
 `ollama list` - list all hosted LLM models
+
 `ollama serve` - start the API server
 
 You may consider a tool like Postman to interact with the Ollama API server.
