@@ -40,9 +40,9 @@ Bug reports, feature requests, code contributions, and documentation are welcome
 
 ## Requirements
 
-- .NET Framework 4.7.2, to target CLR 4 for SQL Server 2022
-- SQL Server 2022 Express, with CLR integration enabled
-- Ollama server on localhost:11434 hosting llama3.2 or other models
+- `.NET Framework 4.7.2 SDK` to target CLR 4 for SQL Server 2022
+- `SQL Server 2022 Express`, with CLR integration enabled
+- `Ollama API server` on `http://127.0.0.1:11434/` hosting one or more LLM models
 
 ## Installation
 
