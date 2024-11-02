@@ -178,11 +178,12 @@ GO
 ## Notes
 
 - UNSAFE assembly permission is required to allow external HTTP requests from SQL Server.
-- Use these function with caution as network operations can impact SQL Server performance.
+- Use these functions with caution as network operations can impact SQL Server performance.
 
 This project was written to investigate the Ollama API, and the use of AI as a code companion.
 
-Over 90% of the code in this project was written by GPT 4.
+Over 90% of the code in this project was written by GPT 4. GPT has suggested entire
+patterns of JSON library support, testing, documentation and project/solution structure.
 
 This project needs much better documentation and test coverage of the JSON library.
 
