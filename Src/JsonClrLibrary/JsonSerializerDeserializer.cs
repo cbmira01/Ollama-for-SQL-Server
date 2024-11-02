@@ -55,9 +55,9 @@ namespace JsonClrLibrary
                     break;
 
                 case List<object> array:
-                    if (IsSimpleArray(array) && array.Count <= 5)
+                    if (IsSimpleArray(array))
                     {
-                        // Print simple arrays with up to 5 elements on one line
+                        // Print simple arrays on one line
                         Console.Write("[");
                         for (int i = 0; i < array.Count; i++)
                         {
@@ -71,7 +71,7 @@ namespace JsonClrLibrary
                     }
                     else
                     {
-                        // Print complex arrays or large simple arrays vertically
+                        // Print complex arrays vertically
                         Console.Write("[");
                         if (!inline) Console.WriteLine();
                         int arrCount = array.Count;
@@ -127,6 +127,7 @@ namespace JsonClrLibrary
         {
             return array.All(item => IsSimpleType(item));
         }
+
 
         #endregion
 
