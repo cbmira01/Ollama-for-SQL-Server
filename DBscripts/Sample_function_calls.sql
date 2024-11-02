@@ -1,5 +1,7 @@
 
 -- Demonstration of LLM completion in SQL Server
+USE Test;
+GO
 
 -- Example of calling CompletePrompt to get completions as projections:
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';

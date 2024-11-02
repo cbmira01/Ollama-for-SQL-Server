@@ -10,6 +10,9 @@ GO
 SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
+USE Test;
+GO
+
 -- Drop functions from the assembly, then drop the assembly link
 IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
     DROP FUNCTION dbo.CompletePrompt;
