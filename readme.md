@@ -23,7 +23,20 @@ by Ollama can be discovered and used, such as llama3.2, zephyr and mistral.
 
 ## Installation
 
-### Clone the repository
+### Install SQL Server and client
+
+SQL Server 2022 Express is sufficient to demonstrate this project. 
+
+In Windows, `SQL Server Configuration Manager` can be used to run and stop database
+services as needed. Under `SQL Server Service`, place `SQL Server (MSSQLSERVER)` and 
+`SQL Server Agent (MSSQLSERVER)` into running or stopped states as desired.
+
+Install a suitable database client to run the deployment scripot and run sample queries.
+SQL Server Management Studio is sufficient to demonstrate this project.
+
+### Install Ollama
+
+### Clone project repository
 
 ```
 git clone https://calmiracle.visualstudio.com/OllamaCompletionsForSqlServer/_git/OllamaCompletionsForSqlServer
@@ -31,14 +44,20 @@ git clone https://calmiracle.visualstudio.com/OllamaCompletionsForSqlServer/_git
 
 ### Open the project in Visual Studio
 
+Build and run the test programs in Debug configuration. 
+
+Build in Release to create an assembly for use on SQL Server. 
+
+
 ### Deploy to SQL Server
 
 Sample SQL code is provided to declare the functions and link the CLR assembly.
+Make sure the deployment script knows where to find your release assembly.
 
 ## Usage
 
-This class exposes two functions that can be used in SQL Server:
-`CompletePrompt` and `CompleteMultiplePrompts`
+Class SqlClrFunctions exposes three functions that can be used in SQL Server:
+`CompletePrompt`, `CompleteMultiplePrompts` and `GetAvailableModels`
 
 ### CompletePrompt
 
@@ -47,12 +66,13 @@ This function sends a prompt to Ollama and returns the completion.
 SQL Server Usage:
 
 ```sql
-SELECT dbo.CompletePrompt(askPrompt, additionalPrompt);
+SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 ```
 
     Parameters:
-        askPrompt: The main prompt or question
-        additionalPrompt: Additional context or information for the prompt
+        @modelName: A hosted model name, such as 'llama3.2' or 'mistral'
+        @askPrompt: The main prompt or question
+        @morePrompt: Additional context or information for the prompt
 
 ### CompleteMultiplePrompts
 
@@ -62,13 +82,14 @@ SQL Server Usage:
 
 ```sql
 
-SELECT * FROM dbo.CompleteMultiplePrompts(ask, body, numCompletions);
+SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCompletions);
 ```
 
     Parameters:
-        askPrompt: The main prompt or question
-        additionalPrompt: Additional context or information for the prompt
-        numCompletions: The number of prompt completions to retrieve
+        @modelName: A hosted model name, such as 'llama3.2' or 'mistral'
+        @askPrompt: The main prompt or question
+        @morePrompt: Additional context or information for the prompt
+        @numCompletions: The number of prompt completions to retrieve
 
 ### Error Handling
 
