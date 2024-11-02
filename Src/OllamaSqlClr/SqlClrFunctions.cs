@@ -15,16 +15,14 @@ namespace OllamaSqlClr
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(
             SqlString askPrompt,
-            SqlString additionalPrompt)
+            SqlString morePrompt)
         {
-            var prompt = askPrompt + " " + additionalPrompt;
+            var prompt = $"{askPrompt.Value} {morePrompt.Value}";
 
             try
             {
-                var result = GetModelResponseToPrompt(prompt.Value, "llama3.2");
-
-                // Extract the response field
-                string response = (string)JsonSerializerDeserializer.GetField(result, "response");
+                var result = GetModelResponseToPrompt(prompt, "llama3.2");
+                string response = JsonSerializerDeserializer.GetStringField(result, "response");
                 return new SqlString(response);
             }
             catch (Exception ex)
@@ -40,10 +38,10 @@ namespace OllamaSqlClr
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
         public static IEnumerable CompleteMultiplePrompts(
             SqlString askPrompt,
-            SqlString additionalPrompt,
+            SqlString morePrompt,
             SqlInt32 numCompletions)
         {
-            var prompt = askPrompt + " " + additionalPrompt;
+            var prompt = $"{askPrompt.Value} {morePrompt.Value}";
             var completions = new List<(Guid, string)>();
             List<int> context = null;
 
@@ -51,19 +49,16 @@ namespace OllamaSqlClr
             {
                 for (int i = 0; i < numCompletions.Value; i++)
                 {
-                    // Call the service and get the result
-                    var result = GetModelResponseToPrompt(prompt.Value, "llama3.2", context);
+                    var result = GetModelResponseToPrompt(prompt, "llama3.2", context);
 
-                    // Extract the response field
-                    string response = (string)JsonSerializerDeserializer.GetField(result, "response");
+                    string response = JsonSerializerDeserializer.GetStringField(result, "response");
 
                     // Generate a unique GUID for each completion
                     Guid completionGuid = Guid.NewGuid();
                     completions.Add((completionGuid, response));
 
-                    // Retrieve and convert the context array from List<object> to List<int>
-                    var contextList = JsonSerializerDeserializer.GetField(result, "context") as List<object>;
-                    context = contextList?.ConvertAll(item => Convert.ToInt32(item));
+                    // Feed the current context into the next request
+                    context = JsonSerializerDeserializer.GetIntegerArray(result, "context");
                 }
 
                 return completions;
