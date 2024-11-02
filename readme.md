@@ -31,10 +31,27 @@ In Windows, `SQL Server Configuration Manager` can be used to run and stop datab
 services as needed. Under `SQL Server Service`, place `SQL Server (MSSQLSERVER)` and 
 `SQL Server Agent (MSSQLSERVER)` into running or stopped states as desired.
 
-Install a suitable database client to run the deployment scripot and run sample queries.
+Install a suitable database client to run the deployment scripts and run sample queries.
 SQL Server Management Studio is sufficient to demonstrate this project.
 
-### Install Ollama
+### Install the Ollama API server
+
+Get the Ollama installer from `https://ollama.com/` or run the Ollama Docker image.
+ 
+However Ollama is installed, make sure your instance will serve on `http://127.0.0.1:11434/ `
+
+Use the Windows command-line interface to interact with Ollama:
+
+`ollama help`
+`ollama pull <modelname>` - install an LLM from the Ollama Library
+`ollama list` - list all hosted LLM models
+`ollama serve` - start the API server
+
+You may consider a tool like Postman to interact with the Ollama API server.
+
+`GET` to `http://127.0.0.1:11434/api/tags` to get a list of models
+
+`POST` to `http://127.0.0.1:11434/api/generate` to send prompts and receive completions
 
 ### Clone project repository
 
