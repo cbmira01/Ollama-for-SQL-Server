@@ -128,7 +128,6 @@ namespace JsonClrLibrary
             return array.All(item => IsSimpleType(item));
         }
 
-
         #endregion
 
         #region "Get fields of object or simple type"
@@ -279,7 +278,7 @@ namespace JsonClrLibrary
 
         #endregion
 
-        #region "Get fields of object or simple type by path"
+        #region "Get fields of object or simple types by path"
 
         public static object GetFieldByPath(List<KeyValuePair<string, object>> data, string path)
         {
@@ -446,7 +445,7 @@ namespace JsonClrLibrary
 
         #endregion
 
-        #region "Get arrays of object or simple types"
+        #region "Get arrays of object or simple types by path"
 
         public static List<object> GetListByPath(List<KeyValuePair<string, object>> data, string path)
         {
