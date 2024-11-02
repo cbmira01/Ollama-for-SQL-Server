@@ -2,9 +2,32 @@
 
 ## Overview
 
-Ollama Completions for SQL Server is an SQL/CLR module that allows SQL Server to send prompts to and
-get completions back from large language models (LLMs) hosted under Ollama. Multiple models hosted
-by Ollama can be discovered and used, such as llama3.2, zephyr and mistral.
+`Ollama Completions for SQL Server` enables SQL Server users to use Large Language Models 
+(LLMs) hosted on Ollama directly within SQL workflows. By using SQL/CLR functions, users can 
+send prompts to multiple LLMs, such as `llama3.2`, `zephyr`, and `mistral`, and receive 
+language-based completions without leaving the SQL Server environment. 
+
+Use this project for natural language processing tasks such as:
+
+- data classification
+- data summaries
+- entity extraction
+- conversational responses
+- sentiment analysis
+
+## License and Disclaimer
+
+Ollama Completions for SQL Server is open source and licensed under the MIT License. 
+By contributing, you agree that your contributions will be licensed under the same terms.
+
+Disclaimer: This project is experimental and intended for educational or research 
+purposes. It is provided “as-is” without warranties or guarantees of performance. 
+Please use caution in production environments, as external API calls can impact SQL Server 
+performance and may require additional security considerations.
+
+## Contributions
+
+Bug reports, feature requests, code contributions, and documentation are welcome.
 
 ## Features
 
