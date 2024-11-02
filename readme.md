@@ -10,13 +10,14 @@ targeted is llama3.2.
 
 - **Single Prompt Completion**: Sends a single prompt and returns the completion from Ollama.
 - **Multiple Prompt Completion**: Sends a prompt and requests multiple completions from Ollama, and returns them in a table.
+- **Extensive JSON support library for Ollama API**
 - **Exception Handling**: Provides error messages if the API request fails.
 
 ## Requirements
 
-- .NET Framework (4.7.2, to target CLR 4 for SQL Server 2022)
+- .NET Framework 4.7.2, to target CLR 4 for SQL Server 2022
 - SQL Server 2022 Express, with CLR integration enabled
-- Ollama server on localhost:11434 hosting llama3.2
+- Ollama server on localhost:11434 hosting llama3.2 or other models
 
 ## Installation
 
