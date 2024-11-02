@@ -32,7 +32,7 @@ FROM dbo.CompleteMultiplePrompts(
     @numCompletions);
 GO
 
--- Discover all the models hosted on Ollama
+-- Discover all the models currently hosted on Ollama
 SELECT *
 FROM dbo.GetAvailableModels()
 GO

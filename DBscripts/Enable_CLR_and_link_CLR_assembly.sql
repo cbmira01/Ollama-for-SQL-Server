@@ -11,12 +11,17 @@ SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
 -- Drop functions from the assembly, then drop the assembly link
-DROP FUNCTION dbo.CompletePrompt;
-DROP FUNCTION dbo.CompleteMultiplePrompts;
-DROP FUNCTION dbo.GetAvailableModels;
-GO
+IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
+    DROP FUNCTION dbo.CompletePrompt;
 
-DROP ASSEMBLY OllamaSqlClr;
+IF OBJECT_ID('dbo.CompleteMultiplePrompts', 'FT') IS NOT NULL
+    DROP FUNCTION dbo.CompleteMultiplePrompts;
+
+IF OBJECT_ID('dbo.GetAvailableModels', 'FT') IS NOT NULL
+    DROP FUNCTION dbo.GetAvailableModels;
+
+IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
+    DROP ASSEMBLY OllamaSqlClr;
 GO
 
 -- Create the assembly link
@@ -40,8 +45,8 @@ CREATE FUNCTION dbo.CompleteMultiplePrompts(
     @numCompletions INT
 )
 RETURNS TABLE (
-    CompletionGuid UNIQUEIDENTIFIER,
-    OllamaCompletion NVARCHAR(MAX)
+    [CompletionGuid] UNIQUEIDENTIFIER,
+    [OllamaCompletion] NVARCHAR(MAX)
 )
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[CompleteMultiplePrompts];
 GO
@@ -49,16 +54,16 @@ GO
 CREATE FUNCTION dbo.GetAvailableModels()
 RETURNS TABLE 
 (
-    ModelGuid UNIQUEIDENTIFIER,
-    Name VARCHAR(30),
-    Model VARCHAR(30),
-    ReferToName VARCHAR(30),
-    ModifiedAt DATETIME,
-    Size BIGINT,
-    Family VARCHAR(30),
-    ParameterSize VARCHAR(20),
-    QuantizationLevel VARCHAR(20),
-    Digest VARCHAR(100)
+    [ModelGuid] UNIQUEIDENTIFIER,
+    [Name] NVARCHAR(30),
+    [Model] NVARCHAR(30),
+    [ReferToName] NVARCHAR(30),
+    [ModifiedAt] DATETIME,
+    [Size] BIGINT,
+    [Family] NVARCHAR(30),
+    [ParameterSize] NVARCHAR(20),
+    [QuantizationLevel] NVARCHAR(20),
+    [Digest] NVARCHAR(100)
 )
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
 GO
