@@ -25,14 +25,16 @@ by Ollama can be discovered and used, such as llama3.2, zephyr and mistral.
 
 ### Install SQL Server and client
 
-SQL Server 2022 Express is sufficient to demonstrate this project. 
+`SQL Server 2022 Express` is sufficient to demonstrate this project. 
 
 In Windows, `SQL Server Configuration Manager` can be used to run and stop database
-services as needed. Under `SQL Server Service`, place `SQL Server (MSSQLSERVER)` and 
+services as needed. 
+
+Under `SQL Server Service`, place `SQL Server (MSSQLSERVER)` and 
 `SQL Server Agent (MSSQLSERVER)` into running or stopped states as desired.
 
 Install a suitable database client to run the deployment scripts and run sample queries.
-SQL Server Management Studio is sufficient to demonstrate this project.
+`SQL Server Management Studio` is sufficient to demonstrate this project.
 
 ### Install the Ollama API server
 
@@ -64,14 +66,15 @@ git clone https://calmiracle.visualstudio.com/OllamaCompletionsForSqlServer/_git
 
 ### Open the project in Visual Studio
 
-Build and run the test programs in Debug configuration. 
+Build and run the test programs in `Debug` configuration. 
 
-Build in Release to create an assembly for use on SQL Server. 
+Build in `Release` to create an assembly for use on SQL Server. 
 
 
 ### Deploy to SQL Server
 
 Sample SQL code is provided to declare the functions and link the CLR assembly.
+
 Make sure the deployment script knows where to find your release assembly.
 
 ## Usage
