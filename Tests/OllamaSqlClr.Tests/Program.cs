@@ -30,7 +30,7 @@ namespace OllamaSqlClr.Tests
                     Debug.WriteLine("");
                     Debug.WriteLine($"Test {index}: {test.Method.Name} begins...");
                     test.Invoke();
-                    Debug.WriteLine($"{test.Method.Name} PASSED");
+                    Debug.WriteLine($"Test {index}: {test.Method.Name} PASSED");
                 }
                 catch (Exception ex)
                 {
@@ -94,6 +94,8 @@ namespace OllamaSqlClr.Tests
         private static void TestGetAvailableModels()
         {
             var results = SqlClrFunctions.GetAvailableModels();
+
+            Debug.WriteLine("");
 
             foreach (var result in results)
             {
