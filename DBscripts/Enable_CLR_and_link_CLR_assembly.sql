@@ -30,7 +30,7 @@ CREATE FUNCTION dbo.CompletePrompt(
   @additionalPrompt NVARCHAR(MAX)
 )
 RETURNS NVARCHAR(MAX)
-AS EXTERNAL NAME OllamaSqlClr.[OllamaSqlClr.SqlClrFunctions].CompletePrompt;
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[CompletePrompt];
 GO
 
 CREATE FUNCTION dbo.CompleteMultiplePrompts(
@@ -42,7 +42,24 @@ RETURNS TABLE (
     CompletionGuid UNIQUEIDENTIFIER,
     OllamaCompletion NVARCHAR(MAX)
 )
-AS EXTERNAL NAME OllamaSqlClr.[OllamaSqlClr.SqlClrFunctions].CompleteMultiplePrompts;
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[CompleteMultiplePrompts];
+GO
+
+CREATE FUNCTION dbo.GetAvailableModels()
+RETURNS TABLE 
+(
+    ModelGuid UNIQUEIDENTIFIER,
+    Name VARCHAR(30),
+    Model VARCHAR(30),
+    ReferToName VARCHAR(30),
+    ModifiedAt DATETIME,
+    Size BIGINT,
+    Family VARCHAR(30),
+    ParameterSize VARCHAR(20),
+    QuantizationLevel VARCHAR(20),
+    Digest VARCHAR(100)
+)
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
 GO
 
 -- List all user-defined assemblies and all CLR functions

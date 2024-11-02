@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Reflection;
+using static OllamaSqlClr.SqlClrFunctions;
 
 namespace OllamaSqlClr.Tests
 {
@@ -17,7 +18,8 @@ namespace OllamaSqlClr.Tests
             // Define and run tests
             List<Action> tests = new List<Action> {
                 TestCompletePrompt,
-                TestCompleteMultiplePrompts
+                TestCompleteMultiplePrompts,
+                TestGetAvailableModels
             };
 
             int index = 1;
@@ -88,7 +90,32 @@ namespace OllamaSqlClr.Tests
             }
             Debug.WriteLine("");
         }
-    }
+
+        private static void TestGetAvailableModels()
+        {
+            var results = SqlClrFunctions.GetAvailableModels();
+
+            foreach (var result in results)
+            {
+                var modelInfo = (ModelInfo)result;
+
+                Debug.WriteLine("    Row:");
+                Debug.WriteLine($"        ModelGuid: {modelInfo.ModelGuid}");
+                Debug.WriteLine($"        Name: {modelInfo.Name}");
+                Debug.WriteLine($"        Model: {modelInfo.Model}");
+                Debug.WriteLine($"        ReferToName: {modelInfo.ReferToName}");
+                Debug.WriteLine($"        ModifiedAt: {modelInfo.ModifiedAt}");
+                Debug.WriteLine($"        Size: {modelInfo.Size}");
+                Debug.WriteLine($"        Family: {modelInfo.Family}");
+                Debug.WriteLine($"        ParameterSize: {modelInfo.ParameterSize}");
+                Debug.WriteLine($"        QuantizationLevel: {modelInfo.QuantizationLevel}");
+                Debug.WriteLine($"        Digest: {modelInfo.Digest}");
+            }
+
+            Debug.WriteLine("");
+        }
+
+    } // end class Program
 
     // Wrapper classes for testing purposes
     public class SqlStringWrapper
@@ -110,4 +137,5 @@ namespace OllamaSqlClr.Tests
             return Value;
         }
     }
-}
+
+} // end namespace OllamaSqlClr.Tests

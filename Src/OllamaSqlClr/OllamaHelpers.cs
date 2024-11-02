@@ -6,7 +6,7 @@ using System.Net;
 
 namespace OllamaSqlClr
 {
-    public static class OllamaHelper
+    public static class OllamaHelpers
     {
         public static string ApiGenerateUrl { get; set; } = "http://127.0.0.1:11434/api/generate";
         public static string ApiTagsUrl { get; set; } = "http://127.0.0.1:11434/api/tags";
@@ -60,5 +60,24 @@ namespace OllamaSqlClr
             return JsonSerializerDeserializer.Deserialize(responseJson);
         }
 
-    } // end class OllamaHelper
+        public static List<KeyValuePair<string, object>> GetOllamaApiTags()
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ApiTagsUrl);
+            request.Timeout = RequestTimeout;
+            request.Method = "GET";
+
+            string responseJson = "";
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            {
+                responseJson = reader.ReadToEnd();
+            }
+
+            //Console.WriteLine("Response...");
+            //JsonSerializerDeserializer.DumpJson(responseJson);
+
+            return JsonSerializerDeserializer.Deserialize(responseJson);
+        }
+
+    } // end class OllamaHelpers
 } // end namespace OllamaSqlClr
