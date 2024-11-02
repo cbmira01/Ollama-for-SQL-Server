@@ -13,6 +13,7 @@ GO
 -- Drop functions from the assembly, then drop the assembly link
 DROP FUNCTION dbo.CompletePrompt;
 DROP FUNCTION dbo.CompleteMultiplePrompts;
+DROP FUNCTION dbo.GetAvailableModels;
 GO
 
 DROP ASSEMBLY OllamaSqlClr;

@@ -31,3 +31,8 @@ FROM dbo.CompleteMultiplePrompts(
     N'Answer in 20 words or less.', 
     @numCompletions);
 GO
+
+-- Discover all the models hosted on Ollama
+SELECT *
+FROM dbo.GetAvailableModels()
+GO
