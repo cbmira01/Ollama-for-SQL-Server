@@ -159,6 +159,7 @@ GO
 - Use these function with caution as network operations can impact SQL Server performance.
 
 This project was written to investigate the Ollama API, and the use of AI as a code companion.
+
 Over 90% of the code in this project was written by GPT 4.
 
 This project needs much better documentation and test coverage of the JSON library.
