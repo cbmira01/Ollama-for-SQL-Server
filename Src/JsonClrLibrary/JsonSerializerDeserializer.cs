@@ -12,6 +12,506 @@ namespace JsonClrLibrary
             return Serialize(data, new HashSet<string>());
         }
 
+        public static List<KeyValuePair<string, object>> Deserialize(string json)
+        {
+            int index = 0;
+            return ParseObject(json, ref index);
+        }
+
+        public static void DumpJson(string json)
+        {
+            int indentLevel = 0;
+            bool inQuotes = false;
+            bool isSimpleArray = false;
+            StringBuilder arrayContent = new StringBuilder();
+
+            for (int i = 0; i < json.Length; i++)
+            {
+                char ch = json[i];
+
+                if (ch == '"' && (i == 0 || json[i - 1] != '\\'))
+                {
+                    inQuotes = !inQuotes;
+                }
+
+                if (!inQuotes)
+                {
+                    if (ch == '[')
+                    {
+                        // Check if this is a simple array (e.g., numbers, booleans, strings)
+                        int j = i + 1;
+                        bool foundComplexType = false;
+                        while (j < json.Length && json[j] != ']')
+                        {
+                            if (json[j] == '{' || json[j] == '[')
+                            {
+                                foundComplexType = true;
+                                break;
+                            }
+                            j++;
+                        }
+                        isSimpleArray = !foundComplexType;
+
+                        if (isSimpleArray)
+                        {
+                            arrayContent.Clear();
+                            arrayContent.Append(ch);
+                            i++;
+                            while (i < json.Length && json[i] != ']')
+                            {
+                                arrayContent.Append(json[i]);
+                                i++;
+                            }
+                            arrayContent.Append(']');
+                            Console.Write(arrayContent.ToString());
+                        }
+                        else
+                        {
+                            Console.WriteLine(ch);
+                            indentLevel++;
+                            Console.Write(new string(' ', indentLevel * 2));
+                        }
+                    }
+                    else if (ch == ']' && !isSimpleArray)
+                    {
+                        indentLevel--;
+                        Console.WriteLine();
+                        Console.Write(new string(' ', indentLevel * 2) + ch);
+                    }
+                    else if (ch == '{' || ch == '}')
+                    {
+                        if (ch == '{')
+                        {
+                            Console.WriteLine(ch);
+                            indentLevel++;
+                            Console.Write(new string(' ', indentLevel * 2));
+                        }
+                        else
+                        {
+                            indentLevel--;
+                            Console.WriteLine();
+                            Console.Write(new string(' ', indentLevel * 2) + ch);
+                        }
+                    }
+                    else if (ch == ',')
+                    {
+                        if (!isSimpleArray)
+                        {
+                            Console.WriteLine(ch);
+                            Console.Write(new string(' ', indentLevel * 2));
+                        }
+                        else
+                        {
+                            Console.Write(ch);
+                        }
+                    }
+                    else
+                    {
+                        if (!isSimpleArray)
+                        {
+                            Console.Write(ch);
+                        }
+                    }
+                }
+                else
+                {
+                    if (isSimpleArray)
+                    {
+                        Console.Write(ch);
+                    }
+                    else
+                    {
+                        Console.Write(ch);
+                    }
+                }
+
+                // Reset simple array flag after closing bracket
+                if (ch == ']' && isSimpleArray)
+                {
+                    isSimpleArray = false;
+                }
+            }
+            Console.WriteLine();
+        }
+
+        #region "Get fields of object or simple type"
+
+        public static object GetField(List<KeyValuePair<string, object>> data, string key)
+        {
+            foreach (var kvp in data)
+            {
+                if (kvp.Key == key)
+                {
+                    // Check if the value is a string that could be a date-time
+                    if (kvp.Value is string strValue && DateTime.TryParse(strValue, out DateTime dateTimeValue))
+                    {
+                        return dateTimeValue; // Return as DateTime if it successfully parses
+                    }
+                    return kvp.Value; // Return the original value if not a date-time string
+                }
+
+                // If the value is a nested object, search recursively
+                if (kvp.Value is List<KeyValuePair<string, object>> nestedData)
+                {
+                    var result = GetField(nestedData, key);
+                    if (result != null) return result;
+                }
+            }
+
+            return null; // Return null if the key is not found
+        }
+
+        public static int GetIntegerField(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is int intValue)
+            {
+                return intValue;
+            }
+            throw new InvalidCastException($"The value for '{key}' is not an integer.");
+        }
+
+        public static long GetLongField(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is long longValue)
+            {
+                return longValue;
+            }
+            throw new InvalidCastException($"The value for '{key}' is not a long.");
+        }
+
+        public static bool GetBooleanField(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is bool boolValue)
+            {
+                return boolValue;
+            }
+            throw new InvalidCastException($"The value for '{key}' is not a boolean.");
+        }
+
+        public static DateTime GetDateField(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is DateTime dateValue)
+            {
+                return dateValue;
+            }
+            if (value is string strValue && DateTime.TryParse(strValue, out DateTime parsedDate))
+            {
+                return parsedDate;
+            }
+            throw new InvalidCastException($"The value for '{key}' is not a valid DateTime.");
+        }
+
+        public static string GetStringField(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is string strValue)
+            {
+                return strValue;
+            }
+            throw new InvalidCastException($"The value for '{key}' is not a string.");
+        }
+
+        #endregion
+
+        #region "Get arrays of object or simple types"
+
+        public static List<int> GetIntegerArray(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is List<object> list)
+            {
+                return list.ConvertAll(item => Convert.ToInt32(item));
+            }
+            throw new InvalidCastException($"The value for '{key}' is not an array of integers.");
+        }
+
+        public static List<long> GetLongArray(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is List<object> list)
+            {
+                return list.ConvertAll(item => Convert.ToInt64(item));
+            }
+            throw new InvalidCastException($"The value for '{key}' is not an array of longs.");
+        }
+
+        public static List<bool> GetBooleanArray(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is List<object> list)
+            {
+                return list.ConvertAll(item => Convert.ToBoolean(item));
+            }
+            throw new InvalidCastException($"The value for '{key}' is not an array of booleans.");
+        }
+
+        public static List<DateTime> GetDateArray(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is List<object> list)
+            {
+                return list.ConvertAll(item =>
+                {
+                    if (item is DateTime dateTime)
+                    {
+                        return dateTime;
+                    }
+                    if (item is string strValue && DateTime.TryParse(strValue, out DateTime parsedDate))
+                    {
+                        return parsedDate;
+                    }
+                    throw new InvalidCastException("Invalid DateTime value in array.");
+                });
+            }
+            throw new InvalidCastException($"The value for '{key}' is not an array of DateTime values.");
+        }
+
+        public static List<string> GetStringArray(List<KeyValuePair<string, object>> data, string key)
+        {
+            var value = GetField(data, key);
+            if (value is List<object> list)
+            {
+                return list.ConvertAll(item => item.ToString());
+            }
+            throw new InvalidCastException($"The value for '{key}' is not an array of strings.");
+        }
+
+        #endregion
+
+        #region "Get fields of object or simple type by path"
+
+        public static object GetFieldByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var parts = path.Split('.');
+            object current = data;
+
+            foreach (var part in parts)
+            {
+                if (current is List<KeyValuePair<string, object>> currentData)
+                {
+                    var match = part;
+                    int? index = null;
+
+                    // Handle array length request
+                    if (match == "length" && current is List<object> list)
+                    {
+                        return list.Count;
+                    }
+
+                    // Handle array indexing, e.g., "models[0]"
+                    if (part.Contains("["))
+                    {
+                        var bracketIndex = part.IndexOf('[');
+                        match = part.Substring(0, bracketIndex);
+                        index = int.Parse(part.Substring(bracketIndex + 1, part.Length - bracketIndex - 2));
+                    }
+
+                    // Find the matching key-value pair safely
+                    var kvp = currentData.FirstOrDefault(k => k.Key == match);
+                    if (kvp.Equals(default(KeyValuePair<string, object>)))
+                    {
+                        throw new Exception($"Key '{match}' not found.");
+                    }
+                    current = kvp.Value;
+
+                    // Apply index if it's a list of objects (array)
+                    if (index.HasValue && current is List<object> listData)
+                    {
+                        current = listData.ElementAtOrDefault(index.Value);
+                    }
+                }
+                else if (part == "length" && current is List<object> array)
+                {
+                    return array.Count; // Return count of items if ".length" is found
+                }
+                else
+                {
+                    throw new Exception($"Invalid path segment '{part}': cannot access '{current?.GetType()}' with '{part}'.");
+                }
+            }
+
+            // Attempt to parse the final value as a DateTime if it's a string
+            if (current is string stringValue && DateTime.TryParse(stringValue, out DateTime dateTimeValue))
+            {
+                return dateTimeValue;
+            }
+
+            return current;
+        }
+
+        public static int GetIntegerByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value is int intValue)
+            {
+                return intValue;
+            }
+            if (value is long longValue)
+            {
+                return Convert.ToInt32(longValue);
+            }
+            if (value is double doubleValue)
+            {
+                return Convert.ToInt32(doubleValue);
+            }
+            if (value is string strValue && int.TryParse(strValue, out int parsedInt))
+            {
+                return parsedInt;
+            }
+            throw new InvalidCastException($"The value at path '{path}' cannot be converted to an integer.");
+        }
+
+        public static long GetLongByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value is long longValue)
+            {
+                return longValue;
+            }
+            if (value is int intValue)
+            {
+                return Convert.ToInt64(intValue);
+            }
+            if (value is double doubleValue)
+            {
+                return Convert.ToInt64(doubleValue);
+            }
+            if (value is string strValue && long.TryParse(strValue, out long parsedLong))
+            {
+                return parsedLong;
+            }
+            throw new InvalidCastException($"The value at path '{path}' cannot be converted to a long.");
+        }
+
+        public static double GetDoubleByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value is double doubleValue)
+            {
+                return doubleValue;
+            }
+            if (value is int intValue)
+            {
+                return Convert.ToDouble(intValue);
+            }
+            if (value is long longValue)
+            {
+                return Convert.ToDouble(longValue);
+            }
+            if (value is string strValue && double.TryParse(strValue, out double parsedDouble))
+            {
+                return parsedDouble;
+            }
+            throw new InvalidCastException($"The value at path '{path}' cannot be converted to a double.");
+        }
+
+        public static bool GetBooleanByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value is bool boolValue)
+            {
+                return boolValue;
+            }
+            if (value is string strValue && bool.TryParse(strValue, out bool parsedBool))
+            {
+                return parsedBool;
+            }
+            throw new InvalidCastException($"The value at path '{path}' cannot be converted to a boolean.");
+        }
+
+        public static DateTime GetDateByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value is DateTime dateValue)
+            {
+                return dateValue;
+            }
+            if (value is string strValue && DateTime.TryParse(strValue, out DateTime parsedDate))
+            {
+                return parsedDate;
+            }
+            throw new InvalidCastException($"The value at path '{path}' cannot be converted to a DateTime.");
+        }
+
+        public static string GetStringByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value != null)
+            {
+                return value.ToString();
+            }
+            throw new InvalidCastException($"The value at path '{path}' is null and cannot be converted to a string.");
+        }
+
+        #endregion
+
+        #region "Get arrays of object or simple types"
+
+        public static List<object> GetListByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var value = GetFieldByPath(data, path);
+            if (value is List<object> list)
+            {
+                return list;
+            }
+            throw new InvalidCastException($"The value at path '{path}' is not an array.");
+        }
+
+        public static List<int> GetIntegerArrayByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var list = GetListByPath(data, path);
+            return list.ConvertAll(item => Convert.ToInt32(item));
+        }
+
+        public static List<long> GetLongArrayByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var list = GetListByPath(data, path);
+            return list.ConvertAll(item => Convert.ToInt64(item));
+        }
+
+        public static List<double> GetDoubleArrayByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var list = GetListByPath(data, path);
+            return list.ConvertAll(item => Convert.ToDouble(item));
+        }
+
+        public static List<bool> GetBooleanArrayByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var list = GetListByPath(data, path);
+            return list.ConvertAll(item => Convert.ToBoolean(item));
+        }
+
+        public static List<DateTime> GetDateArrayByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var list = GetListByPath(data, path);
+            return list.ConvertAll(item =>
+            {
+                if (item is DateTime dateTime)
+                {
+                    return dateTime;
+                }
+                if (item is string strValue && DateTime.TryParse(strValue, out DateTime parsedDate))
+                {
+                    return parsedDate;
+                }
+                throw new InvalidCastException($"Item '{item}' in array at path '{path}' cannot be converted to DateTime.");
+            });
+        }
+
+        public static List<string> GetStringArrayByPath(List<KeyValuePair<string, object>> data, string path)
+        {
+            var list = GetListByPath(data, path);
+            return list.ConvertAll(item => item.ToString());
+        }
+
+        #endregion
+
+        #region "Helper methods"
+
         private static string Serialize(List<KeyValuePair<string, object>> data, HashSet<string> parentKeys)
         {
             HashSet<string> currentKeys = new HashSet<string>(parentKeys); // Track keys at this level
@@ -111,169 +611,6 @@ namespace JsonClrLibrary
         private static string EscapeString(string input)
         {
             return input.Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
-        }
-
-        public static List<KeyValuePair<string, object>> Deserialize(string json)
-        {
-            int index = 0;
-            return ParseObject(json, ref index);
-        }
-
-        public static object GetField(List<KeyValuePair<string, object>> data, string key)
-        {
-            foreach (var kvp in data)
-            {
-                if (kvp.Key == key)
-                {
-                    // Check if the value is a string that could be a date-time
-                    if (kvp.Value is string strValue && DateTime.TryParse(strValue, out DateTime dateTimeValue))
-                    {
-                        return dateTimeValue; // Return as DateTime if it successfully parses
-                    }
-                    return kvp.Value; // Return the original value if not a date-time string
-                }
-
-                // If the value is a nested object, search recursively
-                if (kvp.Value is List<KeyValuePair<string, object>> nestedData)
-                {
-                    var result = GetField(nestedData, key);
-                    if (result != null) return result;
-                }
-            }
-
-            return null; // Return null if the key is not found
-        }
-
-        public static object GetFieldByPath(List<KeyValuePair<string, object>> data, string path)
-        {
-            var parts = path.Split('.');
-            object current = data;
-
-            foreach (var part in parts)
-            {
-                if (current is List<KeyValuePair<string, object>> currentData)
-                {
-                    var match = part;
-                    int? index = null;
-
-                    // Handle array length request
-                    if (match == "length" && current is List<object> list)
-                    {
-                        return list.Count;
-                    }
-
-                    // Handle array indexing, e.g., "models[0]"
-                    if (part.Contains("["))
-                    {
-                        var bracketIndex = part.IndexOf('[');
-                        match = part.Substring(0, bracketIndex);
-                        index = int.Parse(part.Substring(bracketIndex + 1, part.Length - bracketIndex - 2));
-                    }
-
-                    // Find the matching key-value pair safely
-                    var kvp = currentData.FirstOrDefault(k => k.Key == match);
-                    if (kvp.Equals(default(KeyValuePair<string, object>)))
-                    {
-                        throw new Exception($"Key '{match}' not found.");
-                    }
-                    current = kvp.Value;
-
-                    // Apply index if it's a list of objects (array)
-                    if (index.HasValue && current is List<object> listData)
-                    {
-                        current = listData.ElementAtOrDefault(index.Value);
-                    }
-                }
-                else if (part == "length" && current is List<object> array)
-                {
-                    return array.Count; // Return count of items if ".length" is found
-                }
-                else
-                {
-                    throw new Exception($"Invalid path segment '{part}': cannot access '{current?.GetType()}' with '{part}'.");
-                }
-            }
-
-            // Attempt to parse the final value as a DateTime if it's a string
-            if (current is string stringValue && DateTime.TryParse(stringValue, out DateTime dateTimeValue))
-            {
-                return dateTimeValue;
-            }
-
-            return current;
-        }
-
-        public static void DumpJson(string json)
-        {
-            int indentLevel = 0;
-            bool inQuotes = false;
-
-            foreach (char ch in json)
-            {
-                switch (ch)
-                {
-                    case '{':
-                    case '[':
-                        if (!inQuotes)
-                        {
-                            Console.WriteLine(new string(' ', indentLevel * 2) + ch);
-                            indentLevel++;
-                            Console.Write(new string(' ', indentLevel * 2));
-                        }
-                        else
-                        {
-                            Console.Write(ch);
-                        }
-                        break;
-
-                    case '}':
-                    case ']':
-                        if (!inQuotes)
-                        {
-                            indentLevel--;
-                            Console.WriteLine();
-                            Console.Write(new string(' ', indentLevel * 2) + ch);
-                        }
-                        else
-                        {
-                            Console.Write(ch);
-                        }
-                        break;
-
-                    case ',':
-                        if (!inQuotes)
-                        {
-                            Console.WriteLine(ch);
-                            Console.Write(new string(' ', indentLevel * 2));
-                        }
-                        else
-                        {
-                            Console.Write(ch);
-                        }
-                        break;
-
-                    case '"':
-                        Console.Write(ch);
-                        inQuotes = !inQuotes;
-                        break;
-
-                    case ':':
-                        if (!inQuotes)
-                        {
-                            Console.Write(": ");
-                        }
-                        else
-                        {
-                            Console.Write(ch);
-                        }
-                        break;
-
-                    default:
-                        Console.Write(ch);
-                        break;
-                }
-            }
-            Console.WriteLine(); // Ensures the console output ends on a new line
         }
 
         private static List<KeyValuePair<string, object>> ParseObject(string json, ref int index)
@@ -452,6 +789,8 @@ namespace JsonClrLibrary
         {
             while (index < json.Length && char.IsWhiteSpace(json[index])) index++;
         }
+
+        #endregion
 
     } // end public class JsonSerializerDeserializer
 } // end namespace JsonClrLibrary
