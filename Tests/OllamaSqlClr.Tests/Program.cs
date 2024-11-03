@@ -75,9 +75,9 @@ namespace OllamaSqlClr.Tests
 
             var result = SqlClrFunctions.CompletePrompt(modelName, ask, addContext);
 
-            Debug.WriteLine("");
-            Debug.WriteLine($"CompletePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\"): \n    Completion: {result.Value}");
-            Debug.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine($"CompletePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\"): \n    Completion: {result.Value}");
+            Console.WriteLine("");
         }
 
         private static void TestCompleteMultiplePrompts()
@@ -89,32 +89,32 @@ namespace OllamaSqlClr.Tests
 
             var results = SqlClrFunctions.CompleteMultiplePrompts(modelName, ask, addContext, numCompletions);
 
-            Debug.WriteLine("");
-            Debug.WriteLine($"CompleteMultiplePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\", {numCompletions})");
+            Console.WriteLine("");
+            Console.WriteLine($"CompleteMultiplePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\", {numCompletions})");
             foreach (var result in results)
             {
                 var completionInfo = (CompletionInfo)result;
 
-                Debug.WriteLine($"    Row: {completionInfo.CompletionGuid}, {completionInfo.ModelName}, {completionInfo.OllamaCompletion}");
+                Console.WriteLine($"    Row: {completionInfo.CompletionGuid}, {completionInfo.ModelName}, {completionInfo.OllamaCompletion}");
             }
-            Debug.WriteLine("");
+            Console.WriteLine("");
         }
 
         private static void TestGetAvailableModels()
         {
             var results = SqlClrFunctions.GetAvailableModels();
 
-            Debug.WriteLine("");
+            Console.WriteLine("");
 
             foreach (var result in results)
             {
                 var modelInfo = (ModelInfo)result;
 
-                Debug.WriteLine("    Row:");
+                Console.WriteLine("    Row:");
                 Debug.WriteLine($"        ModelGuid: {modelInfo.ModelGuid}");
-                Debug.WriteLine($"        Name: {modelInfo.Name}");
-                Debug.WriteLine($"        Model: {modelInfo.Model}");
-                Debug.WriteLine($"        ReferToName: {modelInfo.ReferToName}");
+                Console.WriteLine($"        Name: {modelInfo.Name}");
+                Console.WriteLine($"        Model: {modelInfo.Model}");
+                Console.WriteLine($"        ReferToName: {modelInfo.ReferToName}");
                 Debug.WriteLine($"        ModifiedAt: {modelInfo.ModifiedAt}");
                 Debug.WriteLine($"        Size: {modelInfo.Size}");
                 Debug.WriteLine($"        Family: {modelInfo.Family}");
@@ -128,14 +128,11 @@ namespace OllamaSqlClr.Tests
 
         private static void TestQueryFromPrompt()
         {
-            var modelName = new SqlStringWrapper("mistral").ToSqlString();
+            var modelName = new SqlStringWrapper("codegemma").ToSqlString();
             var askStrings = new List<string>
             {
                 "Find all entries in support_emails where sentiment is glad.",
                 "List the top 10 products by sales volume.",
-                "12345",
-                "What are the recent transactions over $1000?",
-                "asdfghjkl"
             };
 
             foreach (var askText in askStrings)
@@ -144,9 +141,9 @@ namespace OllamaSqlClr.Tests
 
                 var result = SqlClrFunctions.QueryFromPrompt(modelName, ask);
 
-                Debug.WriteLine("");
-                Debug.WriteLine($"QueryFromPrompt(\"{modelName.Value}\", \"{ask.Value}\"): \n    Completion: {result.Value}");
-                Debug.WriteLine("");
+                Console.WriteLine("");
+                Console.WriteLine($"QueryFromPrompt(\"{modelName.Value}\", \"{ask.Value}\"): \n    Completion: {result.Value}");
+                Console.WriteLine("");
             }
         }
 
