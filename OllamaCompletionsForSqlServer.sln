@@ -17,6 +17,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", "{1D6C3F81-3588-492A-979A-D3FCCA8FA15E}"
 	ProjectSection(SolutionItems) = preProject
 		DBscripts\Enable_CLR_and_link_CLR_assembly.sql = DBscripts\Enable_CLR_and_link_CLR_assembly.sql
+		DBscripts\Query_from_prompt_example.sql = DBscripts\Query_from_prompt_example.sql
 		DBscripts\Sample_function_calls.sql = DBscripts\Sample_function_calls.sql
 		DBscripts\Sentiment_analysis.sql = DBscripts\Sentiment_analysis.sql
 	EndProjectSection

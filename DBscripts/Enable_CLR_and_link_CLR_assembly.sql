@@ -23,6 +23,9 @@ IF OBJECT_ID('dbo.CompleteMultiplePrompts', 'FT') IS NOT NULL
 IF OBJECT_ID('dbo.GetAvailableModels', 'FT') IS NOT NULL
     DROP FUNCTION dbo.GetAvailableModels;
 
+IF OBJECT_ID('dbo.QueryFromPrompt', 'FS') IS NOT NULL
+    DROP FUNCTION dbo.QueryFromPrompt;
+
 IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
     DROP ASSEMBLY OllamaSqlClr;
 GO
@@ -72,6 +75,14 @@ RETURNS TABLE
     [Digest] NVARCHAR(100)
 )
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
+GO
+
+CREATE FUNCTION dbo.QueryFromPrompt(
+    @modelName NVARCHAR(MAX), 
+    @askPrompt NVARCHAR(MAX)
+)
+RETURNS NVARCHAR(MAX)
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
 GO
 
 -- List all user-defined assemblies and all CLR functions

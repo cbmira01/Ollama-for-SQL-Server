@@ -10,6 +10,9 @@ namespace OllamaSqlClr.Tests
 {
     class Program
     {
+
+        #region "Test Harness"
+
         public static void Main(string[] args)
         {
             // Warm up by loading required assemblies
@@ -19,7 +22,8 @@ namespace OllamaSqlClr.Tests
             List<Action> tests = new List<Action> {
                 TestCompletePrompt,
                 TestCompleteMultiplePrompts,
-                TestGetAvailableModels
+                TestGetAvailableModels,
+                TestQueryFromPrompt
             };
 
             int index = 1;
@@ -60,6 +64,8 @@ namespace OllamaSqlClr.Tests
                 Debug.WriteLine($"Warm-up failed: {ex.Message}");
             }
         }
+
+        #endregion
 
         private static void TestCompletePrompt()
         {
@@ -118,6 +124,30 @@ namespace OllamaSqlClr.Tests
             }
 
             Debug.WriteLine("");
+        }
+
+        private static void TestQueryFromPrompt()
+        {
+            var modelName = new SqlStringWrapper("mistral").ToSqlString();
+            var askStrings = new List<string>
+            {
+                "Find all entries in support_emails where sentiment is glad.",
+                "List the top 10 products by sales volume.",
+                "12345",
+                "What are the recent transactions over $1000?",
+                "asdfghjkl"
+            };
+
+            foreach (var askText in askStrings)
+            {
+                var ask = new SqlStringWrapper(askText).ToSqlString();
+
+                var result = SqlClrFunctions.QueryFromPrompt(modelName, ask);
+
+                Debug.WriteLine("");
+                Debug.WriteLine($"QueryFromPrompt(\"{modelName.Value}\", \"{ask.Value}\"): \n    Completion: {result.Value}");
+                Debug.WriteLine("");
+            }
         }
 
     } // end class Program

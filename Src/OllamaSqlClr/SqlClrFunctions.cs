@@ -186,5 +186,31 @@ namespace OllamaSqlClr
 
         #endregion
 
+        #region "QueryFromPrompt"
+
+        [SqlFunction(DataAccess = DataAccessKind.None)]
+        public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
+        {
+            var leadingPrompt = "Write only the SQL code, with no additional commentary, for the following query in double quotes:";
+            var trailingPrompt = "Your response should contain either SQL syntax only, or the words 'no reply'.";
+            var framePrompt = "Do not frame your reply in any sort of code block or quotes, since only a bare reply is wanted.";
+            var codePrompt = "Do not use any character code points,encodings or entities in your response; these are unwanted.";
+
+            var prompt = $"{leadingPrompt} \"{askPrompt.Value}\" {trailingPrompt} {framePrompt} {codePrompt}";
+
+            try
+            {
+                var result = GetModelResponseToPrompt(prompt, modelName.Value);
+                string response = JsonSerializerDeserializer.GetStringField(result, "response");
+                return new SqlString(response);
+            }
+            catch (Exception ex)
+            {
+                return new SqlString($"Error: {ex.Message}");
+            }
+        }
+
+        #endregion
+
     } // end class SqlClrFunctions
 } // end namespace OllamaSqlClr

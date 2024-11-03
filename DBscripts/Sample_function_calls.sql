@@ -41,3 +41,4 @@ GO
 SELECT *
 FROM dbo.GetAvailableModels()
 GO
+
