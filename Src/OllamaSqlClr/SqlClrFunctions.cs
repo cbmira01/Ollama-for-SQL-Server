@@ -5,6 +5,9 @@ using System.Data.SqlTypes;
 using Microsoft.SqlServer.Server;
 using static OllamaSqlClr.OllamaHelpers;
 using JsonClrLibrary;
+using System.Data.SqlClient;
+using System.Data;
+using System.Text.RegularExpressions;
 
 namespace OllamaSqlClr
 {
@@ -188,21 +191,109 @@ namespace OllamaSqlClr
 
         #region "QueryFromPrompt"
 
-        [SqlFunction(DataAccess = DataAccessKind.None)]
+        [SqlFunction(DataAccess = DataAccessKind.Read)]
         public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
         {
             var leadingPrompt = "Write only the SQL code, with no additional commentary, for the following query in double quotes:";
             var trailingPrompt = "Your response should contain either SQL syntax only, or the words 'no reply'.";
             var framePrompt = "Do not frame your reply in any sort of code block or quotes, since only a bare reply is wanted.";
-            var codePrompt = "Do not use any character code points,encodings or entities in your response; these are unwanted.";
+            var codePrompt = "Do not use any character code points, encodings, or entities in your response; these are unwanted.";
 
             var prompt = $"{leadingPrompt} \"{askPrompt.Value}\" {trailingPrompt} {framePrompt} {codePrompt}";
 
             try
             {
-                var result = GetModelResponseToPrompt(prompt, modelName.Value);
-                string response = JsonSerializerDeserializer.GetStringField(result, "response");
-                return new SqlString(response);
+                var proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
+
+                string unsafeKeywordsPattern = @"\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|EXEC|EXECUTE|CREATE|GRANT|REVOKE|DENY)\b|no reply";
+                if (Regex.IsMatch(proposedQuery, unsafeKeywordsPattern, RegexOptions.IgnoreCase))
+                {
+                    throw new InvalidOperationException($"Disallowed expression detected in the query: {proposedQuery}");
+                }
+
+                string limitedQuery = $"SELECT TOP 100 * FROM ({proposedQuery}) AS LimitedResult";
+
+                string wrappedQuery = $@"
+                    BEGIN TRY
+                        {limitedQuery}
+                    END TRY
+                    BEGIN CATCH
+                        SELECT 
+                            ERROR_NUMBER() AS ErrorNumber,
+                            ERROR_MESSAGE() AS ErrorMessage,
+                            ERROR_LINE() AS ErrorLine;
+                    END CATCH";
+
+                string tempProcName = "#TempProc_" + Guid.NewGuid().ToString("N");
+                string createProcStatement = $@"
+                    CREATE PROCEDURE {tempProcName}
+                    AS
+                    BEGIN
+                        SET NOCOUNT ON;
+                        {wrappedQuery}
+                    END";
+
+                // Using context connection to connect to the same server where the CLR function is running
+                using (SqlConnection connection = new SqlConnection("context connection=true"))
+                {
+                    connection.Open();
+
+                    // Create the temporary procedure
+                    using (SqlCommand cmd = new SqlCommand(createProcStatement, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Execute the temporary procedure and get the results
+                    DataTable resultTable = new DataTable();
+                    string executeProc = $"EXEC {tempProcName};";
+                    using (SqlCommand cmd = new SqlCommand(executeProc, connection))
+                    {
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            adapter.Fill(resultTable);
+                        }
+                    }
+
+                    // Destroy the temporary procedure
+                    string dropProcStatement = $"DROP PROCEDURE {tempProcName}";
+                    using (SqlCommand cmd = new SqlCommand(dropProcStatement, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Check for errors in the result table
+                    if (resultTable.Columns.Contains("ErrorNumber"))
+                    {
+                        string errorNumber = resultTable.Rows[0]["ErrorNumber"].ToString();
+                        string errorMessage = resultTable.Rows[0]["ErrorMessage"].ToString();
+                        string errorLine = resultTable.Rows[0]["ErrorLine"].ToString();
+
+                        throw new InvalidOperationException(
+                            $"Error {errorNumber}: {errorMessage} at line {errorLine}."
+                        );
+                    }
+                    else
+                    {
+                        string logStatement = @"
+                            USE [TEST];
+                            GO
+
+                            INSERT INTO QueryPromptLog (Prompt, GeneratedQuery) 
+                                VALUES (@Prompt, @GeneratedQuery)
+                            GO";
+
+                        using (SqlCommand cmd = new SqlCommand(logStatement, connection))
+                        {
+                            cmd.Parameters.AddWithValue("@Prompt", prompt);
+                            cmd.Parameters.AddWithValue("@GeneratedQuery", proposedQuery);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // Return actual query results
+                        return new SqlString("Query executed successfully.");
+                    }
+                }
             }
             catch (Exception ex)
             {

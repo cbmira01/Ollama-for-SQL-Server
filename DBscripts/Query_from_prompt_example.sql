@@ -10,6 +10,8 @@ CREATE TABLE QueryPromptLog (
     GeneratedQuery NVARCHAR(MAX) NOT NULL,
     Timestamp DATETIME NOT NULL DEFAULT(getdate())
 );
+GO
+
 
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @prompt NVARCHAR(MAX) = 'Find all entries in support_emails where sentiment is glad.';
