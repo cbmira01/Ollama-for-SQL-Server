@@ -23,7 +23,7 @@ namespace OllamaSqlClr.Tests
                 TestCompletePrompt,
                 TestCompleteMultiplePrompts,
                 TestGetAvailableModels,
-                TestQueryFromPrompt
+                //TestQueryFromPrompt
             };
 
             int index = 1;
@@ -126,26 +126,26 @@ namespace OllamaSqlClr.Tests
             Debug.WriteLine("");
         }
 
-        private static void TestQueryFromPrompt()
-        {
-            var modelName = new SqlStringWrapper("codegemma").ToSqlString();
-            var askStrings = new List<string>
-            {
-                "Find all entries in support_emails where sentiment is glad.",
-                "List the top 10 products by sales volume.",
-            };
+        //private static void TestQueryFromPrompt()
+        //{
+        //    var modelName = new SqlStringWrapper("codegemma").ToSqlString();
+        //    var askStrings = new List<string>
+        //    {
+        //        "Find all entries in support_emails where sentiment is glad.",
+        //        "List the top 10 products by sales volume.",
+        //    };
 
-            foreach (var askText in askStrings)
-            {
-                var ask = new SqlStringWrapper(askText).ToSqlString();
+        //    foreach (var askText in askStrings)
+        //    {
+        //        var ask = new SqlStringWrapper(askText).ToSqlString();
 
-                var result = SqlClrFunctions.QueryFromPrompt(modelName, ask);
+        //        var result = SqlClrFunctions.QueryFromPrompt(modelName, ask);
 
-                Console.WriteLine("");
-                Console.WriteLine($"QueryFromPrompt(\"{modelName.Value}\", \"{ask.Value}\"): \n    Completion: {result.Value}");
-                Console.WriteLine("");
-            }
-        }
+        //        Console.WriteLine("");
+        //        Console.WriteLine($"QueryFromPrompt(\"{modelName.Value}\", \"{ask.Value}\"): \n    Completion: {result.Value}");
+        //        Console.WriteLine("");
+        //    }
+        //}
 
     } // end class Program
 

@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\DatabaseExecutor.cs" />
+    <Compile Include="DataAccess\IDatabaseExecutor.cs" />
     <Compile Include="OllamaHelpers.cs" />
     <Compile Include="SqlClrFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
