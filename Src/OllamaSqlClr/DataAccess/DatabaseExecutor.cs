@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
 
 namespace OllamaSqlClr.DataAccess
@@ -8,9 +7,11 @@ namespace OllamaSqlClr.DataAccess
     {
         private readonly SqlConnection _connection;
 
-        public DatabaseExecutor(SqlConnection connection)
+        public DatabaseExecutor()
         {
-            _connection = connection;
+            // Use the context connection to connect to the SQL Server hosting the CLR
+            _connection = new SqlConnection("context connection=true");
+            _connection.Open();
         }
 
         public DataTable ExecuteQuery(string query)
@@ -31,5 +32,8 @@ namespace OllamaSqlClr.DataAccess
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public SqlConnection GetConnection() => _connection; // Return the context connection
     }
 }
+
