@@ -206,7 +206,7 @@ namespace OllamaSqlClr
 
             try
             {
-                // Example API call result (replace with actual API call)
+                // TODO: Example API call result (replace with actual API call)
                 string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
 
                 if (!IsSafe(proposedQuery))
@@ -309,12 +309,12 @@ namespace OllamaSqlClr
         {
             // Log the prompt and query
             string logQueryCommand = $@"
-                    USE [TEST];
-                    GO
+                USE [TEST];
+                GO
 
-                    INSERT INTO QueryPromptLog (Prompt, ProposedQuery, ErrorNumber, ErrorMessage, ErrorLine) 
-                        VALUES ({prompt}, {proposedQuery}, {errorNumber}, {errorMessage}, {errorLine})
-                    GO";
+                INSERT INTO QueryPromptLog (Prompt, ProposedQuery, ErrorNumber, ErrorMessage, ErrorLine) 
+                    VALUES ({prompt}, {proposedQuery}, {errorNumber}, {errorMessage}, {errorLine})
+                GO";
 
             dbExecutor.ExecuteNonQuery(logQueryCommand);
 
