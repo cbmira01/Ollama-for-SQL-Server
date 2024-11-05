@@ -31,16 +31,5 @@ namespace OllamaSqlClr.DataAccess
                 cmd.ExecuteNonQuery();
             }
         }
-
-        public DataTable ExecuteWrappedQuery(string query)
-        {
-            using (var cmd = new SqlCommand(query, _connection))
-            using (var adapter = new SqlDataAdapter(cmd))
-            {
-                var resultTable = new DataTable();
-                adapter.Fill(resultTable);
-                return resultTable;
-            }
-        }
     }
 }
