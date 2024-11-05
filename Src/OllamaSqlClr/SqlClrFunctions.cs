@@ -233,12 +233,12 @@ namespace OllamaSqlClr
                     string errorLine = resultTable.Rows[0]["ErrorLine"].ToString();
 
                     LogThisQuery(prompt, proposedQuery, errorNumber, errorMessage, errorLine, dbExecutor);
-                    return $"Result error {errorNumber}: {errorMessage} at line {errorLine}.";
+                    return new SqlString($"Result error {errorNumber}: {errorMessage} at line {errorLine}.");
                 }
                 else
                 {
                     LogThisQuery(prompt, proposedQuery, null, null, null, dbExecutor);
-                    return "Query executed successfully.";
+                    return new SqlString("Query executed successfully.");
                 }
             }
             catch (Exception ex)
@@ -300,25 +300,26 @@ namespace OllamaSqlClr
         }
 
         private static void LogThisQuery(
-            string prompt, 
-            string proposedQuery, 
-            string errorNumber, 
-            string errorMessage, 
+            string prompt,
+            string proposedQuery,
+            string errorNumber,
+            string errorMessage,
             string errorLine,
             IDatabaseExecutor dbExecutor)
         {
-            // Log the prompt and query
-            string logQueryCommand = $@"
-                USE [TEST];
-                GO
-
+            string logQueryCommand = @"
                 INSERT INTO QueryPromptLog (Prompt, ProposedQuery, ErrorNumber, ErrorMessage, ErrorLine) 
-                    VALUES ({prompt}, {proposedQuery}, {errorNumber}, {errorMessage}, {errorLine})
-                GO";
+                VALUES (@Prompt, @ProposedQuery, @ErrorNumber, @ErrorMessage, @ErrorLine);";
 
-            dbExecutor.ExecuteNonQuery(logQueryCommand);
-
-            return;
+            using (var cmd = new SqlCommand(logQueryCommand, dbExecutor.GetConnection()))
+            {
+                cmd.Parameters.AddWithValue("@Prompt", (object)prompt ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ProposedQuery", (object)proposedQuery ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ErrorNumber", (object)errorNumber ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ErrorMessage", (object)errorMessage ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@ErrorLine", (object)errorLine ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         #endregion
