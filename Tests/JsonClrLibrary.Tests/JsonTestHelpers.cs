@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace JsonClrLibrary.Tests
 {
+    // These methods support the console program Program.cs
+
     public static class JsonTestHelpers
     {
         public static bool DeepCompare(List<KeyValuePair<string, object>> data, List<KeyValuePair<string, object>> shouldBe, out string difference)
