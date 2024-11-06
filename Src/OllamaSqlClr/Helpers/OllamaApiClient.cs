@@ -40,10 +40,10 @@ namespace OllamaSqlClr.Helpers
                 JsonBuilder.CreateArray("context", context)
             };
 
-            string json = JsonSerializerDeserializer.Serialize(data);
+            string json = JsonHandler.Serialize(data);
 #if DEBUG
             Console.WriteLine("Request...");
-            JsonSerializerDeserializer.DumpJson(json);
+            JsonHandler.DumpJson(json);
 #endif
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_apiGenerateUrl);
             request.Timeout = _timeout;
@@ -63,9 +63,9 @@ namespace OllamaSqlClr.Helpers
             }
 #if DEBUG
             Console.WriteLine("Response...");
-            JsonSerializerDeserializer.DumpJson(responseJson);
+            JsonHandler.DumpJson(responseJson);
 #endif
-            return JsonSerializerDeserializer.Deserialize(responseJson);
+            return JsonHandler.Deserialize(responseJson);
         }
 
         public List<KeyValuePair<string, object>> GetOllamaApiTags()
@@ -82,9 +82,9 @@ namespace OllamaSqlClr.Helpers
             }
 #if DEBUG
             Console.WriteLine("Response...");
-            JsonSerializerDeserializer.DumpJson(responseJson);
+            JsonHandler.DumpJson(responseJson);
 #endif
-            return JsonSerializerDeserializer.Deserialize(responseJson);
+            return JsonHandler.Deserialize(responseJson);
         }
     }
 }

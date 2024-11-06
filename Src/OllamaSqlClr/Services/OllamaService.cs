@@ -45,7 +45,7 @@ namespace OllamaSqlClr
             try
             {
                 var result = _apiClient.GetModelResponseToPrompt(prompt, modelName);
-                string response = JsonSerializerDeserializer.GetStringField(result, "response");
+                string response = JsonHandler.GetStringField(result, "response");
                 return new SqlString(response);
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace OllamaSqlClr
                 for (int i = 0; i < numCompletions.Value; i++)
                 {
                     var result = _apiClient.GetModelResponseToPrompt(prompt, modelName.Value, context);
-                    string response = JsonSerializerDeserializer.GetStringField(result, "response");
+                    string response = JsonHandler.GetStringField(result, "response");
 
                     var completion = new CompletionRow
                     {
@@ -80,7 +80,7 @@ namespace OllamaSqlClr
                     completions.Add(completion);
 
                     // Feed the current context into the next request
-                    context = JsonSerializerDeserializer.GetIntegerArray(result, "context");
+                    context = JsonHandler.GetIntegerArray(result, "context");
                 }
 
                 return completions;
@@ -105,22 +105,22 @@ namespace OllamaSqlClr
             try
             {
                 var result = _apiClient.GetOllamaApiTags();
-                var modelCount = JsonSerializerDeserializer.GetIntegerByPath(result, "models.length");
+                var modelCount = JsonHandler.GetIntegerByPath(result, "models.length");
 
                 for (var i = 0; i < modelCount; i++)
                 {
                     var modelInfo = new ModelInformationRow
                     {
                         ModelGuid = Guid.NewGuid(),
-                        Name = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].name"),
-                        Model = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].model"),
-                        ReferToName = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].model").Split(':')[0],
-                        ModifiedAt = JsonSerializerDeserializer.GetDateByPath(result, $"models[{i}].modified_at"),
-                        Size = JsonSerializerDeserializer.GetLongByPath(result, $"models[{i}].size"),
-                        Family = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].details.family"),
-                        ParameterSize = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].details.parameter_size"),
-                        QuantizationLevel = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].details.quantization_level"),
-                        Digest = JsonSerializerDeserializer.GetStringByPath(result, $"models[{i}].digest")
+                        Name = JsonHandler.GetStringByPath(result, $"models[{i}].name"),
+                        Model = JsonHandler.GetStringByPath(result, $"models[{i}].model"),
+                        ReferToName = JsonHandler.GetStringByPath(result, $"models[{i}].model").Split(':')[0],
+                        ModifiedAt = JsonHandler.GetDateByPath(result, $"models[{i}].modified_at"),
+                        Size = JsonHandler.GetLongByPath(result, $"models[{i}].size"),
+                        Family = JsonHandler.GetStringByPath(result, $"models[{i}].details.family"),
+                        ParameterSize = JsonHandler.GetStringByPath(result, $"models[{i}].details.parameter_size"),
+                        QuantizationLevel = JsonHandler.GetStringByPath(result, $"models[{i}].details.quantization_level"),
+                        Digest = JsonHandler.GetStringByPath(result, $"models[{i}].digest")
                     };
 
                     availableModels.Add(modelInfo);

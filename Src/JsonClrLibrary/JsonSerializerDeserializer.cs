@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JsonClrLibrary
 {
-    public class JsonSerializerDeserializer
+    public class JsonHandler
     {
         public static string Serialize(List<KeyValuePair<string, object>> data)
         {
@@ -787,6 +787,5 @@ namespace JsonClrLibrary
         }
 
         #endregion
-
-    } // end public class JsonSerializerDeserializer
-} // end namespace JsonClrLibrary
+    }
+}
