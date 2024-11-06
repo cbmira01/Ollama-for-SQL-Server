@@ -1,15 +1,10 @@
 ﻿using OllamaSqlClr.DataAccess;
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OllamaSqlClr.Helpers
 {
     // Logger class for logging SQL queries and errors
-    public class QueryLogger
+    public class QueryLogger : IQueryLogger
     {
         private readonly IDatabaseExecutor _dbExecutor;
 

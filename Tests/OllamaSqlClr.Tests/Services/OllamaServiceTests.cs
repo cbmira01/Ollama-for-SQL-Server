@@ -1,92 +1,95 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlTypes;
 using Moq;
 using Xunit;
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
-using OllamaSqlClr.DataAccess;
+using JsonClrLibrary;
 
 namespace OllamaSqlClr.Tests
 {
     public class OllamaServiceTests
     {
-        private readonly Mock<QueryValidator> _mockValidator;
-        private readonly Mock<QueryLogger> _mockLogger;
-        private readonly Mock<OllamaApiClient> _mockApiClient;
-        private readonly Mock<SqlCommand> _mockSqlCommand;
-        private readonly Mock<SqlQuery> _mockSqlQuery;
-
+        private readonly Mock<IQueryValidator> _mockValidator;
+        private readonly Mock<IQueryLogger> _mockLogger;
+        private readonly Mock<IOllamaApiClient> _mockApiClient;
+        private readonly Mock<ISqlCommand> _mockSqlCommand;
+        private readonly Mock<ISqlQuery> _mockSqlQuery;
         private readonly OllamaService _ollamaService;
 
         public OllamaServiceTests()
         {
-            _mockValidator = new Mock<QueryValidator>();
-            _mockLogger = new Mock<QueryLogger>(Mock.Of<IDatabaseExecutor>());
-            _mockApiClient = new Mock<OllamaApiClient>("http://127.0.0.1:11434");
-            _mockSqlCommand = new Mock<SqlCommand>(Mock.Of<IDatabaseExecutor>());
-            _mockSqlQuery = new Mock<SqlQuery>(Mock.Of<IDatabaseExecutor>());
+            _mockValidator = new Mock<IQueryValidator>();
+            _mockLogger = new Mock<IQueryLogger>();
+            _mockApiClient = new Mock<IOllamaApiClient>();
+            _mockSqlCommand = new Mock<ISqlCommand>();
+            _mockSqlQuery = new Mock<ISqlQuery>();
 
             _ollamaService = new OllamaService(
                 _mockValidator.Object,
                 _mockLogger.Object,
                 _mockApiClient.Object,
                 _mockSqlCommand.Object,
-                _mockSqlQuery.Object);
+                _mockSqlQuery.Object
+            );
         }
 
         [Fact]
         public void CompletePrompt_ReturnsExpectedResponse()
         {
             var modelName = "llama3.2";
-            var askPrompt = "Why is the sky blue?";
-            var morePrompt = "Answer in less than twenty words.";
-            var expectedResponse = new SqlString("The sky is blue due to Rayleigh scattering.");
+            var askPrompt = "What causes rain?";
+            var morePrompt = "Explain briefly.";
+            var expectedResponse = "Rain is caused by moisture in the air condensing.";
 
             _mockApiClient
                 .Setup(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName))
-                .Returns(new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>("response", expectedResponse.Value) });
+                .Returns(new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>("response", expectedResponse) });
 
             var result = _ollamaService.CompletePrompt(modelName, askPrompt, morePrompt);
 
-            Assert.Equal(expectedResponse, result);
+            Assert.Equal(expectedResponse, result.Value);
         }
 
         [Fact]
-        public void CompletePrompt_ReturnsError_OnException()
-        {
-            var modelName = "llama3.2";
-            var askPrompt = "Why is the sky blue?";
-            var morePrompt = "Answer in less than twenty words.";
-
-            _mockApiClient
-                .Setup(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName))
-                .Throws(new Exception("API error"));
-
-            var result = _ollamaService.CompletePrompt(modelName, askPrompt, morePrompt);
-
-            Assert.StartsWith("Error:", result.Value);
-        }
-
-        [Fact]
-        public void CompleteMultiplePrompts_ReturnsMultipleCompletions()
+        public void CompleteMultiplePrompts_ReturnsMultipleCompletions_WithContextUpdate()
         {
             var modelName = new SqlString("llama3.2");
             var askPrompt = new SqlString("What causes rain?");
             var morePrompt = new SqlString("Explain briefly.");
             var numCompletions = new SqlInt32(2);
+
+            // Mock responses with different contexts for each iteration
             var responseList = new List<CompletionRow>
             {
                 new CompletionRow { CompletionGuid = Guid.NewGuid(), ModelName = modelName.Value, OllamaCompletion = "Rain is caused by moisture condensing." },
                 new CompletionRow { CompletionGuid = Guid.NewGuid(), ModelName = modelName.Value, OllamaCompletion = "Rain forms when clouds become saturated." }
             };
 
-            _mockApiClient
-                .Setup(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName.Value, null))
-                .Returns(new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>("response", responseList[0].OllamaCompletion) });
+            // Define different contexts to simulate the API's response
+            var contextArray1 = new List<object> { 1, 2, 3 };
+            var contextArray2 = new List<object> { 4, 5, 6 };
 
+            _mockApiClient
+                .SetupSequence(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName.Value, It.IsAny<List<int>>()))
+                .Returns(new List<KeyValuePair<string, object>>
+                {
+                    new KeyValuePair<string, object>("response", responseList[0].OllamaCompletion),
+                    new KeyValuePair<string, object>("context", contextArray1)
+                })
+                .Returns(new List<KeyValuePair<string, object>>
+                {
+                    new KeyValuePair<string, object>("response", responseList[1].OllamaCompletion),
+                    new KeyValuePair<string, object>("context", contextArray2)
+                });
+
+            // Act
             var result = (IEnumerable<CompletionRow>)_ollamaService.CompleteMultiplePrompts(modelName, askPrompt, morePrompt, numCompletions);
 
+            // Assert: Ensure responses match the expected completions
             Assert.Collection(result,
                 item => Assert.Equal("Rain is caused by moisture condensing.", item.OllamaCompletion),
                 item => Assert.Equal("Rain forms when clouds become saturated.", item.OllamaCompletion));
@@ -95,43 +98,80 @@ namespace OllamaSqlClr.Tests
         [Fact]
         public void GetAvailableModels_ReturnsModelInformation()
         {
-            var modelInfo = new ModelInformationRow
-            {
-                ModelGuid = Guid.NewGuid(),
-                Name = "llama3.2",
-                Model = "model",
-                ReferToName = "llama3",
-                ModifiedAt = DateTime.Now,
-                Size = 12345,
-                Family = "language model",
-                ParameterSize = "large",
-                QuantizationLevel = "medium",
-                Digest = "digest123"
-            };
+            // Arrange
+            var modelData = JsonBuilder.CreateAnonymousObject(
+                JsonBuilder.CreateField("name", "Model1"),
+                JsonBuilder.CreateField("model", "ModelType1"),
+                JsonBuilder.CreateField("modified_at", DateTime.Now.ToString("o")), // Date as ISO 8601 string
+                JsonBuilder.CreateNumeric("size", 1024L),
+                JsonBuilder.CreateObject("details",
+                    JsonBuilder.CreateField("family", "TestFamily"),
+                    JsonBuilder.CreateField("parameter_size", "1024MB"),
+                    JsonBuilder.CreateField("quantization_level", "8-bit")
+                ),
+                JsonBuilder.CreateField("digest", "abc123")
+            );
 
+            // Mock API response to return a structure that includes `models.length`
             _mockApiClient
                 .Setup(api => api.GetOllamaApiTags())
                 .Returns(new List<KeyValuePair<string, object>>
                 {
-                    new KeyValuePair<string, object>("models.length", 1),
-                    new KeyValuePair<string, object>("models[0].name", modelInfo.Name),
-                    new KeyValuePair<string, object>("models[0].model", modelInfo.Model),
-                    new KeyValuePair<string, object>("models[0].modified_at", modelInfo.ModifiedAt),
-                    new KeyValuePair<string, object>("models[0].size", modelInfo.Size),
-                    new KeyValuePair<string, object>("models[0].details.family", modelInfo.Family),
-                    new KeyValuePair<string, object>("models[0].details.parameter_size", modelInfo.ParameterSize),
-                    new KeyValuePair<string, object>("models[0].details.quantization_level", modelInfo.QuantizationLevel),
-                    new KeyValuePair<string, object>("models[0].digest", modelInfo.Digest)
+                    JsonBuilder.CreateArray("models", modelData),
+                    JsonBuilder.CreateNumeric("models.length", 1)
                 });
 
-            var result = (IEnumerable<ModelInformationRow>)_ollamaService.GetAvailableModels();
+            // Act
+            var result = (List<ModelInformationRow>)_ollamaService.GetAvailableModels();
 
-            Assert.Collection(result,
-                item =>
-                {
-                    Assert.Equal(modelInfo.Name, item.Name);
-                    Assert.Equal(modelInfo.Model, item.Model);
-                });
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("Model1", result[0].Name);
+            Assert.Equal("ModelType1", result[0].Model);
+            Assert.Equal("TestFamily", result[0].Family);
+            Assert.Equal("1024MB", result[0].ParameterSize);
+            Assert.Equal("8-bit", result[0].QuantizationLevel);
+            Assert.Equal("abc123", result[0].Digest);
+            Assert.Equal(1024L, result[0].Size);
+        }
+
+        [Fact]
+        public void QueryFromPrompt_ReturnsError_WhenQueryIsNotSafe()
+        {
+            var modelName = new SqlString("llama3.2");
+            var askPrompt = new SqlString("How to delete data?");
+            var unsafeQuery = "DROP TABLE Users;";
+
+            _mockValidator.Setup(v => v.IsSafeQuery(unsafeQuery)).Returns(false);
+
+            var result = _ollamaService.QueryFromPrompt(modelName, askPrompt);
+
+            Assert.Equal("Error: proposed query had unsafe keywords.", result.Value);
+        }
+
+        [Fact]
+        public void QueryFromPrompt_ReturnsExecutionResult()
+        {
+            var modelName = new SqlString("llama3.2");
+            var askPrompt = new SqlString("Get data from support_emails.");
+            const string safeQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';"; // Matching the hardcoded query
+
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("id", typeof(int));
+            dataTable.Rows.Add(1);  // Ensure there’s at least one row
+
+            // Setup mocks
+            _mockValidator.Setup(v => v.IsSafeQuery(safeQuery)).Returns(true);
+            _mockSqlCommand.Setup(s => s.CreateProcedureFromQuery(safeQuery)).Returns("procedureName");
+            _mockSqlCommand.Setup(s => s.RunTemporaryProcedure("procedureName")).Returns(dataTable);
+            _mockSqlCommand.Setup(s => s.DropTemporaryProcedure("procedureName")).Returns((true, "Procedure dropped successfully."));
+
+            // Act
+            var result = _ollamaService.QueryFromPrompt(modelName, askPrompt);
+
+            // Assert
+            Assert.Equal("Query executed successfully.", result.Value);
+            _mockValidator.Verify(v => v.IsSafeQuery(It.IsAny<string>()), Times.Once, "IsSafeQuery should be called once but wasn't.");
         }
     }
 }

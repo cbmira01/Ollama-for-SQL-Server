@@ -2,12 +2,11 @@
 using System.Data.SqlClient;
 using System.Data;
 
-
 namespace OllamaSqlClr.Helpers
 {
     // Handle SQL queries
 
-    public class SqlQuery
+    public class SqlQuery : ISqlQuery
     {
         public readonly IDatabaseExecutor _dbExecutor;
 

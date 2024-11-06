@@ -7,7 +7,7 @@ namespace OllamaSqlClr.Helpers
 {
     // Handle SQL commands
 
-    public class SqlCommand
+    public class SqlCommand : ISqlCommand
     {
         public readonly IDatabaseExecutor _dbExecutor;
 

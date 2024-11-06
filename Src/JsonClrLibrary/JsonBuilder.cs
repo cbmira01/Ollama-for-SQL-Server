@@ -71,5 +71,5 @@ namespace JsonClrLibrary
             throw new ArgumentException($"The value provided for '{key}' is not a recognized numeric type.");
         }
 
-    } // end public class JsonSerializerDeserializer
-} // end namespace JsonClrLibrary
+    }
+}

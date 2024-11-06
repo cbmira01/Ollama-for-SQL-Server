@@ -48,6 +48,11 @@
   <ItemGroup>
     <Compile Include="DataAccess\DatabaseExecutor.cs" />
     <Compile Include="DataAccess\IDatabaseExecutor.cs" />
+    <Compile Include="Helpers\IOllamaApiClient.cs" />
+    <Compile Include="Helpers\IQueryLogger.cs" />
+    <Compile Include="Helpers\IQueryValidator.cs" />
+    <Compile Include="Helpers\ISqlCommand.cs" />
+    <Compile Include="Helpers\ISqlQuery.cs" />
     <Compile Include="Helpers\OllamaApiClient.cs" />
     <Compile Include="Helpers\QueryLogger.cs" />
     <Compile Include="Helpers\QueryValidator.cs" />
@@ -55,6 +60,7 @@
     <Compile Include="Helpers\SqlQuery.cs" />
     <Compile Include="Models\CompletionRow.cs" />
     <Compile Include="Models\ModelInformationRow.cs" />
+    <Compile Include="Services\IOllamaService.cs" />
     <Compile Include="Services\OllamaService.cs" />
     <Compile Include="SqlClrFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

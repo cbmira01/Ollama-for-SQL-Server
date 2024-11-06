@@ -6,7 +6,7 @@ using System.Net;
 
 namespace OllamaSqlClr.Helpers
 {
-    public class OllamaApiClient
+    public class OllamaApiClient : IOllamaApiClient
     {
         public readonly string _apiUrl;
         private readonly string _apiGenerateUrl;

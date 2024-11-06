@@ -3,7 +3,7 @@
 namespace OllamaSqlClr.Helpers
 {
     // Check for SQL keywords that alter data
-    public class QueryValidator
+    public class QueryValidator : IQueryValidator
     {
         public bool IsSafeQuery(string query)
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Data.SqlTypes;
 using Microsoft.SqlServer.Server;
 
@@ -10,34 +11,46 @@ namespace OllamaSqlClr
 {
     public static class SqlClrFunctions
     {
-        private static readonly OllamaService _ollamaService = new OllamaService(
+        // Use a factory method to allow mocking
+        public static Func<IOllamaService> OllamaServiceFactory { get; set; } = () => new OllamaService(
             new QueryValidator(),
             new QueryLogger(new DatabaseExecutor()),
             new OllamaApiClient("http://127.0.0.1:11434"),
             new SqlCommand(new DatabaseExecutor()),
-            new SqlQuery(new DatabaseExecutor()));
+            new SqlQuery(new DatabaseExecutor())
+        );
+
+        public static IOllamaService OllamaServiceInstance => OllamaServiceFactory();
+
+        #region "Implemented SQL/CLR functions"
 
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
-            return _ollamaService.CompletePrompt(modelName.Value, askPrompt.Value, morePrompt.Value);
+            return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
         public static IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions)
         {
-            return _ollamaService.CompleteMultiplePrompts(
-                modelName.Value,
-                askPrompt.Value,
-                morePrompt.Value,
-                numCompletions);
+            return OllamaServiceInstance.CompleteMultiplePrompts(modelName, askPrompt, morePrompt, numCompletions);
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_GetAvailableModels")]
         public static IEnumerable GetAvailableModels()
         {
-            return _ollamaService.GetAvailableModels();
+            return OllamaServiceInstance.GetAvailableModels();
         }
+
+        [SqlFunction(DataAccess = DataAccessKind.Read)]
+        public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
+        {
+            return OllamaServiceInstance.QueryFromPrompt(modelName, askPrompt);
+        }
+
+        #endregion 
+
+        #region "FillRow methods, do not unit test"
 
         public static void FillRow_CompleteMultiplePrompts(
             object completionObj,
@@ -79,15 +92,9 @@ namespace OllamaSqlClr
             digest = new SqlString(modelInfo.Digest);
         }
 
-        [SqlFunction(DataAccess = DataAccessKind.Read)]
-        public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
-        {
-            return _ollamaService.QueryFromPrompt(
-                modelName.Value,
-                askPrompt.Value);
-        }
-
         // TODO: QueryFromPrompt FillRow goes here
 
-    } // end class SqlClrFunctions
-} // end namespace OllamaSqlClr
+        #endregion
+
+    }
+}

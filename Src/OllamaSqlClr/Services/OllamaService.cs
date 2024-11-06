@@ -17,20 +17,20 @@ namespace OllamaSqlClr
     // Fill-Row static classes stay in the SqlClrFunctions class, 
     //      since they are called directly by SQL Server.
 
-    public class OllamaService
+    public class OllamaService : IOllamaService
     {
-        private readonly QueryValidator _validator;
-        private readonly QueryLogger _queryLogger;
-        private readonly OllamaApiClient _apiClient;
-        private readonly SqlCommand _sqlCommand;
-        private readonly SqlQuery _sqlQuery;
+        private readonly IQueryValidator _validator;
+        private readonly IQueryLogger _queryLogger;
+        private readonly IOllamaApiClient _apiClient;
+        private readonly ISqlCommand _sqlCommand;
+        private readonly ISqlQuery _sqlQuery;
 
         public OllamaService(
-            QueryValidator validator, 
-            QueryLogger queryLogger, 
-            OllamaApiClient apiClient, 
-            SqlCommand sqlCommand,
-            SqlQuery sqlQuery)
+            IQueryValidator validator, 
+            IQueryLogger queryLogger, 
+            IOllamaApiClient apiClient, 
+            ISqlCommand sqlCommand,
+            ISqlQuery sqlQuery)
         {
             _validator = validator;
             _queryLogger = queryLogger;
@@ -39,12 +39,12 @@ namespace OllamaSqlClr
             _sqlQuery = sqlQuery;
         }
 
-        public SqlString CompletePrompt(string modelName, string askPrompt, string morePrompt)
+        public SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
-            var prompt = $"{askPrompt} {morePrompt}";
+            var prompt = $"{askPrompt.Value} {morePrompt.Value}";
             try
             {
-                var result = _apiClient.GetModelResponseToPrompt(prompt, modelName);
+                var result = _apiClient.GetModelResponseToPrompt(prompt, modelName.Value);
                 string response = JsonHandler.GetStringField(result, "response");
                 return new SqlString(response);
             }
@@ -54,11 +54,7 @@ namespace OllamaSqlClr
             }
         }
 
-        public IEnumerable CompleteMultiplePrompts(
-            SqlString modelName,
-            SqlString askPrompt,
-            SqlString morePrompt,
-            SqlInt32 numCompletions)
+        public IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions)
         {
             var prompt = $"{askPrompt.Value} {morePrompt.Value}";
             var completions = new List<CompletionRow>();
