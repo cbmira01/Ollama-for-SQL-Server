@@ -50,6 +50,7 @@
     <Compile Include="DataAccess\QueryFromPromptTests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\OllamaServiceTests.cs" />
     <Compile Include="SqlClrFunctionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
