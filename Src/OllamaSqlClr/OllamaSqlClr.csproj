@@ -48,7 +48,14 @@
   <ItemGroup>
     <Compile Include="DataAccess\DatabaseExecutor.cs" />
     <Compile Include="DataAccess\IDatabaseExecutor.cs" />
-    <Compile Include="OllamaHelpers.cs" />
+    <Compile Include="Helpers\OllamaApiClient.cs" />
+    <Compile Include="Helpers\QueryLogger.cs" />
+    <Compile Include="Helpers\QueryValidator.cs" />
+    <Compile Include="Helpers\SqlCommand.cs" />
+    <Compile Include="Helpers\SqlQuery.cs" />
+    <Compile Include="Models\CompletionRow.cs" />
+    <Compile Include="Models\ModelInformationRow.cs" />
+    <Compile Include="Services\OllamaService.cs" />
     <Compile Include="SqlClrFunctions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -62,5 +69,6 @@
       <Name>JsonClrLibrary</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

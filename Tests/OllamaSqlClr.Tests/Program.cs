@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Reflection;
-using static OllamaSqlClr.SqlClrFunctions;
 
 namespace OllamaSqlClr.Tests
 {
@@ -93,7 +91,7 @@ namespace OllamaSqlClr.Tests
             Console.WriteLine($"CompleteMultiplePrompt(\"{modelName}\", \"{ask}\", \"{addContext}\", {numCompletions})");
             foreach (var result in results)
             {
-                var completionInfo = (CompletionInfo)result;
+                var completionInfo = (Models.CompletionRow)result;
 
                 Console.WriteLine($"    Row: {completionInfo.CompletionGuid}, {completionInfo.ModelName}, {completionInfo.OllamaCompletion}");
             }
@@ -108,7 +106,7 @@ namespace OllamaSqlClr.Tests
 
             foreach (var result in results)
             {
-                var modelInfo = (ModelInfo)result;
+                var modelInfo = (Models.ModelInformationRow)result;
 
                 Console.WriteLine("    Row:");
                 Debug.WriteLine($"        ModelGuid: {modelInfo.ModelGuid}");
@@ -139,7 +137,7 @@ namespace OllamaSqlClr.Tests
         //    {
         //        var ask = new SqlStringWrapper(askText).ToSqlString();
 
-        //        var result = SqlClrFunctions.QueryFromPrompt(modelName, ask);
+        //        var result = OllamaService.QueryFromPrompt(modelName, ask);
 
         //        Console.WriteLine("");
         //        Console.WriteLine($"QueryFromPrompt(\"{modelName.Value}\", \"{ask.Value}\"): \n    Completion: {result.Value}");

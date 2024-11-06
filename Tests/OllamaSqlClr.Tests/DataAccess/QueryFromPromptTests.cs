@@ -30,7 +30,7 @@ namespace OllamaSqlClr.Tests.DataAccess
             var askPrompt = new SqlString("Some valid SQL prompt");
 
             // Act: Call the method with the mock object
-            var result = QueryFromPrompt(modelName, askPrompt, mockDbExecutor.Object);
+            var result = QueryFromPrompt(modelName, askPrompt);
 
             // Assert: Verify the results and mock interactions
             Assert.Equal("Query . successfully.", result.Value);

@@ -1,29 +1,29 @@
-﻿using JsonClrLibrary;
-using OllamaSqlClr.DataAccess;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using JsonClrLibrary;
+using OllamaSqlClr.DataAccess;
 
 namespace OllamaSqlClr
 {
-    public static class OllamaHelpers
+    public class OllamaHelper : IOllamaHelper
     {
-        public static string ApiGenerateUrl { get; set; } = "http://127.0.0.1:11434/api/generate";
-        public static string ApiTagsUrl { get; set; } = "http://127.0.0.1:11434/api/tags";
-        public static int RequestTimeout { get; set; } = 100000; // Default timeout of 100 seconds
+        public string ApiGenerateUrl { get; set; } = "http://127.0.0.1:11434/api/generate";
+        public string ApiTagsUrl { get; set; } = "http://127.0.0.1:11434/api/tags";
+        public int RequestTimeout { get; set; } = 100000; // Default timeout of 100 seconds
 
-        public static List<KeyValuePair<string, object>> GetModelResponseToPrompt(
+        public List<KeyValuePair<string, object>> GetModelResponseToPrompt(
             string prompt,
             string modelName)
         {
             return GetModelResponseToPrompt(prompt, modelName, null);
         }
 
-        public static List<KeyValuePair<string, object>> GetModelResponseToPrompt(
+        public List<KeyValuePair<string, object>> GetModelResponseToPrompt(
             string prompt, 
             string modelName, 
             List<int> context)
@@ -68,7 +68,7 @@ namespace OllamaSqlClr
             return JsonSerializerDeserializer.Deserialize(responseJson);
         }
 
-        public static List<KeyValuePair<string, object>> GetOllamaApiTags()
+        public List<KeyValuePair<string, object>> GetOllamaApiTags()
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(ApiTagsUrl);
             request.Timeout = RequestTimeout;
@@ -89,13 +89,13 @@ namespace OllamaSqlClr
             return JsonSerializerDeserializer.Deserialize(responseJson);
         }
 
-        public static bool IsSafe(string query)
+        public  bool IsSafe(string query)
         {
             string unsafeKeywordsPattern = @"\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|EXEC|EXECUTE|CREATE|GRANT|REVOKE|DENY)\b|no reply";
             return !Regex.IsMatch(query, unsafeKeywordsPattern, RegexOptions.IgnoreCase);
         }
 
-        public static DataTable BuildAndRunTempProcedure(string query, IDatabaseExecutor dbExecutor)
+        public DataTable BuildAndRunTempProcedure(string query, IDatabaseExecutor dbExecutor)
         {
             string limitedQuery = $@"
                 SELECT TOP 100 * FROM ({query}) AS LimitedResult";
@@ -141,7 +141,7 @@ namespace OllamaSqlClr
             return resultTable;
         }
 
-        public static void LogThisQuery(
+        public void LogThisQuery(
             string prompt,
             string proposedQuery,
             string errorNumber,
