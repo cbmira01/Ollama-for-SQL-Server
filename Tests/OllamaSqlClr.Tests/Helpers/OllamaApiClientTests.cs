@@ -9,35 +9,40 @@ namespace OllamaSqlClr.Tests.Helpers
 {
     public class OllamaApiClientTests
     {
+        private readonly Mock<IOllamaApiClient> _mockApiClient;
+
+        public OllamaApiClientTests()
+        {
+            _mockApiClient = new Mock<IOllamaApiClient>();
+        }
+
         [Fact]
         public void GetModelResponseToPrompt_ShouldReturnKeyValuePairList_WhenApiCallIsSuccessful()
         {
             // Arrange
-            var mockApiClient = new Mock<OllamaApiClient>("http://127.0.0.1:11434");
             string prompt = "Test prompt";
             string modelName = "testModel";
-            var mockResponse = new List<KeyValuePair<string, object>> { JsonBuilder.CreateField("response", "mock response") };
+            var mockResponse = JsonBuilder.CreateAnonymousObject(JsonBuilder.CreateField("response", "mock response"));
 
-            mockApiClient.Setup(client => client.GetModelResponseToPrompt(prompt, modelName)).Returns(mockResponse);
+            _mockApiClient.Setup(client => client.GetModelResponseToPrompt(prompt, modelName)).Returns(mockResponse);
 
             // Act
-            var result = mockApiClient.Object.GetModelResponseToPrompt(prompt, modelName);
+            var result = _mockApiClient.Object.GetModelResponseToPrompt(prompt, modelName);
 
             // Assert
             Assert.Equal(mockResponse, result);
         }
 
+
         [Fact]
         public void GetOllamaApiTags_ShouldReturnKeyValuePairList_WhenApiCallIsSuccessful()
         {
             // Arrange
-            var mockApiClient = new Mock<OllamaApiClient>("http://127.0.0.1:11434");
-            var mockResponse = new List<KeyValuePair<string, object>> { JsonBuilder.CreateField("tag", "mockTag") };
-
-            mockApiClient.Setup(client => client.GetOllamaApiTags()).Returns(mockResponse);
+            var mockResponse = JsonBuilder.CreateAnonymousObject(JsonBuilder.CreateField("tag", "mockTag"));
+            _mockApiClient.Setup(client => client.GetOllamaApiTags()).Returns(mockResponse);
 
             // Act
-            var result = mockApiClient.Object.GetOllamaApiTags();
+            var result = _mockApiClient.Object.GetOllamaApiTags();
 
             // Assert
             Assert.Equal(mockResponse, result);

@@ -3,7 +3,6 @@ using System;
 
 namespace OllamaSqlClr.Helpers
 {
-    // Logger class for logging SQL queries and errors
     public class QueryLogger : IQueryLogger
     {
         private readonly IDatabaseExecutor _dbExecutor;
@@ -25,19 +24,12 @@ namespace OllamaSqlClr.Helpers
 
         public void LogQueryExecution(string prompt, string query, string errorNumber, string errorMessage, string errorLine)
         {
-            string logQueryCommand = @"
-                INSERT INTO QueryPromptLog (Prompt, Query, ErrorNumber, ErrorMessage, ErrorLine) 
-                VALUES (@Prompt, @Query, @ErrorNumber, @ErrorMessage, @ErrorLine);";
+            string logQueryCommand = $@"
+                INSERT INTO QueryPromptLog (Prompt, Query, ErrorNumber, ErrorMessage, ErrorLine)
+                VALUES ('{prompt}', '{query}', '{errorNumber}', '{errorMessage}', '{errorLine}');";
 
-            using (var cmd = new System.Data.SqlClient.SqlCommand(logQueryCommand, _dbExecutor.GetConnection()))
-            {
-                cmd.Parameters.AddWithValue("@Prompt", (object)prompt ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Query", (object)query ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@ErrorNumber", (object)errorNumber ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@ErrorMessage", (object)errorMessage ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@ErrorLine", (object)errorLine ?? DBNull.Value);
-                cmd.ExecuteNonQuery();
-            }
+            // Use the injected database executor to "execute" the SQL
+            _dbExecutor.ExecuteNonQuery(logQueryCommand);
         }
     }
 }

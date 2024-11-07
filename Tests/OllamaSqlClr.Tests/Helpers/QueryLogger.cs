@@ -8,42 +8,52 @@ namespace OllamaSqlClr.Tests.Helpers
     public class QueryLoggerTests
     {
         [Fact]
-        public void LogQuerySuccess_ShouldLogQueryWithoutErrors()
+        public void LogQuerySuccess_ShouldExecuteNonQueryWithCorrectCommand()
         {
             // Arrange
             var mockExecutor = new Mock<IDatabaseExecutor>();
-            mockExecutor.Setup(e => e.ExecuteNonQuery(It.IsAny<string>())).Verifiable();
-
             var logger = new QueryLogger(mockExecutor.Object);
-            var prompt = "Test prompt";
-            var query = "SELECT * FROM test";
+
+            var prompt = "Sample Prompt";
+            var query = "SELECT * FROM TestTable";
 
             // Act
             logger.LogQuerySuccess(prompt, query);
 
             // Assert
-            mockExecutor.Verify(e => e.ExecuteNonQuery(It.IsAny<string>()), Times.Once);
+            mockExecutor.Verify(e => e.ExecuteNonQuery(It.Is<string>(cmd =>
+                cmd.Contains("INSERT INTO QueryPromptLog") &&
+                cmd.Contains($"'{prompt}'") &&
+                cmd.Contains($"'{query}'") &&
+                cmd.Contains("''")  // Ensures empty strings instead of NULL for error details
+            )), Times.Once);
         }
 
         [Fact]
-        public void LogQueryError_ShouldLogQueryWithErrorDetails()
+        public void LogQueryError_ShouldExecuteNonQueryWithCorrectCommandAndErrorDetails()
         {
             // Arrange
             var mockExecutor = new Mock<IDatabaseExecutor>();
-            mockExecutor.Setup(e => e.ExecuteNonQuery(It.IsAny<string>())).Verifiable();
-
             var logger = new QueryLogger(mockExecutor.Object);
-            var prompt = "Test prompt";
-            var query = "SELECT * FROM test";
-            var errorNumber = "123";
-            var errorMessage = "Test error";
+
+            var prompt = "Sample Prompt";
+            var query = "SELECT * FROM TestTable";
+            var errorNumber = "1234";
+            var errorMessage = "Sample error message";
             var errorLine = "45";
 
             // Act
             logger.LogQueryError(prompt, query, errorNumber, errorMessage, errorLine);
 
             // Assert
-            mockExecutor.Verify(e => e.ExecuteNonQuery(It.IsAny<string>()), Times.Once);
+            mockExecutor.Verify(e => e.ExecuteNonQuery(It.Is<string>(cmd =>
+                cmd.Contains("INSERT INTO QueryPromptLog") &&
+                cmd.Contains($"'{prompt}'") &&
+                cmd.Contains($"'{query}'") &&
+                cmd.Contains($"'{errorNumber}'") &&
+                cmd.Contains($"'{errorMessage}'") &&
+                cmd.Contains($"'{errorLine}'")
+            )), Times.Once);
         }
     }
 }
