@@ -77,13 +77,13 @@ RETURNS TABLE
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
 GO
 
-CREATE FUNCTION dbo.QueryFromPrompt(
-    @modelName NVARCHAR(MAX), 
-    @askPrompt NVARCHAR(MAX)
-)
-RETURNS NVARCHAR(MAX)
-AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
-GO
+--CREATE FUNCTION dbo.QueryFromPrompt(
+--    @modelName NVARCHAR(MAX), 
+--    @askPrompt NVARCHAR(MAX)
+--)
+--RETURNS NVARCHAR(MAX)
+--AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
+--GO
 
 -- List all user-defined assemblies and all CLR functions
 SELECT * FROM sys.assemblies WHERE is_user_defined = 1;

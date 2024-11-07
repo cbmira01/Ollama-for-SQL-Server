@@ -16,10 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1953EB01
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", "{1D6C3F81-3588-492A-979A-D3FCCA8FA15E}"
 	ProjectSection(SolutionItems) = preProject
-		DBscripts\Enable_CLR_and_link_CLR_assembly.sql = DBscripts\Enable_CLR_and_link_CLR_assembly.sql
-		DBscripts\Query_from_prompt_example.sql = DBscripts\Query_from_prompt_example.sql
-		DBscripts\Sample_function_calls.sql = DBscripts\Sample_function_calls.sql
-		DBscripts\Sentiment_analysis.sql = DBscripts\Sentiment_analysis.sql
+		DBscripts\Script20_Sample_function_calls.sql = DBscripts\Script20_Sample_function_calls.sql
+		DBscripts\Script10_Enable_CLR_and_link_CLR_assembly.sql = DBscripts\Script10_Enable_CLR_and_link_CLR_assembly.sql
+		DBscripts\Script30_Sentiment_analysis.sql = DBscripts\Script30_Sentiment_analysis.sql
+		DBscripts\Script40_Query_from_prompt_example.sql = DBscripts\Script40_Query_from_prompt_example.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonClrLibrary", "Src\JsonClrLibrary\JsonClrLibrary.csproj", "{09C49120-5019-4B68-A16D-E44EA8F2B521}"

@@ -28,8 +28,7 @@ namespace OllamaSqlClr
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
-            var s = OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
-            return s;
+            return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
