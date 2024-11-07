@@ -37,6 +37,7 @@ namespace JsonClrLibrary.Tests
                         TestDeepCompare,
                 };
 
+                bool allPassed = true;
                 int index = 1;
                 foreach (var test in tests)
                 {
@@ -50,10 +51,23 @@ namespace JsonClrLibrary.Tests
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Test {index}: {test.Method.Name} failed: {ex.Message}");
+                        allPassed = false;
                     }
 
                     index++;
                 }
+
+                Debug.WriteLine("");
+
+                if (allPassed) 
+                {
+                    Debug.WriteLine("All tests PASSED!");
+                } 
+                else 
+                {
+                    Debug.WriteLine("Some tests failed...");
+                }
+
                 Debug.WriteLine("");
             }
 
