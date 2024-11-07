@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data.SqlTypes;
 using Microsoft.SqlServer.Server;
 
+using OllamaSqlClr.Services;
 using OllamaSqlClr.DataAccess;
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
@@ -27,7 +28,8 @@ namespace OllamaSqlClr
         [SqlFunction(DataAccess = DataAccessKind.None)]
         public static SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
-            return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+            var s = OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+            return s;
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]

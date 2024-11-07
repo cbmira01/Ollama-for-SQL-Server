@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using Moq;
 using Xunit;
+
+using OllamaSqlClr.Services;
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using JsonClrLibrary;
 
-namespace OllamaSqlClr.Tests
+namespace OllamaSqlClr.Tests.Services
 {
     public class OllamaServiceTests
     {
@@ -38,7 +39,7 @@ namespace OllamaSqlClr.Tests
         }
 
         [Fact]
-        public void CompletePrompt_ReturnsExpectedResponse()
+        public void Test01_CompletePrompt_ReturnsExpectedResponse()
         {
             var modelName = "llama3.2";
             var askPrompt = "What causes rain?";
@@ -55,7 +56,7 @@ namespace OllamaSqlClr.Tests
         }
 
         [Fact]
-        public void CompleteMultiplePrompts_ReturnsMultipleCompletions_WithContextUpdate()
+        public void Test02_CompleteMultiplePrompts_ReturnsMultipleCompletions_WithContextUpdate()
         {
             var modelName = new SqlString("llama3.2");
             var askPrompt = new SqlString("What causes rain?");
@@ -96,7 +97,7 @@ namespace OllamaSqlClr.Tests
         }
 
         [Fact]
-        public void GetAvailableModels_ReturnsModelInformation()
+        public void Test03_GetAvailableModels_ReturnsModelInformation()
         {
             // Arrange
             var modelData = JsonBuilder.CreateAnonymousObject(
@@ -136,7 +137,7 @@ namespace OllamaSqlClr.Tests
         }
 
         [Fact]
-        public void QueryFromPrompt_ReturnsError_WhenQueryIsNotSafe()
+        public void Test04_QueryFromPrompt_ReturnsError_WhenQueryIsNotSafe()
         {
             var modelName = new SqlString("llama3.2");
             var askPrompt = new SqlString("How to delete data?");
@@ -150,7 +151,7 @@ namespace OllamaSqlClr.Tests
         }
 
         [Fact]
-        public void QueryFromPrompt_ReturnsExecutionResult()
+        public void Test05_QueryFromPrompt_ReturnsExecutionResult()
         {
             var modelName = new SqlString("llama3.2");
             var askPrompt = new SqlString("Get data from support_emails.");

@@ -5,10 +5,10 @@ using System.Collections;
 using System.Data;
 
 using OllamaSqlClr.Helpers;
-using JsonClrLibrary;
 using OllamaSqlClr.Models;
+using JsonClrLibrary;
 
-namespace OllamaSqlClr
+namespace OllamaSqlClr.Services
 {
     // Service class that combines all the helpers for SQL CLR functions to use.
     //
