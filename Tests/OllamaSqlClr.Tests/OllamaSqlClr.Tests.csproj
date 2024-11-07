@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="DataAccess\QueryFromPromptTests.cs" />
     <Compile Include="Helpers\OllamaApiClientTests.cs" />
-    <Compile Include="Helpers\QueryLogger.cs" />
+    <Compile Include="Helpers\QueryLoggerTests.cs" />
     <Compile Include="Helpers\QueryValidatorTests.cs" />
     <Compile Include="Helpers\SqlCommandTests.cs" />
     <Compile Include="Helpers\SqlQueryTests.cs" />
