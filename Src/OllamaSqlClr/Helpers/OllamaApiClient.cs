@@ -15,8 +15,9 @@ namespace OllamaSqlClr.Helpers
 
         public OllamaApiClient(string apiUrl)
         {
-            _apiGenerateUrl = $"{_apiUrl}/api/generate";
-            _apiTagUrl = $"{_apiUrl}/api/generate";
+            _apiUrl = apiUrl;
+            _apiGenerateUrl = $"{apiUrl}/api/generate";
+            _apiTagUrl = $"{apiUrl}/api/tags";
             _timeout = 100000;
         }
 
