@@ -7,10 +7,13 @@ namespace OllamaSqlClr.Helpers
     {
         public bool IsSafeQuery(string query)
         {
-            string unsafeKeywordsPattern = @"\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|EXEC|EXECUTE|CREATE|GRANT|REVOKE|DENY)\b|no reply";
+            string unsafeKeywordsPattern = @"\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|EXEC|EXECUTE|CREATE|GRANT|REVOKE|DENY)\b";
             return !Regex.IsMatch(query, unsafeKeywordsPattern, RegexOptions.IgnoreCase);
         }
 
-        // Additional validation methods as needed
+        public bool IsNoReply(string query)
+        {
+            return Regex.IsMatch(query, @"\bno reply\b", RegexOptions.IgnoreCase);
+        }
     }
 }

@@ -20,6 +20,22 @@ namespace OllamaSqlClr.Tests.Helpers
             // Assert
             Assert.Equal(expected, result);
         }
+
+        [Theory]
+        [InlineData("SELECT * FROM test", false)]
+        [InlineData("INSERT INTO test VALUES (1)", false)]
+        [InlineData("I can make no reply at all.", true)]
+        public void IsNoReply_ShouldReturnExpectedResults(string query, bool expected)
+        {
+            // Arrange
+            var validator = new QueryValidator();
+
+            // Act
+            var result = validator.IsNoReply(query);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
     }
 }
 
