@@ -14,21 +14,22 @@ namespace OllamaSqlClr
     {
         // Use a factory method to allow mocking
         public static Func<IOllamaService> OllamaServiceFactory { get; set; } = () => new OllamaService(
-            new QueryValidator(),
-            new QueryLogger(new DatabaseExecutor()),
-            new OllamaApiClient("http://127.0.0.1:11434"),
-            new SqlCommand(new DatabaseExecutor()),
-            new SqlQuery(new DatabaseExecutor())
+            //new QueryValidator(),
+            //new QueryLogger(new DatabaseExecutor()),
+            new OllamaApiClient("http://127.0.0.1:11434")
+            //new SqlCommand(new DatabaseExecutor()),
+            //new SqlQuery(new DatabaseExecutor())
         );
 
         public static IOllamaService OllamaServiceInstance => OllamaServiceFactory();
 
         #region "Implemented SQL/CLR functions"
 
-        [SqlFunction(DataAccess = DataAccessKind.None)]
+        [SqlFunction(DataAccess = DataAccessKind.Read)]
         public static SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
-            return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+            var s = OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+            return s;
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
@@ -43,11 +44,11 @@ namespace OllamaSqlClr
             return OllamaServiceInstance.GetAvailableModels();
         }
 
-        [SqlFunction(DataAccess = DataAccessKind.Read)]
-        public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
-        {
-            return OllamaServiceInstance.QueryFromPrompt(modelName, askPrompt);
-        }
+        //[SqlFunction(DataAccess = DataAccessKind.Read)]
+        //public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
+        //{
+        //    return OllamaServiceInstance.QueryFromPrompt(modelName, askPrompt);
+        //}
 
         #endregion 
 

@@ -19,24 +19,25 @@ namespace OllamaSqlClr.Services
 
     public class OllamaService : IOllamaService
     {
-        private readonly IQueryValidator _validator;
-        private readonly IQueryLogger _queryLogger;
+        //private readonly IQueryValidator _validator;
+        //private readonly IQueryLogger _queryLogger;
         private readonly IOllamaApiClient _apiClient;
-        private readonly ISqlCommand _sqlCommand;
-        private readonly ISqlQuery _sqlQuery;
+        //private readonly ISqlCommand _sqlCommand;
+        //private readonly ISqlQuery _sqlQuery;
 
         public OllamaService(
-            IQueryValidator validator, 
-            IQueryLogger queryLogger, 
-            IOllamaApiClient apiClient, 
-            ISqlCommand sqlCommand,
-            ISqlQuery sqlQuery)
+            //IQueryValidator validator, 
+            //IQueryLogger queryLogger, 
+            IOllamaApiClient apiClient 
+            //ISqlCommand sqlCommand,
+            //ISqlQuery sqlQuery
+            )
         {
-            _validator = validator;
-            _queryLogger = queryLogger;
+            //_validator = validator;
+            //_queryLogger = queryLogger;
             _apiClient = apiClient;
-            _sqlCommand = sqlCommand;
-            _sqlQuery = sqlQuery;
+            //_sqlCommand = sqlCommand;
+            //_sqlQuery = sqlQuery;
         }
 
         public SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
@@ -130,65 +131,65 @@ namespace OllamaSqlClr.Services
             }
         }
 
-        public SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
-        {
-            var leadingPrompt = "Write only the SQL code, with no additional commentary, for the following query in double quotes:";
-            var trailingPrompt = "Your response should contain either SQL syntax only, or the words 'no reply'.";
-            var framePrompt = "Do not frame your reply in any sort of code block or quotes, since only a bare reply is wanted.";
-            var codePrompt = "Do not use any character code points, encodings, or entities in your response; these are unwanted.";
+        //public SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
+        //{
+        //    var leadingPrompt = "Write only the SQL code, with no additional commentary, for the following query in double quotes:";
+        //    var trailingPrompt = "Your response should contain either SQL syntax only, or the words 'no reply'.";
+        //    var framePrompt = "Do not frame your reply in any sort of code block or quotes, since only a bare reply is wanted.";
+        //    var codePrompt = "Do not use any character code points, encodings, or entities in your response; these are unwanted.";
 
-            var prompt = $"{leadingPrompt} \"{askPrompt.Value}\" {trailingPrompt} {framePrompt} {codePrompt}";
+        //    var prompt = $"{leadingPrompt} \"{askPrompt.Value}\" {trailingPrompt} {framePrompt} {codePrompt}";
 
-            try
-            {
-                // TODO: Example API call result (replace with actual API call)
-                string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
+        //    try
+        //    {
+        //        // TODO: Example API call result (replace with actual API call)
+        //        string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
                 
-                if (!_validator.IsSafeQuery(proposedQuery))
-                {
-                    return new SqlString("Error: proposed query had unsafe keywords.");
-                }
+        //        if (!_validator.IsSafeQuery(proposedQuery))
+        //        {
+        //            return new SqlString("Error: proposed query had unsafe keywords.");
+        //        }
 
-                string procedureName = _sqlCommand.CreateProcedureFromQuery(proposedQuery);
-                DataTable resultTable = _sqlCommand.RunTemporaryProcedure(procedureName);
+        //        string procedureName = _sqlCommand.CreateProcedureFromQuery(proposedQuery);
+        //        DataTable resultTable = _sqlCommand.RunTemporaryProcedure(procedureName);
 
 
-                (bool isDropped, string message) = _sqlCommand.DropTemporaryProcedure(procedureName);
-                if (!isDropped)
-                {
-                    return new SqlString(message);
-                }
+        //        (bool isDropped, string message) = _sqlCommand.DropTemporaryProcedure(procedureName);
+        //        if (!isDropped)
+        //        {
+        //            return new SqlString(message);
+        //        }
 
-                if (resultTable.Columns.Contains("ErrorNumber"))
-                {
-                    string errorNumber = resultTable.Rows[0]["ErrorNumber"].ToString();
-                    string errorMessage = resultTable.Rows[0]["ErrorMessage"].ToString();
-                    string errorLine = resultTable.Rows[0]["ErrorLine"].ToString();
+        //        if (resultTable.Columns.Contains("ErrorNumber"))
+        //        {
+        //            string errorNumber = resultTable.Rows[0]["ErrorNumber"].ToString();
+        //            string errorMessage = resultTable.Rows[0]["ErrorMessage"].ToString();
+        //            string errorLine = resultTable.Rows[0]["ErrorLine"].ToString();
 
-                    return new SqlString("Error: the query produced errors.");
-                }
+        //            return new SqlString("Error: the query produced errors.");
+        //        }
 
-                // Check for errors in the result table
-                if (resultTable.Columns.Contains("ErrorNumber"))
-                {
-                    string errorNumber = resultTable.Rows[0]["ErrorNumber"].ToString();
-                    string errorMessage = resultTable.Rows[0]["ErrorMessage"].ToString();
-                    string errorLine = resultTable.Rows[0]["ErrorLine"].ToString();
+        //        // Check for errors in the result table
+        //        if (resultTable.Columns.Contains("ErrorNumber"))
+        //        {
+        //            string errorNumber = resultTable.Rows[0]["ErrorNumber"].ToString();
+        //            string errorMessage = resultTable.Rows[0]["ErrorMessage"].ToString();
+        //            string errorLine = resultTable.Rows[0]["ErrorLine"].ToString();
 
-                    _queryLogger.LogQueryError(prompt, proposedQuery, errorNumber, errorMessage, errorLine);
-                    return new SqlString($"Result error {errorNumber}: {errorMessage} at line {errorLine}.");
-                }
-                else
-                {
-                    _queryLogger.LogQuerySuccess(prompt, proposedQuery);
-                    return new SqlString("Query executed successfully.");
-                }
-            }
-            catch (Exception ex)
-            {
-                return new SqlString($"Exception error: {ex.Message}");
-            }
-        }
+        //            _queryLogger.LogQueryError(prompt, proposedQuery, errorNumber, errorMessage, errorLine);
+        //            return new SqlString($"Result error {errorNumber}: {errorMessage} at line {errorLine}.");
+        //        }
+        //        else
+        //        {
+        //            _queryLogger.LogQuerySuccess(prompt, proposedQuery);
+        //            return new SqlString("Query executed successfully.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new SqlString($"Exception error: {ex.Message}");
+        //    }
+        //}
 
     }
 }
