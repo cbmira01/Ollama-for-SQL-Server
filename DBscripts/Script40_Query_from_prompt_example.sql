@@ -11,7 +11,7 @@ CREATE TABLE QueryPromptLog (
     ErrorNumber NVARCHAR(10) NULL,
     ErrorMessage NVARCHAR(100) NULL,
     ErrorLine NVARCHAR(10) NULL,
-    Timestamp DATETIME NOT NULL DEFAULT(getdate())
+    [Timestamp] DATETIME NOT NULL DEFAULT(getdate())
 );
 GO
 

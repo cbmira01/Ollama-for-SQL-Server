@@ -93,7 +93,8 @@ namespace OllamaSqlClr
             digest = new SqlString(modelInfo.Digest);
         }
 
-        // TODO: QueryFromPrompt FillRow goes here
+        // TODO: QueryFromPrompt FillRow goes here, JSON document table
+        //      rows of: GUID, Timestamp, Prompt, ProposedQuery
 
         #endregion
 
