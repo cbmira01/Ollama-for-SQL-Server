@@ -15,5 +15,17 @@
 ## JsonClrLibrary
 
 - Use JsonBuilder.CreateAnonymousObject(...) to create JSON objects
-- Double-check JsonClrLibrary test coverage
 
+## Testing
+
+- Double-check JsonClrLibrary test coverage
+- Integration testing aith Ollama and SQL Server
+
+## Documentation
+
+- Document JSON library
+- Document OllamaSqlClr SQL/CLR endpoints
+- Try out "diagrams as code"
+- References to external sources
+- Use XML Documentation Comments to generated documentation
+- Push to GitHub
