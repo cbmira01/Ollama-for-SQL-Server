@@ -85,6 +85,7 @@ You may consider a tool like Postman to interact with the Ollama API server.
 
 ```
 git clone https://calmiracle.visualstudio.com/OllamaCompletionsForSqlServer/_git/OllamaCompletionsForSqlServer
+git clone https://calmiracle.visualstudio.com/Ollama%20Completions%20for%20SQL%20Server/_git/Ollama%20Completions%20for%20SQL%20Server
 ```
 
 ### Open the project in Visual Studio
