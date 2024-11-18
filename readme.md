@@ -190,6 +190,56 @@ patterns of JSON library support, testing, documentation and project/solution st
 
 This project needs much better documentation and test coverage of the JSON library.
 
+## Testing and Debugging
+
+### Console programs
+
+There is a console program to exercise the JSON library. To run it, configure the 
+solution to `Debug`, set project `JsonClrLibrary.Tests` as the `Startup` project, 
+then click `Start`. Build and test results will appear in the `Output` window.
+
+There is  a console program that will perform some integration tests with the 
+`Ollama` server. To run the tests, the Ollama server must be serving on 
+`http://127.0.0.1:11434`. Configure the solution to `Debug`, set project 
+`OllamaSqlClr.Tests` as the `Startup` project, then click `Start`. Build and 
+test results will appear in the `Output` window. API events can be monitored 
+on the Ollama console.
+
+### Unit Tests
+
+Unit tests for the JSON library and the SQL/CLR functions are available. To run 
+them, navigate to Visual Studio's `Test Explorer`, then click `Run All Tests in View`. 
+External services needed for these tests are mocked.
+
+### Debugging the SQL/CLR functions remotely
+
+It is possible to attach a debugger to the SQL Server process and debug the assembly
+remotely. Here's how:
+
+- `Visual Studio` must be `run as administrator`.
+- Configure the solution to `Release`, then `Build` the solution.
+- Debugging symbols should be present in the assembly (`OllamaSqlClr.pdb` and `JsonClrLibrary.pdb`).
+- Start the `Ollama` server. 
+- Set `SQL Server` and its agent to a running state. Note the process ID of `SQL Server service type`.
+- Run `Script10` to create the assembly and function links in T-SQL.
+- Do the following actions in Visual Studio's `Debug` main tab:
+- - Navigate to `Attach to Process...`. 
+- - Select `Connection type` as `Local`.
+- - Filter process names on 'sql', then select the process ID matching the ID noted above.
+- - Select `Code type` as `Managed (.NET Framework 4.x) code`.
+- - Click `Attach`. You will get a warning modal.
+
+After these steps, breakpoints can be set in managed code and hit as SQL Server calls
+SQL/CLR functions it wants to perform. A good place to start debugging is in the 
+SqlClrFunctions class, or in the OllamaService class.
+
+Every time you create a new feature or correct faulty code, you will need to: 
+
+- Build and test under `Debug` until you get passing code.
+- Build a `Release` assembly.
+- Run `Script10` to relink the assembly to SQL Server.
+- Remote debug with `SQL Server` as needed.
+
 ## Roadmap for future work: possible functions for SQL Server to interact with LLMs
 
 ### AskAllModels Function
