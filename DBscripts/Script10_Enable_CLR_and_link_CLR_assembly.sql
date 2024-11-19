@@ -30,9 +30,14 @@ IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
     DROP ASSEMBLY OllamaSqlClr;
 GO
 
+-- Declare variables for repository and release name, alter as needed
+DECLARE @repositoryName NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+DECLARE @releaseName NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
+DECLARE @fullPath NVARCHAR(MAX) = @repositoryName + '\' + @releaseName;
+
 -- Create the assembly link
 CREATE ASSEMBLY OllamaSqlClr
-FROM 'C:\Users\cmirac2\Source\PrivateRepos\OllamaCompletionsForSqlServer\Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll'
+FROM @fullPath
 WITH PERMISSION_SET = UNSAFE;
 GO
 
