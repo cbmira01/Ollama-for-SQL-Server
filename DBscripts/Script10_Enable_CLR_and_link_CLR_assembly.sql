@@ -31,23 +31,9 @@ IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
 GO
 
 -- Declare variables for repository and release name, alter as needed
-DECLARE @repositoryName NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
-DECLARE @releaseName NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
-DECLARE @fullPath NVARCHAR(MAX) = @repositoryName + '\' + @releaseName;
-
--- Debug: Print the full path being validated
-PRINT 'Debug: Assembly full path is ' + @fullPath;
-
--- Validate the full path exists
-IF NOT EXISTS (
-    SELECT * 
-    FROM sys.dm_os_file_info 
-    WHERE physical_name = @fullPath
-)
-BEGIN
-    PRINT 'Error: The specified assembly path does not exist.';
-    THROW 50000, 'Invalid assembly path.', 1;
-END;
+DECLARE @repositoryName NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+DECLARE @releaseName NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
+DECLARE @fullPath NVARCHAR(400) = @repositoryName + '\' + @releaseName;
 
 -- Create the assembly link
 CREATE ASSEMBLY OllamaSqlClr
