@@ -45,6 +45,12 @@ namespace OllamaSqlClr
             });
         }
 
+        // Reset the lazy instance for testing
+        public static void SetMockOllamaServiceInstance(IOllamaService mockService)
+        {
+            _ollamaServiceInstanceLazy = new Lazy<IOllamaService>(() => mockService);
+        }
+
         #region "Implemented SQL/CLR functions"
 
         [SqlFunction(DataAccess = DataAccessKind.Read)]

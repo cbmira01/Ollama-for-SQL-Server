@@ -71,21 +71,23 @@ namespace OllamaSqlClr.Tests
                 Assembly.Load("JsonClrLibrary"); // Load JSON support library
 
                 // Mock dependencies
+                var apiURL = "http://127.0.0.1/11434/";
+                var apiClient = new OllamaSqlClr.Helpers.OllamaApiClient(apiURL); // Integration test against a real Ollama server
+
                 var mockExecutor = new MockDatabaseExecutor();
-                var mockLogger = new MockQueryLogger();
-                var mockApiClient = new MockOllamaApiClient();
+                var mockLogger = new MockQueryLogger(mockExecutor);
 
                 // Create a mocked OllamaService
                 var mockService = new OllamaService(
                     sqlConnection: "mockConnection",
-                    apiUrl: "http://127.0.0.1/11434/",
+                    apiUrl: apiURL,
                     queryLogger: mockLogger,
-                    apiClient: mockApiClient,
+                    apiClient: apiClient,
                     databaseExecutor: mockExecutor);
 
                 // Inject the mocked service into SqlClrFunctions
-                SqlClrFunctions.Configure("mockConnection", "http://127.0.0.1/11434/");
-                SqlClrFunctions.OllamaServiceInstance = mockService;
+                SqlClrFunctions.Configure("mockConnection", apiURL);
+                SqlClrFunctions.SetMockOllamaServiceInstance(mockService);
 
                 // Add any additional assemblies you expect to use
                 Debug.WriteLine("Warm-up completed successfully.");
@@ -201,4 +203,4 @@ namespace OllamaSqlClr.Tests
         }
     }
 
-} // end namespace OllamaSqlClr.Tests
+}
