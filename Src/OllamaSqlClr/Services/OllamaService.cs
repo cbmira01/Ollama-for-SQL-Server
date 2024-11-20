@@ -145,6 +145,7 @@ namespace OllamaSqlClr.Services
             try
             {
                 string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
+                var _ = proposedQuery;
 
                 return new SqlString ( "Success" );
             }

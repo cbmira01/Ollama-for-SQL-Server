@@ -29,13 +29,13 @@ namespace OllamaSqlClr.Tests.Services
             _mockSqlCommand = new Mock<ISqlCommand>();
             _mockSqlQuery = new Mock<ISqlQuery>();
 
-            _ollamaService = new OllamaService(
-                //_mockValidator.Object,
-                //_mockLogger.Object,
-                _mockApiClient.Object
-                //_mockSqlCommand.Object,
-                //_mockSqlQuery.Object
-            );
+            //_ollamaService = new OllamaService(
+            //    //_mockValidator.Object,
+            //    //_mockLogger.Object,
+            //    _mockApiClient.Object
+            //    //_mockSqlCommand.Object,
+            //    //_mockSqlQuery.Object
+            //);
         }
 
         [Fact]
