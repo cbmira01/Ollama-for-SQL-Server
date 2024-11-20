@@ -9,6 +9,7 @@ using OllamaSqlClr.Models;
 using JsonClrLibrary;
 using System.Data.SqlClient;
 using SqlCommand = OllamaSqlClr.Helpers.SqlCommand;
+using OllamaSqlClr.DataAccess;
 
 namespace OllamaSqlClr.Services
 {
@@ -31,17 +32,21 @@ namespace OllamaSqlClr.Services
             IQueryLogger queryLogger = null,
             IOllamaApiClient apiClient = null,
             ISqlCommand sqlCommand = null,
-            ISqlQuery sqlQuery = null)
+            ISqlQuery sqlQuery = null,
+            IDatabaseExecutor databaseExecutor = null)
         {
             _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
             _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
 
             // Initialize helpers
+            var executor = databaseExecutor ?? new DatabaseExecutor(sqlConnection);
+
             _validator = validator ?? new QueryValidator();
-            _queryLogger = queryLogger ?? new QueryLogger(sqlConnection);
             _apiClient = apiClient ?? new OllamaApiClient(apiUrl);
-            _sqlCommand = sqlCommand ?? new SqlCommand(sqlConnection);
-            _sqlQuery = sqlQuery ?? new SqlQuery(sqlConnection);
+
+            _queryLogger = queryLogger ?? new QueryLogger(databaseExecutor);
+            _sqlCommand = sqlCommand ?? new SqlCommand(databaseExecutor);
+            _sqlQuery = sqlQuery ?? new SqlQuery(databaseExecutor);
         }
 
         public SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)

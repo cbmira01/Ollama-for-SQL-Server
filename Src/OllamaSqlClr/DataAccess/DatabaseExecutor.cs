@@ -7,10 +7,9 @@ namespace OllamaSqlClr.DataAccess
     {
         private readonly SqlConnection _connection;
 
-        public DatabaseExecutor()
+        public DatabaseExecutor(string connectionString = "context connection=true")
         {
-            // Use the context connection to connect to the SQL Server hosting the CLR
-            _connection = new SqlConnection("context connection=true");
+            _connection = new SqlConnection(connectionString);
             _connection.Open();
         }
 
