@@ -2,33 +2,31 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using System.Data;
+using Microsoft.SqlServer.Server;
 
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using JsonClrLibrary;
+using System.Data.SqlClient;
 
 namespace OllamaSqlClr.Services
 {
     public class OllamaService : IOllamaService
     {
-        //private readonly IQueryValidator _validator;
-        //private readonly IQueryLogger _queryLogger;
-        private readonly IOllamaApiClient _apiClient;
-        //private readonly ISqlCommand _sqlCommand;
-        //private readonly ISqlQuery _sqlQuery;
+        private readonly string _sqlConnection;
+        private readonly string _apiUrl;
 
-        public OllamaService(
-            //IQueryValidator validator, 
-            //IQueryLogger queryLogger, 
-            IOllamaApiClient apiClient 
-            //ISqlCommand sqlCommand,
-            //ISqlQuery sqlQuery
-            )
+        private readonly IQueryValidator _validator;
+        private readonly IQueryLogger _queryLogger;
+        private readonly IOllamaApiClient _apiClient;
+        private readonly ISqlCommand _sqlCommand;
+        private readonly ISqlQuery _sqlQuery;
+
+        public OllamaService(string sqlConnection, string apiUrl)
         {
             //_validator = validator;
             //_queryLogger = queryLogger;
-            _apiClient = apiClient;
+            //_apiClient = apiClient;
             //_sqlCommand = sqlCommand;
             //_sqlQuery = sqlQuery;
         }

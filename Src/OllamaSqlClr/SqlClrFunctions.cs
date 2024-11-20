@@ -12,16 +12,42 @@ namespace OllamaSqlClr
 {
     public static class SqlClrFunctions
     {
-        // Use a factory method to allow mocking
-        public static Func<IOllamaService> OllamaServiceFactory { get; set; } = () => new OllamaService(
-            //new QueryValidator(),
-            //new QueryLogger(new DatabaseExecutor()),
-            new OllamaApiClient("http://127.0.0.1:11434")
-            //new SqlCommand(new DatabaseExecutor()),
-            //new SqlQuery(new DatabaseExecutor())
-        );
+        private static IOllamaService _ollamaServiceInstance;
 
-        public static IOllamaService OllamaServiceInstance => OllamaServiceFactory();
+        // Configuration fields
+        private static string _sqlConnection;
+        private static string _apiUrl;
+
+        // Method to set configurations
+        public static void Configure(string sqlConnection, string apiUrl)
+        {
+            _sqlConnection = sqlConnection;
+            _apiUrl = apiUrl;
+        }
+
+        // Property for lazy initialization or external injection
+        public static IOllamaService OllamaServiceInstance
+        {
+            get
+            {
+                if (_ollamaServiceInstance == null)
+                {
+                    if (string.IsNullOrEmpty(_sqlConnection) || string.IsNullOrEmpty(_apiUrl))
+                    {
+                        throw new InvalidOperationException("OllamaServiceInstance cannot be initialized without SQL Connection and API URL.");
+                    }
+
+                    // Lazy initialization with configuration
+                    _ollamaServiceInstance = new OllamaService(_sqlConnection, _apiUrl);
+                }
+                return _ollamaServiceInstance;
+            }
+            set
+            {
+                // Allows external injection (e.g., for testing)
+                _ollamaServiceInstance = value;
+            }
+        }
 
         #region "Implemented SQL/CLR functions"
 
