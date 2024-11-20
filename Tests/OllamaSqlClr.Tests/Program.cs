@@ -1,5 +1,8 @@
-﻿using System;
+﻿using OllamaSqlClr.Services;
+using OllamaSqlClr.Tests.Mocks;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Reflection;
@@ -38,6 +41,7 @@ namespace OllamaSqlClr.Tests
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"{test.Method.Name} failed: {ex.Message}");
+                    allPassed = false;
                 }
                 index++;
             }
@@ -65,6 +69,23 @@ namespace OllamaSqlClr.Tests
                 var dataType = typeof(System.Data.DataTable); // Ensures System.Data.dll is loaded
                 Assembly.Load("OllamaSqlClr"); // Load assembly under test
                 Assembly.Load("JsonClrLibrary"); // Load JSON support library
+
+                // Mock dependencies
+                var mockExecutor = new MockDatabaseExecutor();
+                var mockLogger = new MockQueryLogger();
+                var mockApiClient = new MockOllamaApiClient();
+
+                // Create a mocked OllamaService
+                var mockService = new OllamaService(
+                    sqlConnection: "mockConnection",
+                    apiUrl: "http://127.0.0.1/11434/",
+                    queryLogger: mockLogger,
+                    apiClient: mockApiClient,
+                    databaseExecutor: mockExecutor);
+
+                // Inject the mocked service into SqlClrFunctions
+                SqlClrFunctions.Configure("mockConnection", "http://127.0.0.1/11434/");
+                SqlClrFunctions.OllamaServiceInstance = mockService;
 
                 // Add any additional assemblies you expect to use
                 Debug.WriteLine("Warm-up completed successfully.");
