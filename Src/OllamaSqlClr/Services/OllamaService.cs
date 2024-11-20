@@ -39,10 +39,10 @@ namespace OllamaSqlClr.Services
             _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
 
             // Initialize helpers
-            var executor = databaseExecutor ?? new DatabaseExecutor(sqlConnection);
+            var executor = databaseExecutor ?? new DatabaseExecutor(_sqlConnection);
 
             _validator = validator ?? new QueryValidator();
-            _apiClient = apiClient ?? new OllamaApiClient(apiUrl);
+            _apiClient = apiClient ?? new OllamaApiClient(_apiUrl);
 
             _queryLogger = queryLogger ?? new QueryLogger(databaseExecutor);
             _sqlCommand = sqlCommand ?? new SqlCommand(databaseExecutor);
