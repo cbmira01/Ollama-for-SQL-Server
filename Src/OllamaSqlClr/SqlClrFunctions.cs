@@ -43,11 +43,11 @@ namespace OllamaSqlClr
             return OllamaServiceInstance.GetAvailableModels();
         }
 
-        //[SqlFunction(DataAccess = DataAccessKind.Read)]
-        //public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
-        //{
-        //    return OllamaServiceInstance.QueryFromPrompt(modelName, askPrompt);
-        //}
+        [SqlFunction(DataAccess = DataAccessKind.Read)]
+        public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
+        {
+            return OllamaServiceInstance.QueryFromPrompt();
+        }
 
         #endregion 
 
