@@ -4,49 +4,45 @@ using System.Data.SqlTypes;
 using Microsoft.SqlServer.Server;
 
 using OllamaSqlClr.Services;
-using OllamaSqlClr.DataAccess;
-using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 
 namespace OllamaSqlClr
 {
     public static class SqlClrFunctions
     {
-        private static IOllamaService _ollamaServiceInstance;
-
-        // Configuration fields
         private static string _sqlConnection;
         private static string _apiUrl;
 
-        // Method to set configurations
+        // Lazy initialization for the OllamaService instance
+        private static Lazy<IOllamaService> _ollamaServiceInstanceLazy = CreateLazyInstance();
+
+        // Public property to access the lazy-initialized instance
+        public static IOllamaService OllamaServiceInstance => _ollamaServiceInstanceLazy.Value;
+
+        // Method to configure SQL connection and API URL
+        private static readonly object _configLock = new object();
         public static void Configure(string sqlConnection, string apiUrl)
         {
-            _sqlConnection = sqlConnection;
-            _apiUrl = apiUrl;
+            lock (_configLock)
+            {
+                _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
+                _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
+            }
         }
 
-        // Property for lazy initialization or external injection
-        public static IOllamaService OllamaServiceInstance
+        // Creates a new Lazy instance
+        private static Lazy<IOllamaService> CreateLazyInstance()
         {
-            get
+            return new Lazy<IOllamaService>(() =>
             {
-                if (_ollamaServiceInstance == null)
+                if (string.IsNullOrEmpty(_sqlConnection) || string.IsNullOrEmpty(_apiUrl))
                 {
-                    if (string.IsNullOrEmpty(_sqlConnection) || string.IsNullOrEmpty(_apiUrl))
-                    {
-                        throw new InvalidOperationException("OllamaServiceInstance cannot be initialized without SQL Connection and API URL.");
-                    }
-
-                    // Lazy initialization with configuration
-                    _ollamaServiceInstance = new OllamaService(_sqlConnection, _apiUrl);
+                    throw new InvalidOperationException("OllamaServiceInstance cannot be initialized without SQL Connection and API URL.");
                 }
-                return _ollamaServiceInstance;
-            }
-            set
-            {
-                // Allows external injection (e.g., for testing)
-                _ollamaServiceInstance = value;
-            }
+
+                // Create a new OllamaService with the current configuration
+                return new OllamaService(_sqlConnection, _apiUrl);
+            });
         }
 
         #region "Implemented SQL/CLR functions"
@@ -70,7 +66,7 @@ namespace OllamaSqlClr
         }
 
         [SqlFunction(DataAccess = DataAccessKind.Read)]
-        public static SqlString QueryFromPrompt(SqlString modelName, SqlString askPrompt)
+        public static SqlString QueryFromPrompt()
         {
             return OllamaServiceInstance.QueryFromPrompt();
         }
