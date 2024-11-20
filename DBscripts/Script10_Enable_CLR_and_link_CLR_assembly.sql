@@ -2,6 +2,8 @@
 -- Enable CLR, drop and re-create functions and assembly link, and run a short test.
 -- Must be done everytime the SQL CLR project is rebuilt.
 -- These functions depend on the Ollama API service running on localhost.
+--
+-- Be sure to modify @repositoryName as needed.
 
 sp_configure 'clr enabled', 1;
 RECONFIGURE;
@@ -82,13 +84,13 @@ RETURNS TABLE
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
 GO
 
---CREATE FUNCTION dbo.QueryFromPrompt(
---    @modelName NVARCHAR(MAX), 
---    @askPrompt NVARCHAR(MAX)
---)
---RETURNS NVARCHAR(MAX)
---AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
---GO
+CREATE FUNCTION dbo.QueryFromPrompt(
+    @modelName NVARCHAR(MAX), 
+    @askPrompt NVARCHAR(MAX)
+)
+RETURNS NVARCHAR(MAX)
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
+GO
 
 -- List all user-defined assemblies and all CLR functions
 SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
