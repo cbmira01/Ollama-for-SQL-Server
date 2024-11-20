@@ -74,19 +74,22 @@ namespace OllamaSqlClr.Tests
                 var apiURL = "http://127.0.0.1/11434";
                 var apiClient = new OllamaSqlClr.Helpers.OllamaApiClient(apiURL); // Integration test against a real Ollama server
 
-                var mockExecutor = new MockDatabaseExecutor();
-                var mockLogger = new MockQueryLogger(mockExecutor);
+                var mockDatabaseExecutor = new MockDatabaseExecutor();
+                var mockQueryLogger = new MockQueryLogger(mockDatabaseExecutor);
+                var mockSqlQuery = new MockSqlQuery(mockDatabaseExecutor);
+                var mockSqlCommand = new MockSqlCommand(mockDatabaseExecutor);
+                var mockQueryValidator = new MockQueryValidator();
 
                 // Create a mocked OllamaService
                 var mockService = new OllamaService(
                     sqlConnection: "mockConnection",
                     apiUrl: apiURL,
-                    queryLogger: mockLogger,
+                    queryLogger: mockQueryLogger,
                     sqlCommand: mockSqlCommand,
                     sqlQuery: mockSqlQuery,
-                    validator: mockValidator,
+                    validator: mockQueryValidator,
                     apiClient: apiClient,
-                    databaseExecutor: mockExecutor);
+                    databaseExecutor: mockDatabaseExecutor);
 
                 // Inject the mocked service into SqlClrFunctions
                 SqlClrFunctions.Configure("mockConnection", apiURL);
@@ -108,13 +111,6 @@ namespace OllamaSqlClr.Tests
             var modelName = new SqlStringWrapper("llama3.2").ToSqlString();
             var ask = new SqlStringWrapper("Why is the sky blue?").ToSqlString();
             var addContext = new SqlStringWrapper("Answer in less than twenty words.").ToSqlString();
-
-
-
-
-
-
-
 
             var result = SqlClrFunctions.CompletePrompt(modelName, ask, addContext);
 

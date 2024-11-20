@@ -5,8 +5,6 @@ using System.Data;
 
 namespace OllamaSqlClr.Helpers
 {
-    // Handle SQL commands
-
     public class SqlCommand : ISqlCommand
     {
         public readonly IDatabaseExecutor _dbExecutor;

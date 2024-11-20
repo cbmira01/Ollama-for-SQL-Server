@@ -1,65 +1,8 @@
-﻿using OllamaSqlClr.DataAccess;
-using OllamaSqlClr.Helpers;
-using System;
+﻿using OllamaSqlClr.Helpers;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 
 namespace OllamaSqlClr.Tests.Mocks
 {
-    public class MockDatabaseExecutor : IDatabaseExecutor
-    {
-        public DataTable ExecuteQuery(string query)
-        {
-            // Return a mock DataTable
-            var table = new DataTable();
-            table.Columns.Add("Column1");
-            table.Rows.Add("Mocked Row 1");
-            table.Rows.Add("Mocked Row 2");
-            return table;
-        }
-
-        public void ExecuteNonQuery(string commandText)
-        {
-            // No-op for testing
-        }
-
-        public SqlConnection GetConnection()
-        {
-            return null; // No connection needed in test context
-        }
-    }
-
-    public class MockQueryLogger : IQueryLogger
-    {
-        private readonly IDatabaseExecutor _dbExecutor;
-
-        public MockQueryLogger(IDatabaseExecutor dbExecutor)
-        {
-            _dbExecutor = dbExecutor;
-        }
-
-        public void LogQuerySuccess(string prompt, string query) 
-        {
-            LogQueryExecution(prompt, query, null, null, null);
-        }
-
-        public void LogQueryError(string prompt, string query, string errorNumber, string errorMessage, string errorLine) 
-        {
-            LogQueryExecution(prompt, query, "Error number", "Error Message", "Error Line");
-        }
-
-        public void LogQueryExecution(string prompt, string query, string errorNumber, string errorMessage, string errorLine) 
-        {
-            string logQueryCommand = $@"
-                INSERT INTO QueryPromptLog (Prompt, Query, ErrorNumber, ErrorMessage, ErrorLine)
-                VALUES ('{prompt}', '{query}', '{errorNumber}', '{errorMessage}', '{errorLine}');";
-
-            // Use the injected database executor to "execute" the SQL
-            _dbExecutor.ExecuteNonQuery(logQueryCommand);
-        }
-    }
-
     public class MockOllamaApiClient : IOllamaApiClient
     {
         public List<KeyValuePair<string, object>> GetModelResponseToPrompt(string prompt, string modelName)
