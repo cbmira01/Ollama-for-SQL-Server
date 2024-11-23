@@ -57,8 +57,7 @@ namespace JsonClrLibrary
                 case List<object> array:
                     if (IsSimpleArray(array))
                     {
-                        // Print simple arrays on one line
-                        Console.Write("[");
+                        Console.Write($"[\n{indent}{indent}");
                         for (int i = 0; i < array.Count; i++)
                         {
                             DumpValue(array[i], indentLevel + 1, inline: true);
@@ -66,8 +65,13 @@ namespace JsonClrLibrary
                             {
                                 Console.Write(", ");
                             }
+
+                            if ((i+1)%15 == 0) 
+                            {
+                                Console.Write($"\n{indent}{indent}");
+                            }
                         }
-                        Console.Write("]");
+                        Console.Write($"\n{indent}{indent}]");
                     }
                     else
                     {

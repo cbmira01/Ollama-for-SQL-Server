@@ -71,7 +71,7 @@ namespace OllamaSqlClr.Tests
                 Assembly.Load("JsonClrLibrary"); // Load JSON support library
 
                 // Mock dependencies
-                var apiURL = "http://127.0.0.1/11434";
+                var apiURL = "http://127.0.0.1:11434";
                 var apiClient = new OllamaSqlClr.Helpers.OllamaApiClient(apiURL); // Integration test against a real Ollama server
 
                 var mockDatabaseExecutor = new MockDatabaseExecutor();
