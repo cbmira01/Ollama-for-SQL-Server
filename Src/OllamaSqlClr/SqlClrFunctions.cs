@@ -79,7 +79,7 @@ namespace OllamaSqlClr
 
         #endregion 
 
-        #region "FillRow methods, do not unit test"
+        #region "FillRow methods"
 
         public static void FillRow_CompleteMultiplePrompts(
             object completionObj,
