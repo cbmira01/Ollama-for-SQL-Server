@@ -1,4 +1,6 @@
 ﻿
+USE TEST;
+
 -- List all user-defined assemblies and all CLR functions
 SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
 GO

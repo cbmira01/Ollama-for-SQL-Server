@@ -17,7 +17,9 @@ GO
 USE Test;
 GO
 
--- Drop functions from the assembly, then drop the assembly link
+-- Drop all CLR objects in the correct order
+
+-- Drop all CLR functions
 IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
     DROP FUNCTION dbo.CompletePrompt;
 
@@ -30,6 +32,12 @@ IF OBJECT_ID('dbo.GetAvailableModels', 'FT') IS NOT NULL
 IF OBJECT_ID('dbo.QueryFromPrompt', 'FS') IS NOT NULL
     DROP FUNCTION dbo.QueryFromPrompt;
 
+-- Drop the CLR stored procedure
+IF OBJECT_ID('dbo.ConfigureOllamaService', 'PC') IS NOT NULL
+    DROP PROCEDURE dbo.ConfigureOllamaService;
+GO
+
+-- Drop the assembly only after all dependent objects are removed
 IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
     DROP ASSEMBLY OllamaSqlClr;
 GO
