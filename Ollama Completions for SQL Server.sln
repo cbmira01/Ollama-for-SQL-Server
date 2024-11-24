@@ -36,10 +36,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		Docs\CONTRIBUTING.md = Docs\CONTRIBUTING.md
 		Docs\INSTALLATION.md = Docs\INSTALLATION.md
+		Docs\JSON-LIBRARY.md = Docs\JSON-LIBRARY.md
 		Docs\README.md = Docs\README.md
 		Docs\ROADMAP.md = Docs\ROADMAP.md
 		Docs\TESTING.md = Docs\TESTING.md
 		Docs\USAGE.md = Docs\USAGE.md
+		Docs\WORKS-CONSULTED.md = Docs\WORKS-CONSULTED.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{6FC9999C-2339-4816-9598-1E111E3E076A}"

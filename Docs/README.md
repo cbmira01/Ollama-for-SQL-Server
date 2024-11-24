@@ -27,12 +27,13 @@ Refer to the documentation files in order:
 - **README.md**
 - **INSTALLATION.md**
 - **USAGE.md**
+- **JSON-LIBRARY.md** (in progress)
 - **TESTING.md**
 - **CONTRIBUTING.md**
-- **JSON-LIBRARY.md** (coming soon)
 - **ROADMAP.md**
+- **WORKS-CONSULTED.md** (in progress)
 
-### Notes
+## Notes
 
 - UNSAFE assembly permission is required to allow external HTTP requests from SQL Server.
 - Use these functions with caution as network operations can impact SQL Server performance.
