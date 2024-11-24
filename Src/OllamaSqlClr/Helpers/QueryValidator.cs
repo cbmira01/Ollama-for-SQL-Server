@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace OllamaSqlClr.Helpers
 {
@@ -14,6 +15,15 @@ namespace OllamaSqlClr.Helpers
         public bool IsNoReply(string query)
         {
             return Regex.IsMatch(query, @"\bno reply\b", RegexOptions.IgnoreCase);
+        }
+
+        public bool IsNullOrEmpty(string query) 
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

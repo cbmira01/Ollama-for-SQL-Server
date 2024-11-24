@@ -7,6 +7,5 @@ namespace OllamaSqlClr.DataAccess
     {
         DataTable ExecuteQuery(string query);
         void ExecuteNonQuery(string commandText);
-        SqlConnection GetConnection();
     }
 }

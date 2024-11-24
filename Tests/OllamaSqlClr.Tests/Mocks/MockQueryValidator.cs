@@ -27,5 +27,15 @@ namespace OllamaSqlClr.Tests.Mocks
                 return false;
             }
         }
+
+        public bool IsNullOrEmpty(string query)
+        {
+            if (query == "mockNoReply")
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

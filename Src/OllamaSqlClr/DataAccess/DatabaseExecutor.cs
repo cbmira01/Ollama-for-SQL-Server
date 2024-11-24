@@ -1,38 +1,37 @@
-﻿using System.Data;
+﻿using OllamaSqlClr.DataAccess;
 using System.Data.SqlClient;
+using System.Data;
+using System;
 
-namespace OllamaSqlClr.DataAccess
+public class DatabaseExecutor : IDatabaseExecutor
 {
-    public class DatabaseExecutor : IDatabaseExecutor
+    private readonly string _connectionString;
+
+    public DatabaseExecutor(string connectionString = "context connection=true")
     {
-        private readonly SqlConnection _connection;
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+    }
 
-        public DatabaseExecutor(string connectionString)
+    public DataTable ExecuteQuery(string query)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        using (var cmd = new SqlCommand(query, connection))
+        using (var adapter = new SqlDataAdapter(cmd))
         {
-            _connection = new SqlConnection(connectionString);
-            _connection.Open();
+            connection.Open();
+            var resultTable = new DataTable();
+            adapter.Fill(resultTable);
+            return resultTable;
         }
+    }
 
-        public DataTable ExecuteQuery(string query)
+    public void ExecuteNonQuery(string commandText)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        using (var cmd = new SqlCommand(commandText, connection))
         {
-            using (var cmd = new SqlCommand(query, _connection))
-            using (var adapter = new SqlDataAdapter(cmd))
-            {
-                var resultTable = new DataTable();
-                adapter.Fill(resultTable);
-                return resultTable;
-            }
+            connection.Open();
+            cmd.ExecuteNonQuery();
         }
-
-        public void ExecuteNonQuery(string commandText)
-        {
-            using (var cmd = new SqlCommand(commandText, _connection))
-            {
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        public SqlConnection GetConnection() => _connection; // Return the context connection
     }
 }
-

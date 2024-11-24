@@ -19,6 +19,11 @@
 --DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 --DECLARE @prompt NVARCHAR(MAX) = 'Find all entries in support_emails where sentiment is glad.';
 
---SELECT dbo.QueryFromPrompt(@modelName, @prompt);
---GO
+USE TEST;
+GO
+
+SELECT dbo.QueryFromPrompt();
+GO
+
+SELECT * FROM support_emails WHERE sentiment = 'glad';
 

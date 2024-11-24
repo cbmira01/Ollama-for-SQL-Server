@@ -142,7 +142,7 @@ namespace OllamaSqlClr.Services
         {
             try
             {
-                string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
+                string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad' ";
 
                 var isSafe = _queryValidator.IsSafeQuery(proposedQuery);
                 var isNoReply = _queryValidator.IsNoReply(proposedQuery);
