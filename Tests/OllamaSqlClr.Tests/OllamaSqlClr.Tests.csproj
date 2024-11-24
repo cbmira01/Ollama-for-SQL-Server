@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAccess\QueryFromPromptTests.cs" />
     <Compile Include="Mocks\MockDatabaseExecutor.cs" />
     <Compile Include="Mocks\MockOllamaApiClient.cs" />
     <Compile Include="Mocks\MockQueryLogger.cs" />
