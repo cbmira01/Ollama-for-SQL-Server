@@ -20,8 +20,8 @@ namespace OllamaSqlClr.Tests.Services
         private readonly Mock<IQueryValidator> _mockQueryValidator;
         private readonly Mock<IQueryLogger> _mockQueryLogger;
         private readonly Mock<IOllamaApiClient> _mockApiClient;
-        private readonly Mock<ISqlCommand> _mockSqlCommand;
-        private readonly Mock<ISqlQuery> _mockSqlQuery;
+        private readonly Mock<ISqlCommandHelper> _mockSqlCommandHelper;
+        private readonly Mock<ISqlQueryHelper> _mockSqlQueryHelper;
         private readonly OllamaService _ollamaService;
 
         public OllamaServiceTests()
@@ -30,8 +30,8 @@ namespace OllamaSqlClr.Tests.Services
             _mockDatabaseExecutor = new Mock<IDatabaseExecutor>();
             _mockQueryLogger = new Mock<IQueryLogger>();
             _mockApiClient = new Mock<IOllamaApiClient>();
-            _mockSqlCommand = new Mock<ISqlCommand>();
-            _mockSqlQuery = new Mock<ISqlQuery>();
+            _mockSqlCommandHelper = new Mock<ISqlCommandHelper>();
+            _mockSqlQueryHelper = new Mock<ISqlQueryHelper>();
             _mockQueryValidator = new Mock<IQueryValidator>();
 
             // Inject mocks into the service
@@ -40,8 +40,8 @@ namespace OllamaSqlClr.Tests.Services
                 sqlConnection: "mockConnection",
                 apiUrl: apiUrl,
                 queryLogger: _mockQueryLogger.Object,
-                sqlCommand: _mockSqlCommand.Object,
-                sqlQuery: _mockSqlQuery.Object,
+                sqlCommandHelper: _mockSqlCommandHelper.Object,
+                sqlQueryHelper: _mockSqlQueryHelper.Object,
                 queryValidator: _mockQueryValidator.Object,
                 apiClient: _mockApiClient.Object,
                 databaseExecutor: _mockDatabaseExecutor.Object);

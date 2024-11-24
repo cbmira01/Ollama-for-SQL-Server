@@ -5,11 +5,11 @@ using System.Data;
 
 namespace OllamaSqlClr.Tests.Mocks
 {
-    public class MockSqlCommand : ISqlCommand
+    public class MockSqlCommandHelper : ISqlCommandHelper
     {
         public readonly IDatabaseExecutor _dbExecutor;
 
-        public MockSqlCommand(IDatabaseExecutor dbExecutor)
+        public MockSqlCommandHelper(IDatabaseExecutor dbExecutor)
         {
             _dbExecutor = dbExecutor;
         }
@@ -19,17 +19,17 @@ namespace OllamaSqlClr.Tests.Mocks
             return $"Mock procedure created from \"{query}\" ";
         }
 
-        public DataTable RunTemporaryProcedure(string name)
+        public DataTable RunProcedure(string name)
         {
             // Return a mock DataTable
             var table = new DataTable();
-            table.Columns.Add("ColumnMockSqlCommand");
+            table.Columns.Add("ColumnMockSqlCommandHelper");
             table.Rows.Add("Mocked MockSqlCommand Row 1");
             table.Rows.Add("Mocked MockSqlCommand Row 2");
             return table;
         }
 
-        public (bool, string) DropTemporaryProcedure(string name)
+        public (bool, string) DropProcedure(string name)
         {
             return (true, $"Mocked procedure \"{name}\" was dropped successfully.");
         }

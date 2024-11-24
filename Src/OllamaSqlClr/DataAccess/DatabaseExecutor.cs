@@ -7,8 +7,7 @@ namespace OllamaSqlClr.DataAccess
     {
         private readonly SqlConnection _connection;
 
-        // TODO: This is wrong, connection string should come from either testing or TSQL configuration
-        public DatabaseExecutor(string connectionString = "context connection=true")
+        public DatabaseExecutor(string connectionString)
         {
             _connection = new SqlConnection(connectionString);
             _connection.Open();

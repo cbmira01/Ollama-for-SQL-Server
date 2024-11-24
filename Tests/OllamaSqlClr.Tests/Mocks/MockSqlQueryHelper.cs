@@ -5,11 +5,11 @@ using System.Data.SqlClient;
 
 namespace OllamaSqlClr.Tests.Mocks
 {
-    public class MockSqlQuery : ISqlQuery
+    public class MockSqlQueryHelper : ISqlQueryHelper
     {
         public readonly IDatabaseExecutor _dbExecutor;
 
-        public MockSqlQuery(IDatabaseExecutor dbExecutor)
+        public MockSqlQueryHelper(IDatabaseExecutor dbExecutor)
         {
             _dbExecutor = dbExecutor;
         }

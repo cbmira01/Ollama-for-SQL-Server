@@ -7,8 +7,6 @@ using JsonClrLibrary;
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using OllamaSqlClr.DataAccess;
-using SqlCommand = OllamaSqlClr.Helpers.SqlCommand;
-
 
 namespace OllamaSqlClr.Services
 {
@@ -20,8 +18,9 @@ namespace OllamaSqlClr.Services
         private readonly IQueryValidator _queryValidator;
         private readonly IQueryLogger _queryLogger;
         private readonly IOllamaApiClient _apiClient;
-        private readonly ISqlCommand _sqlCommand;
-        private readonly ISqlQuery _sqlQuery;
+        private readonly ISqlCommandHelper _sqlCommandHelper;
+        private readonly ISqlQueryHelper _sqlQueryHelper;
+        private readonly IDatabaseExecutor _databaseExecutor;
 
         public OllamaService(
             string sqlConnection,
@@ -30,22 +29,22 @@ namespace OllamaSqlClr.Services
             IQueryValidator queryValidator = null,
             IQueryLogger queryLogger = null,
             IOllamaApiClient apiClient = null,
-            ISqlCommand sqlCommand = null,
-            ISqlQuery sqlQuery = null,
+            ISqlCommandHelper sqlCommandHelper = null,
+            ISqlQueryHelper sqlQueryHelper = null,
             IDatabaseExecutor databaseExecutor = null)
         {
             _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
             _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
 
             // Initialize helpers
-            var executor = databaseExecutor ?? new DatabaseExecutor(_sqlConnection);
+            _databaseExecutor = databaseExecutor ?? new DatabaseExecutor(_sqlConnection);
 
             _queryValidator = queryValidator ?? new QueryValidator();
             _apiClient = apiClient ?? new OllamaApiClient(_apiUrl);
 
-            _queryLogger = queryLogger ?? new QueryLogger(databaseExecutor);
-            _sqlCommand = sqlCommand ?? new SqlCommand(databaseExecutor);
-            _sqlQuery = sqlQuery ?? new SqlQuery(databaseExecutor);
+            _queryLogger = queryLogger ?? new QueryLogger(_databaseExecutor);
+            _sqlCommandHelper = sqlCommandHelper ?? new SqlCommandHelper(_databaseExecutor);
+            _sqlQueryHelper = sqlQueryHelper ?? new SqlQueryHelper(_databaseExecutor);
         }
 
         public SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
@@ -148,13 +147,13 @@ namespace OllamaSqlClr.Services
                 var isSafe = _queryValidator.IsSafeQuery(proposedQuery);
                 var isNoReply = _queryValidator.IsNoReply(proposedQuery);
 
-                var procedureName = _sqlCommand.CreateProcedureFromQuery(proposedQuery);
-                var dataTable = _sqlCommand.RunTemporaryProcedure(procedureName);
+                var procedureName = _sqlCommandHelper.CreateProcedureFromQuery(proposedQuery);
+                var dataTable = _sqlCommandHelper.RunProcedure(procedureName);
                 var result = dataTable.ToString();
 
                 bool isSuccessful = false;
                 string message = string.Empty;
-                (isSuccessful, message) = _sqlCommand.DropTemporaryProcedure(procedureName);
+                (isSuccessful, message) = _sqlCommandHelper.DropProcedure(procedureName);
 
                 return new SqlString($"Data table: {result}; DROP: {isSuccessful}, {message}");
             }

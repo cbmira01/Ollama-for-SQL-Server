@@ -51,13 +51,13 @@
     <Compile Include="Helpers\IOllamaApiClient.cs" />
     <Compile Include="Helpers\IQueryLogger.cs" />
     <Compile Include="Helpers\IQueryValidator.cs" />
-    <Compile Include="Helpers\ISqlCommand.cs" />
-    <Compile Include="Helpers\ISqlQuery.cs" />
+    <Compile Include="Helpers\ISqlCommandHelper.cs" />
+    <Compile Include="Helpers\ISqlQueryHelper.cs" />
     <Compile Include="Helpers\OllamaApiClient.cs" />
     <Compile Include="Helpers\QueryLogger.cs" />
     <Compile Include="Helpers\QueryValidator.cs" />
-    <Compile Include="Helpers\SqlCommand.cs" />
-    <Compile Include="Helpers\SqlQuery.cs" />
+    <Compile Include="Helpers\SqlCommandHelper.cs" />
+    <Compile Include="Helpers\SqlQueryHelper.cs" />
     <Compile Include="Models\CompletionRow.cs" />
     <Compile Include="Models\ModelInformationRow.cs" />
     <Compile Include="Services\IOllamaService.cs" />

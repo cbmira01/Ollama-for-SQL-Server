@@ -2,7 +2,7 @@
 
 namespace OllamaSqlClr.Helpers
 {
-    public interface ISqlQuery
+    public interface ISqlQueryHelper
     {
         DataTable ExecuteProcedure(string name);
     }

@@ -77,8 +77,8 @@ namespace OllamaSqlClr.Tests
 
                 var mockDatabaseExecutor = new MockDatabaseExecutor();
                 var mockQueryLogger = new MockQueryLogger(mockDatabaseExecutor);
-                var mockSqlQuery = new MockSqlQuery(mockDatabaseExecutor);
-                var mockSqlCommand = new MockSqlCommand(mockDatabaseExecutor);
+                var mockSqlQueryHelper = new MockSqlQueryHelper(mockDatabaseExecutor);
+                var mockSqlCommandHelper = new MockSqlCommandHelper(mockDatabaseExecutor);
                 var mockQueryValidator = new MockQueryValidator();
 
                 // Create a mocked OllamaService
@@ -86,8 +86,8 @@ namespace OllamaSqlClr.Tests
                     sqlConnection: "mockConnection",
                     apiUrl: apiURL,
                     queryLogger: mockQueryLogger,
-                    sqlCommand: mockSqlCommand,
-                    sqlQuery: mockSqlQuery,
+                    sqlCommandHelper: mockSqlCommandHelper,
+                    sqlQueryHelper: mockSqlQueryHelper,
                     queryValidator: mockQueryValidator,
                     apiClient: apiClient,
                     databaseExecutor: mockDatabaseExecutor);
