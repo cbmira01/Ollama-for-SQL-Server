@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using Microsoft.SqlServer.Server;
 
+using JsonClrLibrary;
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
-using JsonClrLibrary;
-using System.Data.SqlClient;
-using SqlCommand = OllamaSqlClr.Helpers.SqlCommand;
 using OllamaSqlClr.DataAccess;
+using SqlCommand = OllamaSqlClr.Helpers.SqlCommand;
+
 
 namespace OllamaSqlClr.Services
 {
@@ -18,7 +17,7 @@ namespace OllamaSqlClr.Services
         private readonly string _sqlConnection;
         private readonly string _apiUrl;
 
-        private readonly IQueryValidator _validator;
+        private readonly IQueryValidator _queryValidator;
         private readonly IQueryLogger _queryLogger;
         private readonly IOllamaApiClient _apiClient;
         private readonly ISqlCommand _sqlCommand;
@@ -28,7 +27,7 @@ namespace OllamaSqlClr.Services
             string sqlConnection,
             string apiUrl,
 
-            IQueryValidator validator = null,
+            IQueryValidator queryValidator = null,
             IQueryLogger queryLogger = null,
             IOllamaApiClient apiClient = null,
             ISqlCommand sqlCommand = null,
@@ -41,7 +40,7 @@ namespace OllamaSqlClr.Services
             // Initialize helpers
             var executor = databaseExecutor ?? new DatabaseExecutor(_sqlConnection);
 
-            _validator = validator ?? new QueryValidator();
+            _queryValidator = queryValidator ?? new QueryValidator();
             _apiClient = apiClient ?? new OllamaApiClient(_apiUrl);
 
             _queryLogger = queryLogger ?? new QueryLogger(databaseExecutor);
@@ -145,9 +144,19 @@ namespace OllamaSqlClr.Services
             try
             {
                 string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad';";
-                var _ = proposedQuery;
 
-                return new SqlString ( "Success" );
+                var isSafe = _queryValidator.IsSafeQuery(proposedQuery);
+                var isNoReply = _queryValidator.IsNoReply(proposedQuery);
+
+                var procedureName = _sqlCommand.CreateProcedureFromQuery(proposedQuery);
+                var dataTable = _sqlCommand.RunTemporaryProcedure(procedureName);
+                var result = dataTable.ToString();
+
+                bool isSuccessful = false;
+                string message = string.Empty;
+                (isSuccessful, message) = _sqlCommand.DropTemporaryProcedure(procedureName);
+
+                return new SqlString($"Data table: {result}; DROP: {isSuccessful}, {message}");
             }
             catch (Exception ex)
             {

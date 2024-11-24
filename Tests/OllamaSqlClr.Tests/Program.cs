@@ -61,6 +61,7 @@ namespace OllamaSqlClr.Tests
 
         private static void WarmUp()
         {
+            Debug.WriteLine("");
             Debug.WriteLine("Starting warm-up...");
 
             try
@@ -87,7 +88,7 @@ namespace OllamaSqlClr.Tests
                     queryLogger: mockQueryLogger,
                     sqlCommand: mockSqlCommand,
                     sqlQuery: mockSqlQuery,
-                    validator: mockQueryValidator,
+                    queryValidator: mockQueryValidator,
                     apiClient: apiClient,
                     databaseExecutor: mockDatabaseExecutor);
 

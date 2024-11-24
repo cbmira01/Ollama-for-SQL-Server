@@ -42,7 +42,7 @@ namespace OllamaSqlClr.Tests.Services
                 queryLogger: _mockQueryLogger.Object,
                 sqlCommand: _mockSqlCommand.Object,
                 sqlQuery: _mockSqlQuery.Object,
-                validator: _mockQueryValidator.Object,
+                queryValidator: _mockQueryValidator.Object,
                 apiClient: _mockApiClient.Object,
                 databaseExecutor: _mockDatabaseExecutor.Object);
         }
