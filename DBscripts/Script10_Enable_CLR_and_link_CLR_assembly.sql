@@ -1,9 +1,11 @@
 
 -- Enable CLR, drop and re-create functions and assembly link, and run a short test.
 -- Must be done everytime the SQL CLR project is rebuilt.
--- These functions depend on the Ollama API service running on localhost.
+-- These functions depend on the Ollama API service running on 127.0.0.1.
 --
--- Be sure to modify @repositoryName as needed.
+-- Make sure a TEST database is available on your database server.
+-- Modify @repositoryName as needed for your assembly location.
+-- Modify @sqlConnection AND @APIuRL as needed for your environment.
 
 sp_configure 'clr enabled', 1;
 RECONFIGURE;
@@ -84,12 +86,26 @@ RETURNS TABLE
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
 GO
 
+-- QueryFromPrompt function in progress
 CREATE FUNCTION dbo.QueryFromPrompt(
-    @modelName NVARCHAR(MAX), 
-    @askPrompt NVARCHAR(MAX)
+    -- @modelName NVARCHAR(MAX), 
+    -- @askPrompt NVARCHAR(MAX)
 )
 RETURNS NVARCHAR(MAX)
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
+GO
+
+CREATE PROCEDURE dbo.ConfigureOllamaService
+    @sqlConnection NVARCHAR(MAX),
+    @apiUrl NVARCHAR(MAX)
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[ConfigureOllamaService];
+GO
+
+-- Configure the SQL CLR environment; alter as needed
+--     Required before any SQL/CLR calls
+DECLARE @sqlConnection NVARCHAR(50) = 'context connection=true';
+DECLARE @apiUrl NVARCHAR(50) = 'http://127.0.0.1:11434';
+EXEC [dbo].[ConfigureOllamaService] @sqlConnection, @apiUrl;
 GO
 
 -- List all user-defined assemblies and all CLR functions

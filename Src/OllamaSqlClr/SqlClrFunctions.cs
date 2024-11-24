@@ -10,6 +10,8 @@ namespace OllamaSqlClr
 {
     public static class SqlClrFunctions
     {
+        #region Ollama service instance construction 
+
         private static string _sqlConnection;
         private static string _apiUrl;
 
@@ -50,6 +52,15 @@ namespace OllamaSqlClr
         {
             _ollamaServiceInstanceLazy = new Lazy<IOllamaService>(() => mockService);
         }
+
+        // Allow the service instance to be configured from T-SQL
+        [SqlProcedure]
+        public static void ConfigureOllamaService(SqlString sqlConnection, SqlString apiUrl)
+        {
+            Configure(sqlConnection.Value, apiUrl.Value);
+        }
+
+        #endregion
 
         #region "Implemented SQL/CLR functions"
 
