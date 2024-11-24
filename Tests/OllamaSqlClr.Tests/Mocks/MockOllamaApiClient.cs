@@ -1,10 +1,25 @@
 ﻿using OllamaSqlClr.Helpers;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace OllamaSqlClr.Tests.Mocks
 {
     public class MockOllamaApiClient : IOllamaApiClient
     {
+        public readonly string _apiUrl;
+        private readonly string _apiGenerateUrl;
+        private readonly string _apiTagUrl;
+        private readonly int _timeout;
+
+        public MockOllamaApiClient(string apiUrl)
+        {
+            _apiUrl = apiUrl;
+            _apiGenerateUrl = $"{apiUrl}/api/generate";
+            _apiTagUrl = $"{apiUrl}/api/tags";
+            _timeout = 100000;
+            var _ = _timeout;
+        }
+
         public List<KeyValuePair<string, object>> GetModelResponseToPrompt(string prompt, string modelName)
         {
             return new List<KeyValuePair<string, object>>

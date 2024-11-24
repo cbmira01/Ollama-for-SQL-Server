@@ -222,10 +222,17 @@ namespace JsonClrLibrary
         public static List<int> GetIntegerArray(List<KeyValuePair<string, object>> data, string key)
         {
             var value = GetField(data, key);
+
             if (value is List<object> list)
             {
                 return list.ConvertAll(item => Convert.ToInt32(item));
             }
+
+            if (value is List<int> intList)
+            {
+                return intList;
+            }
+
             throw new InvalidCastException($"The value for '{key}' is not an array of integers.");
         }
 
