@@ -44,13 +44,13 @@ namespace JsonClrLibrary.Tests
                     try
                     {
                         Debug.WriteLine("");
-                        Debug.WriteLine($"Test {index}: {test.Method.Name} begins...");
+                        Debug.WriteLine($"    Test {index}: {test.Method.Name} begins...");
                         test.Invoke();
-                        Debug.WriteLine($"Test {index}: {test.Method.Name} PASSED");
+                        Debug.WriteLine($"    Test {index}: {test.Method.Name} PASSED");
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Test {index}: {test.Method.Name} failed: {ex.Message}");
+                        Debug.WriteLine($"    Test {index}: {test.Method.Name} failed: {ex.Message}");
                         allPassed = false;
                     }
 
@@ -73,7 +73,8 @@ namespace JsonClrLibrary.Tests
 
             private static void WarmUp()
             {
-                Debug.WriteLine("Starting warm-up...");
+                Debug.WriteLine("");
+                Debug.WriteLine("    Starting warm-up...");
 
                 try
                 {
@@ -81,11 +82,11 @@ namespace JsonClrLibrary.Tests
                     Assembly.Load("JsonClrLibrary"); // Load JSON support library
 
                     // Add any additional assemblies you expect to use
-                    Debug.WriteLine("Warm-up completed successfully.");
+                    Debug.WriteLine("    Warm-up completed successfully.");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Warm-up failed: {ex.Message}");
+                    Debug.WriteLine($"    Warm-up failed: {ex.Message}");
                 }
             }
 
@@ -93,19 +94,11 @@ namespace JsonClrLibrary.Tests
 
             private static void TestSimpleSerialization()
             {
-                //var data = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("Name", "Test"),
-                //    new KeyValuePair<string, object>("IsActive", true),
-                //    new KeyValuePair<string, object>("Count", 10)
-                //};
-
-                var data = new List<KeyValuePair<string, object>>
-                {
+                var data = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("Name", "Test"),
                     JsonBuilder.CreateField("IsActive", true),
                     JsonBuilder.CreateField("Count", 10)
-                };
+                );
 
                 string json = JsonHandler.Serialize(data);
 
@@ -118,20 +111,11 @@ namespace JsonClrLibrary.Tests
 
             private static void TestNestedSerialization()
             {
-                //var data = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("Parent", new List<KeyValuePair<string, object>>
-                //    {
-                //        new KeyValuePair<string, object>("Child", "Value")
-                //    })
-                //};
-
-                var data = new List<KeyValuePair<string, object>>
-                {
+                var data = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateObject("Parent",
                         JsonBuilder.CreateField("Child", "Value")
                     )
-                };
+                );
 
                 string json = JsonHandler.Serialize(data);
 
@@ -144,15 +128,9 @@ namespace JsonClrLibrary.Tests
 
             private static void TestDateRecognition()
             {
-                //var data = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("Timestamp", new DateTime(2024, 10, 27, 12, 0, 0))
-                //};
-
-                var data = new List<KeyValuePair<string, object>>
-                {
+                var data = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("Timestamp", new DateTime(2024, 10, 27, 12, 0, 0))
-                };
+                );
 
                 string json = JsonHandler.Serialize(data);
 
@@ -165,21 +143,12 @@ namespace JsonClrLibrary.Tests
 
             private static void TestOneLevelDuplicateTags()
             {
-                //var data = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("model", "nameofmodel"),
-                //    new KeyValuePair<string, object>("prompt", "Why is the sky blue?"),
-                //    new KeyValuePair<string, object>("stream", false),
-                //    new KeyValuePair<string, object>("model", "duplicateModel") // Intentional duplicate key
-                //};
-
-                var data = new List<KeyValuePair<string, object>>
-                {
+                var data = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("model", "nameofmodel"),
                     JsonBuilder.CreateField("prompt", "Why is the sky blue?"),
                     JsonBuilder.CreateField("stream", false),
                     JsonBuilder.CreateField("model", "duplicateModel") // Intentional duplicate key
-                };
+                );
 
                 try
                 {
@@ -194,21 +163,7 @@ namespace JsonClrLibrary.Tests
 
             private static void TestNestedDuplicateTags()
             {
-                //var nestedObject = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("nestedKey1", "value1"),
-                //    new KeyValuePair<string, object>("nestedKey1", "duplicateValue") // Intentional duplicate key within nested object
-                //};
-
-                //var data = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("model", "nameofmodel"),
-                //    new KeyValuePair<string, object>("prompt", "Why is the sky blue?"),
-                //    new KeyValuePair<string, object>("nestedObject", nestedObject) // Nested object with duplicate keys
-                //};
-
-                var data = new List<KeyValuePair<string, object>>
-                {
+                var data = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("model", "nameofmodel"),
                     JsonBuilder.CreateField("prompt", "Why is the sky blue?"),
                     JsonBuilder.CreateObject(
@@ -216,7 +171,7 @@ namespace JsonClrLibrary.Tests
                         JsonBuilder.CreateField("nestedKey1", "value1"),
                         JsonBuilder.CreateField("nestedKey1", "duplicateValue") // Intentional duplicate key within nested object
                     )
-                };
+                );
 
                 try
                 {
@@ -234,8 +189,7 @@ namespace JsonClrLibrary.Tests
                 List<int> context1 = new List<int>() { 1, 2, 3 };
                 List<int> context4 = null;
 
-                var data = new List<KeyValuePair<string, object>>
-                {
+                var data = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("model", "nameofmodel"),
                     JsonBuilder.CreateField("prompt", "Why is the sky blue?"),
                     JsonBuilder.CreateField("stream", false),
@@ -243,7 +197,7 @@ namespace JsonClrLibrary.Tests
                     JsonBuilder.CreateArray("context2", "one", "two", "three"),
                     JsonBuilder.CreateArray("context3", true, false, false),
                     JsonBuilder.CreateArray("context4", context4)
-                };
+                );
 
                 string json = JsonHandler.Serialize(data);
 
@@ -260,32 +214,7 @@ namespace JsonClrLibrary.Tests
                 string json = "{\"model\": \"zephyr\", \"created_at\": \"2024-10-29T19:43:45.7743388Z\", \"response\": \"The grass appears green...\", \"done\": true, \"done_reason\": \"stop\", \"context\": [28705, 13, 28789, 28766, 1838, 28766, 28767, 13, 7638, 349, 272, 10109, 5344, 28804, 26307, 1215, 15643, 28723, 13, 2, 28705, 13, 28789, 28766, 489, 11143, 28766, 28767, 13, 1014, 10109, 8045, 5344, 1096, 378, 24345, 680, 302, 272, 5344, 275, 26795, 28713, 302, 2061, 325, 28781, 28782, 28734, 28733, 28782, 28787, 28734, 23693, 300, 2612, 28731, 477, 272, 4376, 821, 378, 10612, 1816, 28723, 851, 20757, 349, 2651, 390, 484, 5638, 3126, 19530, 28725, 264, 18958, 466, 1419, 297, 9923, 369, 18156, 706, 298, 6603, 22950, 778, 3408, 1059, 8886, 28724, 448, 21537, 28723], \"total_duration\": 21070342000, \"load_duration\": 7924431300, \"prompt_eval_count\": 30, \"prompt_eval_duration\": 2666814000, \"eval_count\": 67, \"eval_duration\": 10474129000}";
                 var data = JsonHandler.Deserialize(json);
 
-                //var shouldBe = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("model", "zephyr"),
-                //    new KeyValuePair<string, object>("created_at", DateTime.Parse("2024-10-29T19:43:45.7743388Z")),
-                //    new KeyValuePair<string, object>("response", "The grass appears green..."),
-                //    new KeyValuePair<string, object>("done", true),
-                //    new KeyValuePair<string, object>("done_reason", "stop"),
-                //    new KeyValuePair<string, object>("context", new List<object>
-                //    {
-                //        28705, 13, 28789, 28766, 1838, 28766, 28767, 13, 7638, 349, 272, 10109, 5344, 28804, 26307, 1215,
-                //        15643, 28723, 13, 2, 28705, 13, 28789, 28766, 489, 11143, 28766, 28767, 13, 1014, 10109, 8045,
-                //        5344, 1096, 378, 24345, 680, 302, 272, 5344, 275, 26795, 28713, 302, 2061, 325, 28781, 28782,
-                //        28734, 28733, 28782, 28787, 28734, 23693, 300, 2612, 28731, 477, 272, 4376, 821, 378, 10612,
-                //        1816, 28723, 851, 20757, 349, 2651, 390, 484, 5638, 3126, 19530, 28725, 264, 18958, 466, 1419,
-                //        297, 9923, 369, 18156, 706, 298, 6603, 22950, 778, 3408, 1059, 8886, 28724, 448, 21537, 28723
-                //    }),
-                //    new KeyValuePair<string, object>("total_duration", 21070342000),
-                //    new KeyValuePair<string, object>("load_duration", 7924431300),
-                //    new KeyValuePair<string, object>("prompt_eval_count", 30),
-                //    new KeyValuePair<string, object>("prompt_eval_duration", 2666814000),
-                //    new KeyValuePair<string, object>("eval_count", 67),
-                //    new KeyValuePair<string, object>("eval_duration", 10474129000)
-                //};
-
-                var shouldBe = new List<KeyValuePair<string, object>>
-                {
+                var shouldBe = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("model", "zephyr"),
                     JsonBuilder.CreateField("created_at", DateTime.Parse("2024-10-29T19:43:45.7743388Z")),
                     JsonBuilder.CreateField("response", "The grass appears green..."),
@@ -305,7 +234,7 @@ namespace JsonClrLibrary.Tests
                     JsonBuilder.CreateField("prompt_eval_duration", 2666814000),
                     JsonBuilder.CreateField("eval_count", 67),
                     JsonBuilder.CreateField("eval_duration", 10474129000)
-                };
+                );
 
                 if (!JsonTestHelpers.DeepCompare(data, shouldBe, out string difference))
                 {
@@ -318,49 +247,7 @@ namespace JsonClrLibrary.Tests
                 string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";
                 var data = JsonHandler.Deserialize(json);
 
-                //var shouldBe = new List<KeyValuePair<string, object>>
-                //{
-                //    new KeyValuePair<string, object>("models", new List<object>
-                //    {
-                //        new List<KeyValuePair<string, object>>
-                //        {
-                //            new KeyValuePair<string, object>("name", "zephyr:latest"),
-                //            new KeyValuePair<string, object>("model", "zephyr:latest"),
-                //            new KeyValuePair<string, object>("modified_at", DateTime.Parse("2024-10-27T11:51:03.5321962-04:00")),
-                //            new KeyValuePair<string, object>("size", 4109854934L),
-                //            new KeyValuePair<string, object>("digest", "bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354"),
-                //            new KeyValuePair<string, object>("details", new List<KeyValuePair<string, object>>
-                //            {
-                //                new KeyValuePair<string, object>("parent_model", ""),
-                //                new KeyValuePair<string, object>("format", "gguf"),
-                //                new KeyValuePair<string, object>("family", "llama"),
-                //                new KeyValuePair<string, object>("families", new List<object> { "llama" }),
-                //                new KeyValuePair<string, object>("parameter_size", "7B"),
-                //                new KeyValuePair<string, object>("quantization_level", "Q4_0")
-                //            })
-                //        },
-                //        new List<KeyValuePair<string, object>>
-                //        {
-                //            new KeyValuePair<string, object>("name", "llama3.2:latest"),
-                //            new KeyValuePair<string, object>("model", "llama3.2:latest"),
-                //            new KeyValuePair<string, object>("modified_at", DateTime.Parse("2024-09-30T10:37:15.6276545-04:00")),
-                //            new KeyValuePair<string, object>("size", 2019393189L),
-                //            new KeyValuePair<string, object>("digest", "a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72"),
-                //            new KeyValuePair<string, object>("details", new List<KeyValuePair<string, object>>
-                //            {
-                //                new KeyValuePair<string, object>("parent_model", ""),
-                //                new KeyValuePair<string, object>("format", "gguf"),
-                //                new KeyValuePair<string, object>("family", "llama"),
-                //                new KeyValuePair<string, object>("families", new List<object> { "llama" }),
-                //                new KeyValuePair<string, object>("parameter_size", "3.2B"),
-                //                new KeyValuePair<string, object>("quantization_level", "Q4_K_M")
-                //            })
-                //        }
-                //    })
-                //};
-
-                var shouldBe = new List<KeyValuePair<string, object>>
-                {
+                var shouldBe = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("models", JsonBuilder.CreateArray(
                         // First model object
                         JsonBuilder.CreateAnonymousObject(
@@ -395,7 +282,7 @@ namespace JsonClrLibrary.Tests
                             )
                         )
                     ))
-                };
+                );
 
                 if (!JsonTestHelpers.DeepCompare(data, shouldBe, out string difference))
                 {
@@ -516,8 +403,7 @@ namespace JsonClrLibrary.Tests
                 string json = "{\"models\":[{\"name\":\"zephyr:latest\",\"model\":\"zephyr:latest\",\"modified_at\":\"2024-10-27T11:51:03.5321962-04:00\",\"size\":4109854934,\"digest\":\"bbe38b81adec6be8ff951d148864ed15a368aa2e8534a5092d444f184a56e354\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"7B\",\"quantization_level\":\"Q4_0\"}},{\"name\":\"llama3.2:latest\",\"model\":\"llama3.2:latest\",\"modified_at\":\"2024-09-30T10:37:15.6276545-04:00\",\"size\":2019393189,\"digest\":\"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",\"details\":{\"parent_model\":\"\",\"format\":\"gguf\",\"family\":\"llama\",\"families\":[\"llama\"],\"parameter_size\":\"3.2B\",\"quantization_level\":\"Q4_K_M\"}}]}";
                 var data = JsonHandler.Deserialize(json);
 
-                var shouldBeData = new List<KeyValuePair<string, object>>
-                {
+                var shouldBeData = JsonBuilder.CreateAnonymousObject(
                     JsonBuilder.CreateField("models", JsonBuilder.CreateArray(
                         // First model object
                         JsonBuilder.CreateAnonymousObject(
@@ -552,7 +438,7 @@ namespace JsonClrLibrary.Tests
                             )
                         )
                     ))
-                };
+                );
 
                 var shouldBeJson = JsonHandler.Serialize(shouldBeData);
 

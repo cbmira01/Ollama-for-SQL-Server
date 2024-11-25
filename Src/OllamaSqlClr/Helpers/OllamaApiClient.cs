@@ -33,13 +33,12 @@ namespace OllamaSqlClr.Helpers
             string modelName,
             List<int> context)
         {
-            var data = new List<KeyValuePair<string, object>>
-            {
+            var data = JsonBuilder.CreateAnonymousObject(
                 JsonBuilder.CreateField("model", modelName),
                 JsonBuilder.CreateField("prompt", prompt),
                 JsonBuilder.CreateField("stream", false),
                 JsonBuilder.CreateArray("context", context)
-            };
+            );
 
             string json = JsonHandler.Serialize(data);
 #if DEBUG
