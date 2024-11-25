@@ -49,26 +49,23 @@
   - Define parameters like `prompt` and `contextPrompt`.
   - Ensure functionality is fully testable.
   - Implement execution of arbitrary database queries via SQL/CLR.
+  - Would a database schema help the LLM? Can the LLM read structured (ie JSON) schema?
+  - How do I keep an LLM focused on producing valid SQL queries?
 
-- **OllamaSqlClr Features**:
-  - Add configuration and environment management support.
-
-### JsonClrLibrary Enhancements
-- Use `JsonBuilder.CreateAnonymousObject(...)` for creating new JSON objects.
+- **AskAllModels**
+  - What would the TVF fill-row schema look like?
+  - Would this query be too slow?
 
 ---
 
 ### Testing
 - Verify comprehensive test coverage for `JsonClrLibrary`.
-- Perform integration testing with both Ollama and SQL Server.
 
 ---
 
 ### Documentation
 - Document the JSON library usage and APIs.
-- Add detailed documentation for `OllamaSqlClr` SQL/CLR endpoints.
 - Explore "diagrams as code" to visualize system interactions.
-- Include references and credits for contributors and external libraries.
 
 ---
 
