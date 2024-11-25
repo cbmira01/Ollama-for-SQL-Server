@@ -7,53 +7,54 @@
 -- Modify @repositoryName as needed for your assembly location.
 -- Modify @sqlConnection AND @APIuRL as needed for your environment.
 
-sp_configure 'clr enabled', 1;
-RECONFIGURE;
+-- Use target database; enable CLR if needed; 
+	USE Test;
 GO
 
-SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
+	sp_configure 'clr enabled', 1;
+	RECONFIGURE;
+	SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
-USE Test;
+-- Drop all CLR functions and the CLR assembly
+BEGIN
+	IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
+		DROP FUNCTION dbo.CompletePrompt;
+
+	IF OBJECT_ID('dbo.CompleteMultiplePrompts', 'FT') IS NOT NULL
+		DROP FUNCTION dbo.CompleteMultiplePrompts;
+
+	IF OBJECT_ID('dbo.GetAvailableModels', 'FT') IS NOT NULL
+		DROP FUNCTION dbo.GetAvailableModels;
+
+	IF OBJECT_ID('dbo.QueryFromPrompt', 'FS') IS NOT NULL
+		DROP FUNCTION dbo.QueryFromPrompt;
+
+	-- Drop the CLR stored procedure
+	IF OBJECT_ID('dbo.ConfigureOllamaService', 'PC') IS NOT NULL
+		DROP PROCEDURE dbo.ConfigureOllamaService;
+
+	-- Drop the assembly only after all dependent objects are removed
+	IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
+		DROP ASSEMBLY OllamaSqlClr;
+END
 GO
 
--- Drop all CLR objects in the correct order
+-- Re-link to the most recently released CLR assembly
+-- Declare variables for repository and release name; alter as needed
+BEGIN
+	DECLARE @repositoryName NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+	DECLARE @releaseName NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
+	DECLARE @fullPath NVARCHAR(400) = @repositoryName + '\' + @releaseName;
 
--- Drop all CLR functions
-IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
-    DROP FUNCTION dbo.CompletePrompt;
-
-IF OBJECT_ID('dbo.CompleteMultiplePrompts', 'FT') IS NOT NULL
-    DROP FUNCTION dbo.CompleteMultiplePrompts;
-
-IF OBJECT_ID('dbo.GetAvailableModels', 'FT') IS NOT NULL
-    DROP FUNCTION dbo.GetAvailableModels;
-
-IF OBJECT_ID('dbo.QueryFromPrompt', 'FS') IS NOT NULL
-    DROP FUNCTION dbo.QueryFromPrompt;
-
--- Drop the CLR stored procedure
-IF OBJECT_ID('dbo.ConfigureOllamaService', 'PC') IS NOT NULL
-    DROP PROCEDURE dbo.ConfigureOllamaService;
+	-- Create the assembly link
+	CREATE ASSEMBLY OllamaSqlClr
+	FROM @fullPath
+	WITH PERMISSION_SET = UNSAFE;
+END
 GO
 
--- Drop the assembly only after all dependent objects are removed
-IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
-    DROP ASSEMBLY OllamaSqlClr;
-GO
-
--- Declare variables for repository and release name, alter as needed
-DECLARE @repositoryName NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
-DECLARE @releaseName NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
-DECLARE @fullPath NVARCHAR(400) = @repositoryName + '\' + @releaseName;
-
--- Create the assembly link
-CREATE ASSEMBLY OllamaSqlClr
-FROM @fullPath
-WITH PERMISSION_SET = UNSAFE;
-GO
-
--- Create the functions
+-- Create links for the CLR functions
 CREATE FUNCTION dbo.CompletePrompt(
     @modelName NVARCHAR(MAX), 
     @askPrompt NVARCHAR(MAX), 
@@ -101,19 +102,6 @@ CREATE FUNCTION dbo.QueryFromPrompt(
 )
 RETURNS NVARCHAR(MAX)
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
-GO
-
-CREATE PROCEDURE dbo.ConfigureOllamaService
-    @sqlConnection NVARCHAR(MAX),
-    @apiUrl NVARCHAR(MAX)
-AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[ConfigureOllamaService];
-GO
-
--- Configure the SQL CLR environment; alter as needed
---     Required before any SQL/CLR calls
-DECLARE @sqlConnection NVARCHAR(50) = 'context connection=true';
-DECLARE @apiUrl NVARCHAR(50) = 'http://127.0.0.1:11434';
-EXEC [dbo].[ConfigureOllamaService] @sqlConnection, @apiUrl;
 GO
 
 -- List all user-defined assemblies and all CLR functions

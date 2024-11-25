@@ -21,8 +21,14 @@ namespace OllamaSqlClr
         // Public property to access the lazy-initialized instance
         public static IOllamaService OllamaServiceInstance => _ollamaServiceInstanceLazy.Value;
 
-        // Method to configure SQL connection and API URL
         private static readonly object _configLock = new object();
+
+        static SqlClrFunctions()
+        {
+            // Default configuration for local setup
+            Configure("context connection=true", "http://127.0.0.1:11434");
+        }
+
         public static void Configure(string sqlConnection, string apiUrl)
         {
             lock (_configLock)
@@ -30,6 +36,24 @@ namespace OllamaSqlClr
                 _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
                 _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
             }
+        }
+
+        public static void SetMockOllamaServiceInstance(IOllamaService mockService)
+        {
+            // Allow overriding the lazy instance for tests
+            if (mockService == null)
+            {
+                throw new ArgumentNullException(nameof(mockService));
+            }
+            _ollamaServiceInstanceLazy = new Lazy<IOllamaService>(() => mockService);
+        }
+
+
+        // Use during unit testing
+        public static void ResetOllamaServiceConfiguration()
+        {
+            // Reset lazy instance to force re-initialization
+            _ollamaServiceInstanceLazy = CreateLazyInstance();
         }
 
         // Creates a new Lazy instance
@@ -47,19 +71,6 @@ namespace OllamaSqlClr
             });
         }
 
-        // Reset the lazy instance for testing
-        public static void SetMockOllamaServiceInstance(IOllamaService mockService)
-        {
-            _ollamaServiceInstanceLazy = new Lazy<IOllamaService>(() => mockService);
-        }
-
-        // Allow the service instance to be configured from T-SQL
-        [SqlProcedure]
-        public static void ConfigureOllamaService(SqlString sqlConnection, SqlString apiUrl)
-        {
-            Configure(sqlConnection.Value, apiUrl.Value);
-        }
-
         #endregion
 
         #region "Implemented SQL/CLR functions"
@@ -67,25 +78,54 @@ namespace OllamaSqlClr
         [SqlFunction(DataAccess = DataAccessKind.Read)]
         public static SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
-            return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+            try
+            {
+                return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error in CompletePrompt: ", ex);
+            }
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_CompleteMultiplePrompts")]
         public static IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions)
         {
-            return OllamaServiceInstance.CompleteMultiplePrompts(modelName, askPrompt, morePrompt, numCompletions);
+            try
+            {
+                return OllamaServiceInstance.CompleteMultiplePrompts(modelName, askPrompt, morePrompt, numCompletions);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error in CompleteMultiplePrompts: ", ex);
+            }
         }
 
         [SqlFunction(FillRowMethodName = "FillRow_GetAvailableModels")]
         public static IEnumerable GetAvailableModels()
         {
-            return OllamaServiceInstance.GetAvailableModels();
+            try
+            {
+                return OllamaServiceInstance.GetAvailableModels();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error in GetAvailableModels: ", ex);
+            }
         }
 
         [SqlFunction(DataAccess = DataAccessKind.Read)]
         public static SqlString QueryFromPrompt()
         {
-            return OllamaServiceInstance.QueryFromPrompt();
+            try
+            {
+                return OllamaServiceInstance.QueryFromPrompt();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error in QueryFromPrompt: ", ex);
+            }
+
         }
 
         #endregion 
