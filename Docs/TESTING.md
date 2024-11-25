@@ -1,4 +1,4 @@
-# Ollama Completions for SQL Server - TESTING
+# Ollama Completions for SQL Server - Testing
 
 ## Testing and Debugging
 
@@ -72,11 +72,11 @@ You can attach a debugger to the SQL Server process to debug the SQL/CLR functio
 
 When making changes:
 1. **Build and Test**:
-   - Build in `Debug` mode and ensure all tests pass.
+   - Build the solution in `Debug` configuration and ensure all tests pass.
 2. **Create a Release Build**:
-   - Build the solution in `Release` mode to generate the assembly.
+   - Build the solution in `Release` configuration to generate the assembly.
 3. **Redeploy Assembly**:
-   - Run `Script10` in SQL Server to update the assembly links.
+   - Run `Script10` in SQL Server to update the CLR function and assembly links.
 4. **Debug Remotely**:
    - Attach the debugger to SQL Server as described above.
 

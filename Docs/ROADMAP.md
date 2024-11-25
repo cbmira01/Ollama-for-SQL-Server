@@ -1,4 +1,4 @@
-# Ollama Completions for SQL Server - ROADMAP
+# Ollama Completions for SQL Server - Roadmap
 
 ## Planned Functions
 

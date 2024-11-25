@@ -1,4 +1,4 @@
-# Ollama Completions for SQL Server - USAGE
+# Ollama Completions for SQL Server - Usage
 
 ## Using the SQL/CLR functions
 

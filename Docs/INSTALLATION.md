@@ -1,4 +1,4 @@
-# Ollama Completions for SQL Server - INSTALLATION
+# Ollama Completions for SQL Server - Installation
 
 ## Installation
 
@@ -33,7 +33,7 @@ Install a database client for deployment scripts and queries. **SQL Server Manag
    - `ollama list`: List all hosted LLM models.
    - `ollama serve`: Start the API server.
 
-3. **Optional**: Use tools like **Postman** to interact with Ollama's API:
+3. **Optional**: Use a tool like **Postman** to interact with Ollama's API:
    - `GET` to `http://127.0.0.1:11434/api/tags`: Retrieve a list of models.
    - `POST` to `http://127.0.0.1:11434/api/generate`: Send prompts and receive completions.
 
@@ -47,19 +47,23 @@ Install a database client for deployment scripts and queries. **SQL Server Manag
 
 ```bash
 git clone https://calmiracle@dev.azure.com/calmiracle/Ollama-for-SQL-Server/_git/Ollama-for-SQL-Server
+```
+or
+```bash
 git clone https://github.com/cbmira01/Ollama-for-SQL-Server
 ```
 
 2. Open the project in Visual Studio
 
    - Build and run the test programs in Debug configuration.
+   - Run the test sute via the Test Explorer.
    - Build in Release configuration to create an assembly for SQL Server deployment.
 
 3. Deploy to SQL Server
 
-Use the provided SQL script, Script10, to:
+Use the provided SQL Server deployment script, Script10, to:
 
-   - Declare the SQL/CLR functions.
-   - Link the CLR assembly.
+   - Declare the SQL/CLR functions
+   - Link the CLR assembly
 
 Note: Ensure the deployment script points to your assembly release location.

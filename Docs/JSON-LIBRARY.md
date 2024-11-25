@@ -1,4 +1,4 @@
-# Ollama Completions for SQL Server - JSON for CLR 4
+# Ollama Completions for SQL Server - JSON Library
 
 This project integrates JSON functionality with SQL Server using CLR 4, enabling 
 JSON-based operations and completions in SQL Server. Due to CLR 4's lack of support 
@@ -71,7 +71,7 @@ Example Usage:
 ## Testing
 
 Comprehensive testing of the JSON Builder and JSON Handler is documented in TESTING.md. 
-This includes unit tests and integration tests to ensure the library handles all JSON-related 
+This includes unit and integration tests to ensure the library handles all JSON-related 
 operations reliably.
 
 ---
@@ -79,6 +79,16 @@ operations reliably.
 ## API Reference
 
 ### How to include JsonClrLibrary
+
+To include JSON support into your new SQL/CLR project, make a project reference to JsonClrLibrary.
+Then, in new classes that require JSON support, include this `using` stanza at the top:
+
+```
+using JsonClrLibrary;
+```
+
+JsonBuilder and JsonHandler classes and methods can then be found. An API reference follows, below.
+The solution unit and integration tests also have good examples of how to use JsonClrLibrary.
 
 ---
 

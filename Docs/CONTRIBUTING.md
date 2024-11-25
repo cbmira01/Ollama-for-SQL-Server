@@ -29,9 +29,3 @@ We welcome your contributions to improve `Ollama Completions for SQL Server`! He
 - Ensure code changes are accompanied by unit tests.
 - Follow the existing coding style and conventions.
 - Submit a pull request with a clear description of your changes.
-
-### Getting Started
-
-**Clone the repository**:
-   ```bash
-   git clone https://github.com/your-repo/Ollama-for-SQL-Server.git
