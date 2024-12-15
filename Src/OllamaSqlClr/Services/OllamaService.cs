@@ -138,30 +138,71 @@ namespace OllamaSqlClr.Services
             }
         }
 
-        public SqlString QueryFromPrompt()
+        #region "Query from prompt feature"
+
+        public IEnumerable QueryFromPrompt(SqlString modelName, SqlString prompt)
         {
+            /*
+             * TODO: roadmap for this function:
+             *
+             *      var schema = GetTableSchema(databaseName); // limit tables, memoize result
+             *      (isSchemaAccepted, context) = GiveSchemaToModel(modelname, schema)
+             *      var proposedQuery = GetProposedQuery(modelName, prompt, context)
+             *      var isValidQuery = ValidateProposedQuery(proposedQuery)
+             *      yield return RunProposedQuery(proposedQuery)
+             */
+
+            string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad'";
+            var resultList = new List<QueryFromPromptRow>();
+
             try
             {
-                string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad' ";
-
-                var isSafe = _queryValidator.IsSafeQuery(proposedQuery);
+                var isUnsafe = _queryValidator.IsUnsafe(proposedQuery);
                 var isNoReply = _queryValidator.IsNoReply(proposedQuery);
+                string jsonResult = "";
 
-                var procedureName = _sqlCommandHelper.CreateProcedureFromQuery(proposedQuery);
-                var dataTable = _sqlCommandHelper.RunProcedure(procedureName);
-                var result = dataTable.ToString();
+                if (isUnsafe || isNoReply)
+                {
+                    jsonResult = "{\"error\": \"Query was unsafe or 'no reply'\"}";
+                }
+                else
+                {
+                    string jsonQuery = $"SELECT * FROM ({proposedQuery}) AS Data FOR JSON AUTO";
+                    var dataTable = _databaseExecutor.ExecuteQuery(jsonQuery);
 
-                bool isSuccessful = false;
-                string message = string.Empty;
-                (isSuccessful, message) = _sqlCommandHelper.DropProcedure(procedureName);
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        jsonResult = dataTable.Rows[0][0].ToString();
+                    }
+                }
 
-                return new SqlString($"Data table: {result}; DROP: {isSuccessful}, {message}");
+                resultList.Add(new QueryFromPromptRow
+                {
+                    QueryGuid = Guid.NewGuid(),
+                    ModelName = modelName.Value,
+                    Prompt = prompt.Value,
+                    ProposedQuery = proposedQuery,
+                    Result = jsonResult,
+                    Timestamp = DateTime.UtcNow
+                });
             }
             catch (Exception ex)
             {
-                return new SqlString($"Exception error: {ex.Message}");
+                resultList.Add(new QueryFromPromptRow
+                {
+                    QueryGuid = Guid.NewGuid(),
+                    ModelName = modelName.Value,
+                    Prompt = prompt.Value,
+                    ProposedQuery = proposedQuery,
+                    Result = $"{{\"error\": \"{ex.Message}\"}}",
+                    Timestamp = DateTime.UtcNow
+                });
             }
+
+            return resultList;
         }
+
+        #endregion
 
     }
 }

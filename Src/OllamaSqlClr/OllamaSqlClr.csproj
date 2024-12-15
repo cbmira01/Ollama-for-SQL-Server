@@ -60,6 +60,7 @@
     <Compile Include="Helpers\SqlQueryHelper.cs" />
     <Compile Include="Models\CompletionRow.cs" />
     <Compile Include="Models\ModelInformationRow.cs" />
+    <Compile Include="Models\QueryFromPromptRow.cs" />
     <Compile Include="Services\IOllamaService.cs" />
     <Compile Include="Services\OllamaService.cs" />
     <Compile Include="SqlClrFunctions.cs" />

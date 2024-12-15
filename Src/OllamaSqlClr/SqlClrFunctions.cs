@@ -114,18 +114,22 @@ namespace OllamaSqlClr
             }
         }
 
-        [SqlFunction(DataAccess = DataAccessKind.Read)]
-        public static SqlString QueryFromPrompt()
+        [SqlFunction(
+            TableDefinition = "QueryGuid UNIQUEIDENTIFIER, ModelName NVARCHAR(MAX), ProposedQuery NVARCHAR(Max), Prompt NVARCHAR(MAX), Result NVARCHAR(MAX), Timestamp DATETIME",
+            FillRowMethodName = "FillRow_QueryFromPrompt",
+            DataAccess = DataAccessKind.Read
+         )]
+
+        public static IEnumerable QueryFromPrompt(SqlString modelname, SqlString prompt)
         {
             try
             {
-                return OllamaServiceInstance.QueryFromPrompt();
+                return OllamaServiceInstance.QueryFromPrompt(modelname, prompt);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Error in QueryFromPrompt: ", ex);
             }
-
         }
 
         #endregion 
@@ -172,8 +176,24 @@ namespace OllamaSqlClr
             digest = new SqlString(modelInfo.Digest);
         }
 
-        // TODO: QueryFromPrompt FillRow goes here, JSON document table
-        //      rows of: GUID, Timestamp, Prompt, ProposedQuery
+        public static void FillRow_QueryFromPrompt(
+            object obj,
+            out SqlGuid queryGuid,
+            out SqlString modelName,
+            out SqlString prompt,
+            out SqlString proposedQuery,
+            out SqlString result,
+            out SqlDateTime timestamp)
+        {
+            var data = (QueryFromPromptRow)obj;
+
+            queryGuid = new SqlGuid(data.QueryGuid);
+            modelName = new SqlString(data.ModelName);
+            prompt = new SqlString(data.Prompt);
+            proposedQuery = new SqlString(data.ProposedQuery);
+            result = new SqlString(data.Result);
+            timestamp = new SqlDateTime(data.Timestamp);
+        }
 
         #endregion
 

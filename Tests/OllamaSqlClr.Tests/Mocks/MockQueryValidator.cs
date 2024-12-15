@@ -4,9 +4,9 @@ namespace OllamaSqlClr.Tests.Mocks
 {
     public class MockQueryValidator : IQueryValidator
     {
-        public bool IsSafeQuery(string query)
+        public bool IsUnsafe(string query)
         {
-            if (query == "mockSafeQuery")
+            if (query == "mockUnsafeQuery")
             {
                 return true;
             }

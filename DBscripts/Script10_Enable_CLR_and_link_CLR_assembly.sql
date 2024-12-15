@@ -8,12 +8,12 @@
 -- Modify @sqlConnection AND @APIuRL as needed for your environment.
 
 -- Use target database; enable CLR if needed; 
-	USE Test;
+USE Test;
 GO
 
-	sp_configure 'clr enabled', 1;
-	RECONFIGURE;
-	SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
+sp_configure 'clr enabled', 1;
+RECONFIGURE;
+SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
 -- Drop all CLR functions and the CLR assembly
@@ -27,12 +27,8 @@ BEGIN
 	IF OBJECT_ID('dbo.GetAvailableModels', 'FT') IS NOT NULL
 		DROP FUNCTION dbo.GetAvailableModels;
 
-	IF OBJECT_ID('dbo.QueryFromPrompt', 'FS') IS NOT NULL
+	IF OBJECT_ID('dbo.QueryFromPrompt', 'FT') IS NOT NULL
 		DROP FUNCTION dbo.QueryFromPrompt;
-
-	-- Drop the CLR stored procedure
-	IF OBJECT_ID('dbo.ConfigureOllamaService', 'PC') IS NOT NULL
-		DROP PROCEDURE dbo.ConfigureOllamaService;
 
 	-- Drop the assembly only after all dependent objects are removed
 	IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
@@ -97,10 +93,18 @@ GO
 
 -- QueryFromPrompt function in progress
 CREATE FUNCTION dbo.QueryFromPrompt(
-    -- @modelName NVARCHAR(MAX), 
-    -- @askPrompt NVARCHAR(MAX)
+     @modelName NVARCHAR(MAX), 
+     @prompt NVARCHAR(MAX)
 )
-RETURNS NVARCHAR(MAX)
+RETURNS TABLE 
+(
+    [QueryGuid] UNIQUEIDENTIFIER,
+    [ModelName] NVARCHAR(MAX),
+    [Prompt] NVARCHAR(MAX),
+    [ProposedQuery] NVARCHAR(MAX),
+    [Result] NVARCHAR(MAX),
+    [Timestamp] DATETIME
+)
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
 GO
 

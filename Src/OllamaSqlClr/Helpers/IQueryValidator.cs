@@ -2,7 +2,7 @@
 {
     public interface IQueryValidator
     {
-        bool IsSafeQuery(string query);
+        bool IsUnsafe(string query);
 
         bool IsNoReply(string query);
 

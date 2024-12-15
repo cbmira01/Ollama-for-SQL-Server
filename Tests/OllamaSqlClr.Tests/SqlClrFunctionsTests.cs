@@ -128,17 +128,57 @@ namespace OllamaSqlClr.Tests
         public void Test06_QueryFromPrompt_ReturnsExpectedResponse()
         {
             // Arrange
-            var expectedResponse = new SqlString("SELECT * FROM Weather WHERE Condition = 'Rain';");
+            var modelName = new SqlString("llama3.2");
+            var prompt = new SqlString("What emails have a glad sentiment?");
 
+            // Expected values
+            var expectedId = Guid.NewGuid();
+            var expectedTimestamp = DateTime.UtcNow;
+            var expectedProposedQuery = "SELECT * FROM support_emails WHERE sentiment LIKE '%glad%';";
+            var expectedJsonResult = "[{\"Email\": \"user1@example.com\", \"Sentiment\": \"glad\"}]";
+
+            var expectedRow = new QueryFromPromptRow
+            {
+                QueryGuid = expectedId,
+                ModelName = modelName.Value,
+                Prompt = prompt.Value,
+                ProposedQuery = expectedProposedQuery,
+                Result = expectedJsonResult,
+                Timestamp = expectedTimestamp
+            };
+
+            var expectedResult = new List<QueryFromPromptRow> { expectedRow };
+
+            // Mock the service to return the expected result
             _mockOllamaService
-                .Setup(service => service.QueryFromPrompt())
-                .Returns(expectedResponse);
+                .Setup(service => service.QueryFromPrompt(modelName, prompt))
+                .Returns(expectedResult);
 
             // Act
-            var result = SqlClrFunctions.QueryFromPrompt();
+            var result = SqlClrFunctions.QueryFromPrompt(modelName, prompt);
 
             // Assert
-            Assert.Equal(expectedResponse, result);
+            var resultEnumerator = result.GetEnumerator();
+            var expectedEnumerator = expectedResult.GetEnumerator();
+
+            // Compare each row in the result
+            while (resultEnumerator.MoveNext() && expectedEnumerator.MoveNext())
+            {
+                var actualRow = resultEnumerator.Current as QueryFromPromptRow;
+                var expectedRowItem = expectedEnumerator.Current;
+
+                Assert.NotNull(actualRow);
+                Assert.Equal(expectedRowItem.QueryGuid, actualRow.QueryGuid);
+                Assert.Equal(expectedRowItem.ModelName, actualRow.ModelName);
+                Assert.Equal(expectedRowItem.Prompt, actualRow.Prompt);
+                Assert.Equal(expectedRowItem.ProposedQuery, actualRow.ProposedQuery);
+                Assert.Equal(expectedRowItem.Result, actualRow.Result);
+                Assert.Equal(expectedRowItem.Timestamp, actualRow.Timestamp);
+            }
+
+            // Ensure both enumerators have been fully consumed
+            Assert.False(resultEnumerator.MoveNext());
+            Assert.False(expectedEnumerator.MoveNext());
         }
     }
 }
