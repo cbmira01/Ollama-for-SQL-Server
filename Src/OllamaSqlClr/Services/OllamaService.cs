@@ -149,7 +149,7 @@ namespace OllamaSqlClr.Services
              *      (isSchemaAccepted, context) = GiveSchemaToModel(modelname, schema)
              *      var proposedQuery = GetProposedQuery(modelName, prompt, context)
              *      var isValidQuery = ValidateProposedQuery(proposedQuery)
-             *      yield return RunProposedQuery(proposedQuery)
+             *      return RunProposedQuery(proposedQuery)
              */
 
             string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad'";
