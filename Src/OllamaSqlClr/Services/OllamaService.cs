@@ -7,6 +7,7 @@ using JsonClrLibrary;
 using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using OllamaSqlClr.DataAccess;
+using System.Data;
 
 namespace OllamaSqlClr.Services
 {
@@ -145,12 +146,15 @@ namespace OllamaSqlClr.Services
             /*
              * TODO: roadmap for this function:
              *
-             *      var schema = GetTableSchema(databaseName); // limit tables, memoize result
-             *      (isSchemaAccepted, context) = GiveSchemaToModel(modelname, schema)
+             *      var schemaJson = GetTableSchema(databaseName)
+             *      (isSchemaAccepted, context) = GiveSchemaToModel(modelname, schemaJson)
              *      var proposedQuery = GetProposedQuery(modelName, prompt, context)
              *      var isValidQuery = ValidateProposedQuery(proposedQuery)
-             *      return RunProposedQuery(proposedQuery)
+             *      var result = RunProposedQuery(proposedQuery)
+             *      return result
              */
+
+            var schemaJson = GetTableSchemaJson();
 
             string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad'";
             var resultList = new List<QueryFromPromptRow>();
@@ -181,7 +185,10 @@ namespace OllamaSqlClr.Services
                     QueryGuid = Guid.NewGuid(),
                     ModelName = modelName.Value,
                     Prompt = prompt.Value,
-                    ProposedQuery = proposedQuery,
+
+                    // ProposedQuery = proposedQuery,
+                    ProposedQuery = schemaJson,
+
                     Result = jsonResult,
                     Timestamp = DateTime.UtcNow
                 });
@@ -193,13 +200,35 @@ namespace OllamaSqlClr.Services
                     QueryGuid = Guid.NewGuid(),
                     ModelName = modelName.Value,
                     Prompt = prompt.Value,
-                    ProposedQuery = proposedQuery,
+
+                    // ProposedQuery = proposedQuery,
+                    ProposedQuery = schemaJson,
+
                     Result = $"{{\"error\": \"{ex.Message}\"}}",
                     Timestamp = DateTime.UtcNow
                 });
             }
 
             return resultList;
+        }
+
+        private string GetTableSchemaJson()
+        {
+            string schemaQuery = @"
+                SELECT TOP 1 SchemaJson 
+                FROM DB_Schema
+                ORDER BY ID DESC;
+            ";
+
+            DataTable resultTable = _databaseExecutor.ExecuteQuery(schemaQuery);
+
+            if (resultTable.Rows.Count > 0)
+            {
+                var schemaJson = resultTable.Rows[0]["SchemaJson"].ToString();
+                return schemaJson;
+            }
+
+            return string.Empty;
         }
 
         #endregion
