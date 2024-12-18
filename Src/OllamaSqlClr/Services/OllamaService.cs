@@ -212,8 +212,19 @@ namespace OllamaSqlClr.Services
             return resultList;
         }
 
+        private string _cachedSchemaJson;
+        private DateTime _lastSchemaUpdate;
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10); // Adjust as needed
+
         private string GetTableSchemaJson()
         {
+            // Check if the cache is still valid
+            if (_cachedSchemaJson != null && DateTime.UtcNow - _lastSchemaUpdate < _cacheExpiration)
+            {
+                return _cachedSchemaJson;
+            }
+
+            // Query the database for the schema
             string schemaQuery = @"
                 SELECT TOP 1 SchemaJson 
                 FROM DB_Schema
@@ -224,11 +235,14 @@ namespace OllamaSqlClr.Services
 
             if (resultTable.Rows.Count > 0)
             {
-                var schemaJson = resultTable.Rows[0]["SchemaJson"].ToString();
-                return schemaJson;
+                _cachedSchemaJson = resultTable.Rows[0]["SchemaJson"].ToString();
+                _lastSchemaUpdate = DateTime.UtcNow; // Update the cache timestamp
+                return _cachedSchemaJson;
             }
 
-            return string.Empty;
+            // If no schema is found, clear the cache
+            _cachedSchemaJson = string.Empty;
+            return _cachedSchemaJson;
         }
 
         #endregion
