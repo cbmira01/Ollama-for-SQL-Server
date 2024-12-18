@@ -17,10 +17,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", "{1D6C3F81-3588-492A-979A-D3FCCA8FA15E}"
 	ProjectSection(SolutionItems) = preProject
 		DBscripts\Script00_SQLCLR_utilities.sql = DBscripts\Script00_SQLCLR_utilities.sql
-		DBscripts\Script10_Enable_CLR_and_link_CLR_assembly.sql = DBscripts\Script10_Enable_CLR_and_link_CLR_assembly.sql
-		DBscripts\Script20_Sample_function_calls.sql = DBscripts\Script20_Sample_function_calls.sql
-		DBscripts\Script30_Sentiment_analysis.sql = DBscripts\Script30_Sentiment_analysis.sql
-		DBscripts\Script40_Query_from_prompt_example.sql = DBscripts\Script40_Query_from_prompt_example.sql
+		DBscripts\Script10_Recreate_TEST_database_and_trusted_assemblies.sql = DBscripts\Script10_Recreate_TEST_database_and_trusted_assemblies.sql
+		DBscripts\Script20_Recreate_sample_tables_and_schema.sql = DBscripts\Script20_Recreate_sample_tables_and_schema.sql
+		DBscripts\Script30_Relink_to_CLR_functions.sql = DBscripts\Script30_Relink_to_CLR_functions.sql
+		DBscripts\Script40_Sample_function_calls.sql = DBscripts\Script40_Sample_function_calls.sql
+		DBscripts\Script50_Sentiment_analysis.sql = DBscripts\Script50_Sentiment_analysis.sql
+		DBscripts\Script60_Query_from_prompt_example.sql = DBscripts\Script60_Query_from_prompt_example.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonClrLibrary", "Src\JsonClrLibrary\JsonClrLibrary.csproj", "{09C49120-5019-4B68-A16D-E44EA8F2B521}"
@@ -36,8 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Docs\CONTRIBUTING.md = Docs\CONTRIBUTING.md
 		Docs\INSTALLATION.md = Docs\INSTALLATION.md
 		Docs\JSON-LIBRARY.md = Docs\JSON-LIBRARY.md
-		Docs\README.md = Docs\README.md
 		Docs\ROADMAP.md = Docs\ROADMAP.md
+		Docs\SCRIPTS.md = Docs\SCRIPTS.md
 		Docs\TESTING.md = Docs\TESTING.md
 		Docs\USAGE.md = Docs\USAGE.md
 		Docs\WORKS-CONSULTED.md = Docs\WORKS-CONSULTED.md
