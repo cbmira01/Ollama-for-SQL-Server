@@ -1,11 +1,20 @@
 
--- Demonstration of LLM completion in SQL Server
-USE Test;
+
+/**
+    Demonstrations of LLM completions in SQL Server
+
+    Make sure your local Ollama API server is running.
+**/
+
+
+USE [TEST];
 GO
 
--- Example of calling CompletePrompt to get completions as projections:
+-----------------------------------------------------------
+-- Call 'CompletePrompt' to get completions as projections
+-----------------------------------------------------------
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
-DECLARE @ask NVARCHAR(MAX) = 'Replying only ''happy'' or ''not happy'', is the sentiment generally happy?';
+DECLARE @ask NVARCHAR(MAX) = 'Replying only on the words ''happy'' or ''not happy'', describe this sentiment: ';
 
 SELECT     
     dbo.CompletePrompt(@modelName, @ask, Sentence) AS Response,
@@ -25,7 +34,12 @@ FROM
     ) AS Sentences(Sentence);
 GO
 
--- Example of calling CompleteMultiplePrompts to get completions in a table:
+
+------------------------------------------------------------------
+-- Call 'CompleteMultiplePrompts' to get completions in a table
+
+--      note: this function demonstrates context linkage
+------------------------------------------------------------------
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @numCompletions INT = 10;
 
@@ -37,7 +51,10 @@ FROM dbo.CompleteMultiplePrompts(
     @numCompletions);
 GO
 
+
+-------------------------------------------------------
 -- Discover all the models currently hosted on Ollama
+-------------------------------------------------------
 SELECT *
 FROM dbo.GetAvailableModels()
 GO
