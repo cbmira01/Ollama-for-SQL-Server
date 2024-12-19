@@ -16,7 +16,7 @@ DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ol
 USE [master];
 
 ----------------------------------------------
--- Drop and recreate the TEST database
+-- Recreate the TEST database
 ----------------------------------------------
 IF EXISTS (SELECT name FROM sys.databases WHERE name = 'TEST')
 BEGIN

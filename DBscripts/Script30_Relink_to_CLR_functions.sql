@@ -9,20 +9,22 @@
     - dump a list of all user-defined assemblies all CLR functions
     - run a short query to the Ollama API server
 
-    This script must be run everytime the SQL CLR project is rebuilt.
-    These functions depend on the local Ollama API service available.
+    This script must be run every time the SQL/CLR project is rebuilt.
 
-    Make sure a TEST database is available on your database server, with
-    permissions for CLR integration. This is accomplished in Script10.
+    These functions depend on the local Ollama API service being available...
+        make sure your local Ollama API server is running.
+
+    Use Script10 to ensure that a TEST database is available on your database 
+        server with permissions for CLR integration.
 
     Use Script20 to populate the TEST database with demonstration data.
 
     Make sure the @RepositoryPath symbol is set to your local repository location.
 
     After running this script, take a look at the demonstration scripts:
-    - Script40: Sample function calls
+    - Script40: Various sample function calls
     - Script50: A study of scored sentiment analysis
-    - Script60: A test of QueryFromPrompt (in progress)
+    - Script60: A test of 'QueryFromPrompt' (in progress)
 **/
 
 DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
@@ -145,7 +147,7 @@ JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
 GO
 
 ----------------------------------------------------
--- Example of calling the CompletePrompt function
+-- Sanity check: Call the 'CompletePrompt' function
 ----------------------------------------------------
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @ask NVARCHAR(MAX) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
