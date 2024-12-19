@@ -27,7 +27,7 @@
     - Script60: A test of 'QueryFromPrompt' (in progress)
 **/
 
-DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
 
 ----------------------------------------------
 -- Use the target database with CLR enabled 
@@ -59,8 +59,8 @@ END
 -- Relink to the most recently released CLR assembly
 ------------------------------------------------------
 BEGIN
-	DECLARE @ReleaseName NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
-	DECLARE @fullPath NVARCHAR(MAX) = @RepositoryPath + '\' + @ReleaseName;
+	DECLARE @ReleaseName NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
+	DECLARE @fullPath NVARCHAR(200) = @RepositoryPath + '\' + @ReleaseName;
 
 	-- Create the assembly link
 	CREATE ASSEMBLY OllamaSqlClr
@@ -149,8 +149,8 @@ GO
 ----------------------------------------------------
 -- Sanity check: Call the 'CompletePrompt' function
 ----------------------------------------------------
-DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
-DECLARE @ask NVARCHAR(MAX) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
+DECLARE @modelName NVARCHAR(200) = 'llama3.2';
+DECLARE @ask NVARCHAR(200) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
 
 SELECT dbo.CompletePrompt(@modelName, @ask, N'Tell me in forty words or less!');
 GO

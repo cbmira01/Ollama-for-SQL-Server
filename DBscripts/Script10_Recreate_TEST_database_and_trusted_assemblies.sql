@@ -11,7 +11,7 @@
     After this script, run Script20 to recreate the demonstration tables.
 **/
 
-DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
 
 USE [master];
 
@@ -27,7 +27,6 @@ END
 
 CREATE DATABASE [TEST];
 ALTER DATABASE [TEST] SET TRUSTWORTHY ON;
-GO
 
 ------------------------------------------------------------------------
 -- Enable CLR integration, disable strict security for UNSAFE assemblies
@@ -43,7 +42,6 @@ RECONFIGURE;
 
 EXEC sp_configure 'show advanced options', 0;
 RECONFIGURE;
-GO
 
 ----------------------------------------------
 -- Delete this project's trusted assemblies
@@ -73,8 +71,8 @@ END
 ----------------------------------------------
 -- Define trusted assemblies for this project
 ----------------------------------------------
-DECLARE @OllamaSqlClrRelease NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
-DECLARE @JsonClrLibraryRelease NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\JsonClrLibrary.dll';
+DECLARE @OllamaSqlClrRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
+DECLARE @JsonClrLibraryRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\JsonClrLibrary.dll';
 
 DECLARE @OllamaSqlClrAssemblyPath NVARCHAR(MAX) = @RepositoryPath + '\' + @OllamaSqlClrRelease;
 DECLARE @JsonClrLibraryAssemblyPath NVARCHAR(MAX) = @RepositoryPath + '\' + @JsonClrLibraryRelease;
@@ -115,5 +113,3 @@ EXEC sys.sp_add_trusted_assembly @hash = @AssemblyHash, @description = N'JsonClr
 
 -- Verify the assembly is now trusted
 SELECT * FROM sys.trusted_assemblies;
-
-

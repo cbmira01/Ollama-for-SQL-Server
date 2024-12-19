@@ -53,7 +53,7 @@ GO
 
 
 -------------------------------------------------------
--- Discover all the models currently hosted on Ollama
+-- Discover all models currently hosted on Ollama
 -------------------------------------------------------
 SELECT *
 FROM dbo.GetAvailableModels()

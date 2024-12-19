@@ -49,6 +49,7 @@ INSERT INTO support_emails (email_content, sentiment, sentiment_level) VALUES ('
 INSERT INTO support_emails (email_content, sentiment, sentiment_level) VALUES ('My order arrived promptly. Appreciate the efficient service.', 'glad', 3);
 GO
 
+PRINT 'Support emails created'
 
 ----------------------------------------------------------
 -- Recreate tables used to demonstrate 'QueryFromPrompt'
@@ -131,6 +132,7 @@ INSERT INTO Sales (CustomerID, ItemID, SaleDate, Quantity, TotalPrice) VALUES
 (5, 4, '2024-12-10 18:05:00', 1, 199.99);
 GO
 
+PRINT 'Customer sales data created'
 
 -----------------------------------------------------------------------------
 -- Recreate the schema table (required for 'QueryFromPrompt')
@@ -192,3 +194,5 @@ SELECT TOP 1 SchemaJson
 FROM DB_Schema
 ORDER BY ID DESC;
 GO
+
+PRINT 'Database schema created'
