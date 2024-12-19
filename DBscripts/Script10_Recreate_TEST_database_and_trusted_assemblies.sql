@@ -1,5 +1,18 @@
 
 
+/**
+    This script will:
+        - drop and recreate the TEST database
+        - enable CLR integration for UNSAFE assemblies
+        - drop and recreate trusted assemblies for the Ollama Completions for SQL Server project
+
+    Make sure the @RepositoryPath symbol is set to your local repository location.
+
+    After this script, run Script20 to recreate the demonstration tables.
+**/
+
+DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+
 USE [master];
 
 ----------------------------------------------
@@ -60,7 +73,6 @@ END
 ----------------------------------------------
 -- Define trusted assemblies for this project
 ----------------------------------------------
-DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
 DECLARE @OllamaSqlClrRelease NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
 DECLARE @JsonClrLibraryRelease NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\JsonClrLibrary.dll';
 
@@ -104,34 +116,4 @@ EXEC sys.sp_add_trusted_assembly @hash = @AssemblyHash, @description = N'JsonClr
 -- Verify the assembly is now trusted
 SELECT * FROM sys.trusted_assemblies;
 
---------------------------------
 
--- Below is a cleanup script that removes all entries from sys.trusted_assemblies 
--- by iterating through each trusted assembly and calling sp_drop_trusted_assembly.
---
--- Ensure you have the appropriate permissions to run sp_drop_trusted_assembly.
--- This script removes all trusted assemblies, so use it with caution.
--- 
-
---DECLARE @hash VARBINARY(64);
-
---DECLARE hash_cursor CURSOR LOCAL FORWARD_ONLY READ_ONLY FOR
---SELECT [hash]
---FROM sys.trusted_assemblies;
-
---OPEN hash_cursor;
---FETCH NEXT FROM hash_cursor INTO @hash;
-
---WHILE @@FETCH_STATUS = 0
---BEGIN
---    EXEC sys.sp_drop_trusted_assembly @hash = @hash;
---    FETCH NEXT FROM hash_cursor INTO @hash;
---END
-
---CLOSE hash_cursor;
---DEALLOCATE hash_cursor;
-
----- Verify all trusted assemblies have been removed
---SELECT * FROM sys.trusted_assemblies;
-
---------------------------------

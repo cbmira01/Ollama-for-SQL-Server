@@ -1,22 +1,40 @@
 
--- Enable CLR, drop and re-create functions and assembly link, and run a short test.
--- Must be done everytime the SQL CLR project is rebuilt.
--- These functions depend on the Ollama API service running on 127.0.0.1.
---
--- Make sure a TEST database is available on your database server.
--- Modify @repositoryName as needed for your assembly location.
--- Modify @sqlConnection AND @APIuRL as needed for your environment.
 
--- Use target database; enable CLR if needed; 
-USE Test;
-GO
+/**
+    
+    This script will:
+    - drop all CLR functions and the existing CLR assembly reference
+    - recreate the link to the most currently released CLR assembly
+    - recreate links to the CLR functions
+    - dump a list of all user-defined assemblies all CLR functions
+    - run a short query to the Ollama API server
 
-sp_configure 'clr enabled', 1;
-RECONFIGURE;
-SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
-GO
+    This script must be run everytime the SQL CLR project is rebuilt.
+    These functions depend on the local Ollama API service available.
 
+    Make sure a TEST database is available on your database server, with
+    permissions for CLR integration. This is accomplished in Script10.
+
+    Use Script20 to populate the TEST database with demonstration data.
+
+    Make sure the @RepositoryPath symbol is set to your local repository location.
+
+    After running this script, take a look at the demonstration scripts:
+    - Script40: Sample function calls
+    - Script50: A study of scored sentiment analysis
+    - Script60: A test of QueryFromPrompt (in progress)
+**/
+
+DECLARE @RepositoryPath NVARCHAR(MAX) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+
+----------------------------------------------
+-- Use the target database with CLR enabled 
+----------------------------------------------
+USE [TEST];
+
+----------------------------------------------
 -- Drop all CLR functions and the CLR assembly
+----------------------------------------------
 BEGIN
 	IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
 		DROP FUNCTION dbo.CompletePrompt;
@@ -34,14 +52,13 @@ BEGIN
 	IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
 		DROP ASSEMBLY OllamaSqlClr;
 END
-GO
 
--- Re-link to the most recently released CLR assembly
--- Declare variables for repository and release name; alter as needed
+------------------------------------------------------
+-- Relink to the most recently released CLR assembly
+------------------------------------------------------
 BEGIN
-	DECLARE @repositoryName NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
-	DECLARE @releaseName NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
-	DECLARE @fullPath NVARCHAR(400) = @repositoryName + '\' + @releaseName;
+	DECLARE @ReleaseName NVARCHAR(MAX) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
+	DECLARE @fullPath NVARCHAR(MAX) = @RepositoryPath + '\' + @ReleaseName;
 
 	-- Create the assembly link
 	CREATE ASSEMBLY OllamaSqlClr
@@ -50,7 +67,9 @@ BEGIN
 END
 GO
 
--- Create links for the CLR functions
+----------------------------------------------
+-- Create CLR functions links
+----------------------------------------------
 CREATE FUNCTION dbo.CompletePrompt(
     @modelName NVARCHAR(MAX), 
     @askPrompt NVARCHAR(MAX), 
@@ -91,7 +110,6 @@ RETURNS TABLE
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[GetAvailableModels]
 GO
 
--- QueryFromPrompt function in progress
 CREATE FUNCTION dbo.QueryFromPrompt(
      @modelName NVARCHAR(MAX), 
      @prompt NVARCHAR(MAX)
@@ -108,69 +126,10 @@ RETURNS TABLE
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
 GO
 
--- Memoize the database schema
-IF OBJECT_ID('dbo.DB_Schema', 'U') IS NOT NULL
-    DROP TABLE dbo.DB_Schema;
-GO
-
-CREATE TABLE DB_Schema (
-    ID INT PRIMARY KEY IDENTITY(1,1), 
-    SchemaJson NVARCHAR(MAX)
-);
-GO
-
-INSERT INTO DB_Schema (SchemaJson)
-SELECT 
-    (
-        SELECT 
-            t.TABLE_NAME AS name,
-            (
-                SELECT 
-                    c.COLUMN_NAME AS name,
-                    c.DATA_TYPE AS type,
-                    c.CHARACTER_MAXIMUM_LENGTH AS maxLength,
-                    CASE 
-                        WHEN pk.COLUMN_NAME IS NOT NULL THEN 'true' 
-                        ELSE 'false' 
-                    END AS primaryKey
-                FROM 
-                    INFORMATION_SCHEMA.COLUMNS c
-                LEFT JOIN 
-                    (
-                        SELECT 
-                            cu.TABLE_NAME, cu.COLUMN_NAME
-                        FROM 
-                            INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
-                        JOIN 
-                            INFORMATION_SCHEMA.KEY_COLUMN_USAGE cu
-                        ON 
-                            tc.CONSTRAINT_NAME = cu.CONSTRAINT_NAME
-                        WHERE 
-                            tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
-                    ) pk
-                ON 
-                    c.TABLE_NAME = pk.TABLE_NAME AND c.COLUMN_NAME = pk.COLUMN_NAME
-                WHERE 
-                    c.TABLE_NAME = t.TABLE_NAME
-                FOR JSON PATH
-            ) AS columns
-        FROM 
-            INFORMATION_SCHEMA.TABLES t
-        WHERE 
-            t.TABLE_TYPE = 'BASE TABLE'
-            AND t.TABLE_CATALOG = DB_NAME() -- Use current database dynamically
-        FOR JSON PATH, ROOT('tables')
-    ) AS schemaJson;
-GO
-
-SELECT TOP 1 SchemaJson 
-FROM DB_Schema
-ORDER BY ID DESC;
-GO
-
--- List all user-defined assemblies and all CLR functions
+-----------------------------------------------------------
+-- List all user-defined assemblies and CLR functions
+-----------------------------------------------------------
 SELECT * FROM sys.assemblies WHERE is_user_defined = 1;
-GO
 
 SELECT 
     asm.name AS AssemblyName,
@@ -185,9 +144,11 @@ JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
 --WHERE obj.type IN ('FN', 'TF', 'IF'); -- FN = Scalar function, TF = Table-valued function, IF = Inline function
 GO
 
--- Example of calling the CompletePrompt function in SQL Server:
+----------------------------------------------------
+-- Example of calling the CompletePrompt function
+----------------------------------------------------
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @ask NVARCHAR(MAX) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
 
-SELECT dbo.CompletePrompt(@modelName, @ask, N'Tell me in fourty words or less!');
+SELECT dbo.CompletePrompt(@modelName, @ask, N'Tell me in forty words or less!');
 GO
