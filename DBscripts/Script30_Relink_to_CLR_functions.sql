@@ -6,7 +6,7 @@
     - drop all CLR functions and the existing CLR assembly reference
     - recreate the link to the most currently released CLR assembly
     - recreate links to the CLR functions
-    - dump a list of all user-defined assemblies all CLR functions
+    - dump a list of all user-defined assemblies and all CLR functions
     - run a short query to the Ollama API server
 
     This script must be run every time the SQL/CLR project is rebuilt.
@@ -70,7 +70,7 @@ END
 GO
 
 ----------------------------------------------
--- Create CLR functions links
+-- Create CLR function links
 ----------------------------------------------
 CREATE FUNCTION dbo.CompletePrompt(
     @modelName NVARCHAR(MAX), 

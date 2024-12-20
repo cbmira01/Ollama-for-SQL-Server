@@ -1,6 +1,6 @@
 # Ollama Completions for SQL Server - Roadmap
 
-## Planned Functions
+## Functions to consider for implementation
 
 ### AskAllModels Function
 - **Description:** Sends a prompt to all available hosted models and returns their responses in a table format.
@@ -45,12 +45,10 @@
 
 ### New Features
 - **QueryFromPrompt Function**:
-  - Design a `Document` model for the return object.
-  - Define parameters like `prompt` and `contextPrompt`.
-  - Ensure functionality is fully testable.
   - Implement execution of arbitrary database queries via SQL/CLR.
   - Would a database schema help the LLM? Can the LLM read structured (ie JSON) schema?
   - How do I keep an LLM focused on producing valid SQL queries?
+  - Look at ganged or staged model queries to get from natural language to SQL code.
 
 - **AskAllModels**
   - What would the TVF fill-row schema look like?
@@ -59,13 +57,13 @@
 ---
 
 ### Testing
-- Verify comprehensive test coverage for `JsonClrLibrary`.
+  - QueryFromPrompt will require integration testing
 
 ---
 
 ### Documentation
-- Document the JSON library usage and APIs.
 - Explore "diagrams as code" to visualize system interactions.
+- Explore linked Markdown files.
 
 ---
 
