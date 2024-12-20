@@ -5,8 +5,6 @@ JSON-based operations and completions in SQL Server. Due to CLR 4's lack of supp
 for modern JSON serializers like Newtonsoft.Json, a custom JSON library was developed, 
 relying on primitive string manipulation to construct and handle JSON data.
 
-**in progress**
-
 ## JSON Library Overview
 
 The JSON library was designed to meet the specific requirements of this project. It 

@@ -23,15 +23,16 @@ making it ideal for data-driven NLP tasks.
 
 ### Documentation
 
-Refer to the documentation files in order:
+Refer to the documentation files:
 - **README.md**
+- **SCRIPTS.md**
 - **INSTALLATION.md**
 - **USAGE.md**
-- **JSON-LIBRARY.md** (in progress)
+- **JSON-LIBRARY.md**
 - **TESTING.md**
 - **CONTRIBUTING.md**
 - **ROADMAP.md**
-- **WORKS-CONSULTED.md** (in progress)
+- **WORKS-CONSULTED.md**
 
 ## Notes
 
