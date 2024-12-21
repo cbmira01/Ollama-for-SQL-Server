@@ -24,15 +24,15 @@ making it ideal for data-driven NLP tasks.
 ### Documentation
 
 Refer to the documentation files:
-- **README.md**
-- **SCRIPTS.md**
-- **INSTALLATION.md**
-- **USAGE.md**
-- **JSON-LIBRARY.md**
-- **TESTING.md**
-- **CONTRIBUTING.md**
-- **ROADMAP.md**
-- **WORKS-CONSULTED.md**
+
++ [INSTALLATION](Docs/INSTALLATION.md): How to clone and set up this project
++ [SCRIPTS](Docs/SCRIPTS.md): T-SQL scripts for installation and demonstration
++ [USAGE](Docs/USAGE.md): How to use the defined CLR functions
++ [JSON-LIBRARY](Docs/JSON-LIBRARY.md): The JSON building and handling library
++ [TESTING](Docs/TESTING.md): How to test and debug this project
++ [CONTRIBUTING](Docs/CONTRIBUTING.md): How to contribute to this project
++ [ROADMAP](Docs/ROADMAP.md): Future new functions that may be implemented
++ [WORKS-CONSULTED](Docs/WORKS-CONSULTED.md): More information about Ollama and SQL/CLR
 
 ## Notes
 

@@ -41,9 +41,9 @@ Install a database client for deployment scripts and queries. **SQL Server Manag
 
 ---
 
-### Clone Project Repository
+### Clone the Project Repository
 
-1. Clone the project from one of the following sources:
+1. Clone the project repository from one of the following sources:
 
 ```bash
 git clone https://calmiracle@dev.azure.com/calmiracle/Ollama-for-SQL-Server/_git/Ollama-for-SQL-Server
