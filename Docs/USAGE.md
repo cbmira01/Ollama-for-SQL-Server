@@ -34,7 +34,7 @@ SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCom
 - `@modelName`: Name of a hosted model, such as 'llama3.2' or 'mistral'.
 - `@askPrompt`: Main prompt or question.
 - `@morePrompt`: Additional context or information for the prompt.
-- `@numCompletions`: Number of prompt completions to retrieve. (for CompleteMultiplePrompts)
+- `@numCompletions`: Number of prompt completions to retrieve.
 
 
 ### GetAvailableModels
@@ -109,4 +109,4 @@ Response:
 
 ---
 
-Further examples can be found in SQL scripts Script20, Scipt30, and Script40 in the DB_Scripts folder.
+Further examples can be found in `Script40` and `Script50` in the `DB_Scripts` folder.

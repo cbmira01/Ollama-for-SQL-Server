@@ -80,7 +80,7 @@ Example Usage:
 
 ## Testing
 
-Comprehensive testing of the JSON Builder and JSON Handler is documented in TESTING.md. 
+Comprehensive testing of the JSON Builder and JSON Handler is documented in [TESTING](./TESTING.md). 
 This includes unit and integration tests to ensure the library handles all JSON-related 
 operations reliably.
 

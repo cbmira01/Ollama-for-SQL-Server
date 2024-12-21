@@ -63,7 +63,6 @@
 
 ### Documentation
 - Explore "diagrams as code" to visualize system interactions.
-- Explore linked Markdown files.
 
 ---
 

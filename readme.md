@@ -2,10 +2,12 @@
 
 ## Overview
 
-`Ollama Completions for SQL Server` brings the power of Large Language Models (LLMs) directly to SQL Server workflows. 
-By leveraging SQL/CLR functions, users can seamlessly interact with LLMs hosted on Ollama, such as `llama3.2`, `zephyr`, and `mistral`.
+`Ollama Completions for SQL Server` brings the power of Large Language Models (LLMs) directly 
+to SQL Server workflows. By leveraging SQL/CLR functions, users can seamlessly interact with 
+LLMs hosted on Ollama, such as `llama3.2`, `zephyr`, and `mistral`.
 
-With this project, you can perform advanced natural language processing (NLP) tasks directly within SQL Server, including:
+With this project, you can perform advanced natural language processing (NLP) tasks directly 
+within SQL Server, including:
 
 - **Data Classification**: Automatically categorize text data into predefined groups.
 - **Data Summaries**: Generate concise summaries of lengthy documents, logs, or articles.
@@ -13,8 +15,8 @@ With this project, you can perform advanced natural language processing (NLP) ta
 - **Conversational Responses**: Create interactive, natural language outputs for chat-like experiences.
 - **Sentiment Analysis**: Determine the emotional tone of textual data for insights.
 
-This project enables SQL Server users to harness the power of LLMs without leaving their database environment, 
-making it ideal for data-driven NLP tasks.
+This project enables SQL Server users to harness the power of LLMs without leaving their 
+database environment, making it ideal for data-driven NLP tasks.
 
 ### Key Features:
 - **SQL/CLR Integration**: Use familiar SQL workflows to send prompts and receive model completions.
