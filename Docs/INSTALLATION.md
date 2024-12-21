@@ -9,7 +9,7 @@
 
 ### Workstation specifications
 
-This project was developed on, and deployed to, a machine with following specifications:
+This project was developed on, and deployed to, a machine with these specifications:
 
    - Dell Precision 5560 laptop
    - Intel i9-11950H @ 2.60Ghz, 16 cores
@@ -34,27 +34,34 @@ This project was developed on, and deployed to, a machine with following specifi
 
 ---
 
-### Install the Ollama API server
+### Install and manage the Ollama API server
 
-1. **Get the Installer**: Download from [ollama.com](https://ollama.com/) or use the Ollama Docker image.
+1. **Get Ollama**: Ollama can be set up with an installer, or run under Docker.
+   - [Get the Ollama installer](https://ollama.com/)
+   - [Get the Ollama Docker image](https://hub.docker.com/r/ollama/ollama)
 
-2. **Run Ollama**: Ensure your Ollama API instance serves on `http://127.0.0.1:11434/`
+2. **Run Ollama**
+   - Ensure your Ollama instance serves locally on `http://127.0.0.1:11434/`
+   - Ollama API events can be monitored in a console window.
 
-   Use the following commands in the Ollama CLI:
+   Ollama supports the following commands:
    - `ollama help`: Display help.
-   - `ollama pull <modelname>`: Install an LLM from the Ollama Library.
+   - `ollama pull <modelname>`: Install a given LLM from the Ollama Library.
    - `ollama list`: List all hosted LLM models.
    - `ollama serve`: Start the API server.
 
 3. **Pull Ollama Models**: Pull one or more large language models to your Ollama API server.
-   - Refer to the Ollama library at `https://ollama.com/library`
+   - [Refer to the Ollama library catalog](https://ollama.com/library)
    - LLM `llama3.2` is a good choice for general completions on natural language prompts.
 
 4. **Optional**: A tool like **Postman** can interact with Ollama's API:
    - `GET` to `http://127.0.0.1:11434/api/tags`: Retrieve a list of models.
    - `POST` to `http://127.0.0.1:11434/api/generate`: Send prompts and receive completions.
+   - [Refer to the Ollama API reference](https://github.com/ollama/ollama/blob/main/docs/api.md)
 
-5. **Optional**: A self-hosted AI web interface such as **Open-WebUI** can also be used to interact with Ollama.
+5. **Optional**: Self-hosted web interfaces can also interact with Ollama.
+   - [Get Open-WebUI](https://openwebui.com/)
+   - [12 Tools to Provide a Web UI for Ollama](https://itsfoss.com/ollama-web-ui-tools/)
 
 ---
 
@@ -79,11 +86,11 @@ git clone https://github.com/cbmira01/Ollama-for-SQL-Server
 3. **Deploy to SQL Server**: Run T-SQL scripts for CLR assembly linkage
 
    - Ensure your Ollama API server is running with at least `llama3.2` installed.
-   - In `Script10` and `Script30`, ensure the `@RepositoryPath` symbol is set to your repo path.
+   - Ensure the `@RepositoryPath` symbol In `Script10` and `Script30` is set to your repo path.
    - Run `Script10` to set up the `TEST` database and enable CLR integration for it.
    - Run `Script20` to set up demonstration tables and a schema in JSON format.
    - Run `Script30` to link to the current assembly release and create the function links.
    - Ensure the `Script30` sanity check to the Ollama API was successful.
    - Refer to the script documentation for more information.
-   - Demonstrations of model completions in `Script40` and `Script50` can now be run.
+   - You can now run demonstrations of model completions from `Script40` and `Script50`.
 

@@ -45,14 +45,21 @@
 
 ### New Features
 - **QueryFromPrompt Function**:
-  - Implement execution of arbitrary database queries via SQL/CLR.
+  - Implement execution of arbitrary database queries from natural language prompts.
   - Would a database schema help the LLM? Can the LLM read structured (ie JSON) schema?
   - How do I keep an LLM focused on producing valid SQL queries?
   - Look at ganged or staged model queries to get from natural language to SQL code.
+  - Is there a T-SQL syntax checker?
 
 - **AskAllModels**
-  - What would the TVF fill-row schema look like?
-  - Would this query be too slow?
+  - What would the TVF fill-row schema for this feaure look like?
+  - Would this query be too slow? GPU context has to be dumped and recreated when models are switched.
+  - Would being able to specify a subset list of models be useful?
+
+- **Project configuration**
+  - A lot of unexposed settings are cropping up all over.
+  - New features are going to need highly tweaked LLM prompts.
+  - Configure at build time, or via SQL queries?
 
 ---
 
