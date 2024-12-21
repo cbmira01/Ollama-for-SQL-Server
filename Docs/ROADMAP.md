@@ -44,6 +44,7 @@
 ## Development Tasks
 
 ### New Features
+
 - **QueryFromPrompt Function**:
   - Implement execution of arbitrary database queries from natural language prompts.
   - Would a database schema help the LLM? Can the LLM read structured (ie JSON) schema?
@@ -56,10 +57,21 @@
   - Would this query be too slow? GPU context has to be dumped and recreated when models are switched.
   - Would being able to specify a subset list of models be useful?
 
+---
+
+### Improvements and maintenance
+
 - **Project configuration**
   - A lot of unexposed settings are cropping up all over.
   - New features are going to need highly tweaked LLM prompts.
   - Configure at build time, or via SQL queries?
+
+- **Ollama context field deprecated**: With Ollama 0.5.4 (Dec 2024), the context field in 
+requests has been deprecated. Currently, the `CompleteMultiplePrompts` function
+depends on the context array to link iterated queries. How would this scheme
+work going forward?
+
+- **Better model for SQL coding?** [SqlCoder:15b](https://ollama.com/library/sqlcoder:15b)
 
 ---
 
