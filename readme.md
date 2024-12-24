@@ -41,7 +41,7 @@ Refer to the documentation files:
 
 - What are large language models capable of?
 - How can LLM capabilities be pulled into SQL Server?
-- How can one interact with Ollama's API surface?
+- How does one interact with Ollama's API surface?
 - How well can LLMs write SQL code from natural-language prompts?
 - How does one write SQL/CLR functions?
 - How does an LLM (ChatGPT) work as a coding companion?

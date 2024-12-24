@@ -23,7 +23,7 @@ This project was developed on, and deployed to, a machine with these specificati
 ### Install SQL Server and client
 
 1. **Database server**: 
-   - **SQL Server 2022 Express** self-hosted is sufficient to demonstrate for this project.
+   - **SQL Server 2022 Express** Can run self-hosted, which is sufficient to demonstrate for this project.
    - Do not deploy this project to a production server without careful study.
 
 2. **Server management**: Use **SQL Server Configuration Manager** to manage database services:
@@ -36,7 +36,7 @@ This project was developed on, and deployed to, a machine with these specificati
 
 ### Install and manage the Ollama API server
 
-1. **Get Ollama**: Ollama can be set up with an installer, or run under Docker.
+1. **Get Ollama**: Ollama can be run in a command console, or under Docker.
    - [Get the Ollama installer](https://ollama.com/)
    - [Get the Ollama Docker image](https://hub.docker.com/r/ollama/ollama)
 
