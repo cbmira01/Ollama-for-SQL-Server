@@ -18,12 +18,13 @@ within SQL Server, including:
 This project enables SQL Server users to harness the power of LLMs without leaving their 
 database environment, making it ideal for data-driven NLP tasks.
 
-### Key Features:
+## Key Features
+
 - **SQL/CLR Integration**: Use familiar SQL workflows to send prompts and receive model completions.
 - **Flexible Outputs**: Retrieve results as single projections or structured tables.
 - **Model Support**: Easily switch between multiple LLMs hosted on Ollama.
 
-### Documentation
+## Documentation
 
 Refer to the documentation files:
 
@@ -36,8 +37,17 @@ Refer to the documentation files:
 + [ROADMAP](Docs/ROADMAP.md): Future new functions that may be implemented
 + [WORKS-CONSULTED](Docs/WORKS-CONSULTED.md): More information about Ollama and SQL/CLR
 
+## Why this project?
+
+- What are large language models capable of?
+- How can LLM capabilities be pulled into SQL Server?
+- How can one interact with Ollama's API surface?
+- How well can LLMs write SQL code from natural-language prompts?
+- How does one write SQL/CLR functions?
+- How does an LLM (ChatGPT) work as a coding companion?
+
 ## Notes
 
 - UNSAFE assembly permission is required to allow external HTTP requests from SQL Server.
 - Use these functions with caution as network operations can impact SQL Server performance.
-- This project was written to investigate the Ollama API, and the use of AI as a code companion.
+- Do not deploy this project to a production instance of SQL Server without careful consideration.
