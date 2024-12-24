@@ -15,9 +15,11 @@ GO
 -- Sentiment analysis
 --------------------------------------------------------------------
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
-DECLARE @prompt NVARCHAR(MAX) = 'You are providing a sentiment label for a support email. 
+DECLARE @prompt NVARCHAR(MAX) = '
+You are providing a sentiment label for a support email. 
 Respond with ONLY one word from this list: glad, sad, angry, neutral.
-Do not include punctuation or explanation. ';
+Do not include punctuation or explanation. 
+';
 
 SELECT 
     id,

@@ -2,7 +2,7 @@
 
 ### Requirements to build and deploy
 
-   - **Visual Studio 2022**
+   - **Visual Studio 2022**: Community Edition is sufficient.
    - **.NET Framework 4.7.2 SDK**: Required to target CLR 4 for SQL Server 2022.
    - **SQL Server 2022 Express**: Ensure CLR integration can be enabled.
    - **Ollama API server**: Hosted locally on `http://127.0.0.1:11434/` with one or more LLM models.

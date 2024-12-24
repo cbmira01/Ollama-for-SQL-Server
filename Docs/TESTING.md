@@ -2,8 +2,8 @@
 
 ## Testing and Debugging
 
-This guide explains how to test and debug the components of `Ollama Completions for SQL Server`, including console programs, 
-unit tests, and remote debugging for SQL/CLR functions.
+This guide explains how to test and debug the components of `Ollama Completions for SQL Server`, 
+via console programs, unit tests, and remote debugging. Use of the Visual Studio IDE is assumed.
 
 ---
 
