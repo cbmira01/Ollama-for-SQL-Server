@@ -34,7 +34,6 @@ FROM
     ) AS Sentences(Sentence);
 GO
 
-
 ------------------------------------------------------------------
 -- Call 'CompleteMultiplePrompts' to get completions in a table
 
@@ -51,6 +50,25 @@ FROM dbo.CompleteMultiplePrompts(
     @numCompletions);
 GO
 
+-------------------------------------------------------
+-- Marketing proposals
+-------------------------------------------------------
+DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
+DECLARE @task NVARCHAR(MAX) = '
+You are a marketing expert for a home appliance company.
+Give me a marketing proposal for some type of home appliance that our company will build and sell.
+';
+
+DECLARE @numCompletions INT = 5;
+
+SELECT 
+	OllamaCompletion AS Proposal
+FROM dbo.CompleteMultiplePrompts(
+    @modelName,
+	@task,
+    N'Answer in 50 words or less.', 
+    @numCompletions);
+GO
 
 -------------------------------------------------------
 -- Discover all models currently hosted on Ollama
