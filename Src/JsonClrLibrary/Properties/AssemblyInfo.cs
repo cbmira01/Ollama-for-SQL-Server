@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("JsonClrLibrary")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jefferson County Public Schools")]
+[assembly: AssemblyCompany("Calvin Miracle")]
 [assembly: AssemblyProduct("JsonClrLibrary")]
-[assembly: AssemblyCopyright("Copyright © Jefferson County Public Schools 2024")]
+[assembly: AssemblyCopyright("Copyright © Calvin Miracle 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
