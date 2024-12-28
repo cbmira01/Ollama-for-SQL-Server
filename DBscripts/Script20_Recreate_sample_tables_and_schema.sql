@@ -6,6 +6,7 @@
     - Support emails used for sentiment analysis
     - Customer and sales data to demonstrate (hopefully) script construction
         from a natual language prompt
+    - A stash of large prompts
     - A current schema of the TEST database for consumption by 
         the locally-hosted language models
 **/
@@ -135,20 +136,108 @@ GO
 PRINT 'Customer sales data created'
 
 -----------------------------------------------------------------------------
--- Recreate the schema table (required for 'QueryFromPrompt')
+-- Recreate the KeyValuePairs table
 -----------------------------------------------------------------------------
-IF OBJECT_ID('dbo.DB_Schema', 'U') IS NOT NULL
-    DROP TABLE dbo.DB_Schema;
-GO
+IF OBJECT_ID('dbo.KeyValuePairs', 'U') IS NOT NULL
+    DROP TABLE dbo.KeyValuePairs;
 
-CREATE TABLE DB_Schema (
-    ID INT PRIMARY KEY IDENTITY(1,1), 
-    SchemaJson NVARCHAR(MAX)
+CREATE TABLE KeyValuePairs (
+    [ID] INT PRIMARY KEY IDENTITY(1,1), 
+    [Key] NVARCHAR(20),
+    [Value] NVARCHAR(MAX)
 );
 GO
 
-INSERT INTO DB_Schema (SchemaJson)
+-----------------------------------------------------------------------------
+-- Stash large prompts (required for 'QueryFromPrompt')
+-----------------------------------------------------------------------------
+DECLARE @SqlPreamble NVARCHAR(MAX) ='
+You are an expert in converting natural-language queries into SQL queries in the SQL Server idiom. 
+All queries must strictly adhere to SQL Server syntax.
+';
+
+DECLARE @SqlGuidelines NVARCHAR(MAX) = '
+Follow these guidelines to address the key differences between SQL Server and MySQL:
+
+1. **Row Limiting**: Use `TOP n` instead of `LIMIT n` for limiting rows.
+   - Example:
+     - MySQL: `SELECT * FROM employees LIMIT 5;`
+     - SQL Server: `SELECT TOP 5 * FROM employees;`
+
+2. **Date and Time Functions**: Use `GETDATE()` or `SYSDATETIME()` instead of `NOW()`.
+   - Example:
+     - MySQL: `SELECT NOW();`
+     - SQL Server: `SELECT GETDATE();`
+
+3. **Identifier Quoting**: Use square brackets `[ ]` instead of backticks `` ` `` or double quotes `" "`.
+   - Example:
+     - MySQL: `SELECT * FROM "users";`
+     - SQL Server: `SELECT * FROM [users];`
+
+4. **String Concatenation**: Use `+` for string concatenation instead of `||`.
+   - Example:
+     - MySQL: ''SELECT first_name || '' '' || last_name AS full_name;''
+     - SQL Server: ''SELECT first_name + '' '' + last_name AS full_name;''
+
+5. **Boolean Values**: Use `1` and `0` for `TRUE` and `FALSE`, respectively.
+   - Example:
+     - MySQL: `SELECT * FROM employees WHERE is_active = TRUE;`
+     - SQL Server: `SELECT * FROM employees WHERE is_active = 1;`
+
+6: **Joins**: Avoid MySQL-specific features such as `USING` in joins. Always write explicit `ON` conditions.
+   - Example:
+     - MySQL: `SELECT * FROM a JOIN b USING (id);`
+     - SQL Server: `SELECT * FROM a JOIN b ON a.id = b.id;`
+
+7. **Aggregates in WHERE Clause**: Aggregates cannot appear in the `WHERE` clause. Use the `HAVING` clause for filtering aggregated results.
+   - Example:
+     - Invalid:
+       - `SELECT department, COUNT(*) FROM employees WHERE COUNT(*) > 10 GROUP BY department;`
+     - SQL Server (Correct):
+       - `SELECT department, COUNT(*) AS employee_count FROM employees GROUP BY department HAVING COUNT(*) > 10;`
+
+8. **Avoid Ambiguous Column References**: Always qualify column names with their table aliases or table names in queries involving multiple tables to avoid ambiguity.
+   - Example:
+     - Ambiguous (Error):
+       - `SELECT CustomerID, FirstName, LastName FROM Customers INNER JOIN Sales ON Customers.CustomerID = Sales.CustomerID WHERE TotalPrice >= 400;`
+     - SQL Server (Correct):
+       - `SELECT Customers.CustomerID, Customers.FirstName, Customers.LastName FROM Customers INNER JOIN Sales ON Customers.CustomerID = Sales.CustomerID WHERE Sales.TotalPrice >= 400;`
+
+9. **Ensure Proper Table Joins**: Always explicitly join tables when querying fields from multiple tables. Use the correct `ON` condition to connect related tables.
+   - Example:
+     - Incorrect:
+       - `SELECT COUNT(*) FROM Sales WHERE Customers.FirstName = ''John'';`
+     - SQL Server (Correct):
+       - `SELECT COUNT(*) FROM Sales INNER JOIN Customers ON Sales.CustomerID = Customers.CustomerID WHERE Customers.FirstName = ''John'';`
+';
+
+DECLARE @SchemaPreamble NVARCHAR(MAX) ='
+You are able to read database schema information in JSON format.
+You can select tables and fields from this schema that you think 
+are likely to answer the prompt that will be given to you.
+
+Following is the JSON schema of the database you will examine:
+';
+
+DECLARE @SqlPostscript NVARCHAR(MAX) ='
+Generate SQL code only and make no other commentary.
+
+Write a query for the following prompt:
+';
+
+INSERT INTO KeyValuePairs ([Key], [Value]) VALUES
+(N'sqlPreamble', @SqlPreamble),
+(N'sqlGuidelines', @SqlGuidelines),
+(N'schemaPreamble', @SchemaPreamble),
+(N'sqlPostscript', @SqlPostscript);
+GO
+
+-----------------------------------------------------------------------------
+-- Recreate the recreate the database schema (required for 'QueryFromPrompt')
+-----------------------------------------------------------------------------
+INSERT INTO KeyValuePairs ([Key], [Value])
 SELECT 
+    'schemaJson' AS [Key],
     (
         SELECT 
             t.TABLE_NAME AS name,
@@ -188,11 +277,13 @@ SELECT
             t.TABLE_TYPE = 'BASE TABLE'
             AND t.TABLE_CATALOG = DB_NAME() -- Use current database dynamically
         FOR JSON PATH, ROOT('tables')
-    ) AS schemaJson;
+    ) AS [Value];
 
-SELECT TOP 1 SchemaJson 
-FROM DB_Schema
-ORDER BY ID DESC;
+SELECT TOP 1 
+    [Key], [Value]
+FROM KeyValuePairs
+WHERE [Key] = N'schemaJson'
+ORDER BY [ID] DESC;
 GO
 
 /**

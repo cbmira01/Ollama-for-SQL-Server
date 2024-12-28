@@ -8,6 +8,7 @@ using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using OllamaSqlClr.DataAccess;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace OllamaSqlClr.Services
 {
@@ -143,41 +144,27 @@ namespace OllamaSqlClr.Services
 
         public IEnumerable QueryFromPrompt(SqlString modelName, SqlString prompt)
         {
-            /*
-             * TODO: roadmap for this function:
-             *
-             *      var schemaJson = GetTableSchema(databaseName)
-             *      (isSchemaAccepted, context) = GiveSchemaToModel(modelname, schemaJson)
-             *      var proposedQuery = GetProposedQuery(modelName, prompt, context)
-             *      var isValidQuery = ValidateProposedQuery(proposedQuery)
-             *      var result = RunProposedQuery(proposedQuery)
-             *      return result
-             */
-
-            var schemaJson = GetTableSchemaJson();
-
-            string proposedQuery = "SELECT * FROM support_emails WHERE sentiment = 'glad'";
             var resultList = new List<QueryFromPromptRow>();
+            string jsonTableResult = "";
+
+            string proposedQuery = AskModelForQuery(modelName.Value, prompt.Value);
+            var isUnsafe = _queryValidator.IsUnsafe(proposedQuery);
+            var isNoReply = _queryValidator.IsNoReply(proposedQuery);
+
+            if (isUnsafe || isNoReply)
+            {
+                jsonTableResult = "{\"error\": \"Query was unsafe or 'no reply'\"}";
+            }
 
             try
             {
-                var isUnsafe = _queryValidator.IsUnsafe(proposedQuery);
-                var isNoReply = _queryValidator.IsNoReply(proposedQuery);
-                string jsonResult = "";
+                string cleanedQuery = CleanupQuery(proposedQuery);
+                string jsonQuery = $"SELECT * FROM ({cleanedQuery}) AS Data FOR JSON AUTO";
+                var dataTable = _databaseExecutor.ExecuteQuery(jsonQuery);
 
-                if (isUnsafe || isNoReply)
+                if (dataTable.Rows.Count > 0)
                 {
-                    jsonResult = "{\"error\": \"Query was unsafe or 'no reply'\"}";
-                }
-                else
-                {
-                    string jsonQuery = $"SELECT * FROM ({proposedQuery}) AS Data FOR JSON AUTO";
-                    var dataTable = _databaseExecutor.ExecuteQuery(jsonQuery);
-
-                    if (dataTable.Rows.Count > 0)
-                    {
-                        jsonResult = dataTable.Rows[0][0].ToString();
-                    }
+                    jsonTableResult = dataTable.Rows[0][0].ToString();
                 }
 
                 resultList.Add(new QueryFromPromptRow
@@ -185,11 +172,8 @@ namespace OllamaSqlClr.Services
                     QueryGuid = Guid.NewGuid(),
                     ModelName = modelName.Value,
                     Prompt = prompt.Value,
-
-                    // ProposedQuery = proposedQuery,
-                    ProposedQuery = schemaJson,
-
-                    Result = jsonResult,
+                    ProposedQuery = cleanedQuery,
+                    Result = jsonTableResult,
                     Timestamp = DateTime.UtcNow
                 });
             }
@@ -200,10 +184,7 @@ namespace OllamaSqlClr.Services
                     QueryGuid = Guid.NewGuid(),
                     ModelName = modelName.Value,
                     Prompt = prompt.Value,
-
-                    // ProposedQuery = proposedQuery,
-                    ProposedQuery = schemaJson,
-
+                    ProposedQuery = proposedQuery,
                     Result = $"{{\"error\": \"{ex.Message}\"}}",
                     Timestamp = DateTime.UtcNow
                 });
@@ -212,37 +193,100 @@ namespace OllamaSqlClr.Services
             return resultList;
         }
 
-        private string _cachedSchemaJson;
-        private DateTime _lastSchemaUpdate;
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10); // Adjust as needed
+        private string AskModelForQuery(string modelName, string prompt)
+        {
+            var sqlPreamble = GetValueFromKey("sqlPreamble");
+            var sqlGuidelines = GetValueFromKey("sqlGuidelines");
+            var schemaPreamble = GetValueFromKey("schemaPreamble");
+            var schemaJson = GetValueFromKey("schemaJson");
+            var sqlPostscript = GetValueFromKey("sqlPostscript");
 
-        private string GetTableSchemaJson()
+            var complexPrompt = $"{sqlPreamble} {sqlGuidelines} {schemaPreamble} {schemaJson} {sqlPostscript} {prompt}";
+
+            try
+            {
+                var result = _apiClient.GetModelResponseToPrompt(complexPrompt, modelName);
+                string response = JsonHandler.GetStringField(result, "response");
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return $"Error: {ex.Message}";
+            }
+        }
+
+        private string CleanupQuery(string dirtyQuery)
+        {
+            if (string.IsNullOrEmpty(dirtyQuery))
+            {
+                return dirtyQuery;
+            }
+
+            // Replace '003c' (hex for '<') with the '<' symbol
+            string cleanQuery = Regex.Replace(dirtyQuery, @"003c", "<", RegexOptions.IgnoreCase);
+
+            // Replace '003e' (hex for '>') with the '>' symbol
+            cleanQuery = Regex.Replace(cleanQuery, @"003e", ">", RegexOptions.IgnoreCase);
+
+            // Clean up code bracketing
+            cleanQuery = Regex.Replace(cleanQuery, @"```sql", " ", RegexOptions.IgnoreCase);
+            cleanQuery = Regex.Replace(cleanQuery, @"```", " ", RegexOptions.IgnoreCase);
+
+            // Clean up newlines
+            cleanQuery = Regex.Replace(cleanQuery, @"\n", " ", RegexOptions.IgnoreCase);
+
+            // Clean out semicolons
+            cleanQuery = Regex.Replace(cleanQuery, @";", " ", RegexOptions.IgnoreCase);
+
+            return cleanQuery;
+        }
+
+        private Dictionary<string, string> _keyValueCache;
+        private DateTime _lastCacheUpdate;
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(1); // Adjust as needed
+
+        private void PopulateKeyValueCache()
         {
             // Check if the cache is still valid
-            if (_cachedSchemaJson != null && DateTime.UtcNow - _lastSchemaUpdate < _cacheExpiration)
+            if (_keyValueCache != null && DateTime.UtcNow - _lastCacheUpdate < _cacheExpiration)
             {
-                return _cachedSchemaJson;
+                return; // Cache is still valid, no need to repopulate
             }
 
-            // Query the database for the schema
-            string schemaQuery = @"
-                SELECT TOP 1 SchemaJson 
-                FROM DB_Schema
-                ORDER BY ID DESC;
+            // Query the database for all key-value pairs
+            string query = @"
+                SELECT
+                    [Key], [Value]
+                FROM KeyValuePairs;
             ";
 
-            DataTable resultTable = _databaseExecutor.ExecuteQuery(schemaQuery);
+            DataTable resultTable = _databaseExecutor.ExecuteQuery(query);
 
-            if (resultTable.Rows.Count > 0)
+            // Rebuild the cache
+            _keyValueCache = new Dictionary<string, string>();
+            foreach (DataRow row in resultTable.Rows)
             {
-                _cachedSchemaJson = resultTable.Rows[0]["SchemaJson"].ToString();
-                _lastSchemaUpdate = DateTime.UtcNow; // Update the cache timestamp
-                return _cachedSchemaJson;
+                string key = row["Key"].ToString();
+                string value = row["Value"].ToString();
+
+                if (!string.IsNullOrEmpty(key)) // Ensure keys are not null or empty
+                {
+                    _keyValueCache[key] = value;
+                }
             }
 
-            // If no schema is found, clear the cache
-            _cachedSchemaJson = string.Empty;
-            return _cachedSchemaJson;
+            _lastCacheUpdate = DateTime.UtcNow; // Update the cache timestamp
+        }
+
+        private string GetValueFromKey(string key)
+        {
+            // Ensure the cache is populated
+            PopulateKeyValueCache();
+
+            // Lookup the key in the cache
+            return _keyValueCache != null && _keyValueCache.TryGetValue(key, out var value)
+                ? value
+                : null;
         }
 
         #endregion
