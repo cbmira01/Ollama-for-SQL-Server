@@ -3,12 +3,10 @@
 /**
 
     This script populates tables used to showcase CLR functions:
-    - Support emails used for sentiment analysis
-    - Customer and sales data to demonstrate (hopefully) script construction
-        from a natual language prompt
-    - A stash of large prompts
-    - A current schema of the TEST database for consumption by 
-        the locally-hosted language models
+    - Support emails used for sentiment analysis;
+    - Customer and sales data to demonstrate script construction from a natual language prompt;
+    - A stash of large prompts for the QueryFromPrompt feature;
+    - A current schema of the TEST database for consumption by the locally-hosted language models;
 **/
 
 USE [TEST];
@@ -151,76 +149,60 @@ GO
 -----------------------------------------------------------------------------
 -- Stash large prompts (required for 'QueryFromPrompt')
 -----------------------------------------------------------------------------
-DECLARE @SqlPreamble NVARCHAR(MAX) ='
+DECLARE @SqlPreamble NVARCHAR(MAX) = '
 You are an expert in converting natural-language queries into SQL queries in the SQL Server idiom. 
-All queries must strictly adhere to SQL Server syntax.
+Strictly adhere to SQL Server syntax.
 ';
 
 DECLARE @SqlGuidelines NVARCHAR(MAX) = '
-Follow these guidelines to address the key differences between SQL Server and MySQL:
+Follow these SQL Server guidelines. Always adhere strictly to these rules:
 
-1. **Row Limiting**: Use `TOP n` instead of `LIMIT n` for limiting rows.
-   - Example:
-     - MySQL: `SELECT * FROM employees LIMIT 5;`
-     - SQL Server: `SELECT TOP 5 * FROM employees;`
+1. **Row Limiting**: Use `TOP n` instead of `LIMIT n`.
+   - Example: `SELECT TOP 5 * FROM employees;`
 
 2. **Date and Time Functions**: Use `GETDATE()` or `SYSDATETIME()` instead of `NOW()`.
-   - Example:
-     - MySQL: `SELECT NOW();`
-     - SQL Server: `SELECT GETDATE();`
 
 3. **Identifier Quoting**: Use square brackets `[ ]` instead of backticks `` ` `` or double quotes `" "`.
-   - Example:
-     - MySQL: `SELECT * FROM "users";`
-     - SQL Server: `SELECT * FROM [users];`
 
-4. **String Concatenation**: Use `+` for string concatenation instead of `||`.
-   - Example:
-     - MySQL: ''SELECT first_name || '' '' || last_name AS full_name;''
-     - SQL Server: ''SELECT first_name + '' '' + last_name AS full_name;''
+4. **String Concatenation**: Use `+` for concatenation instead of `||`.
+   - Example: `SELECT first_name + '' '' + last_name AS full_name;`
 
-5. **Boolean Values**: Use `1` and `0` for `TRUE` and `FALSE`, respectively.
-   - Example:
-     - MySQL: `SELECT * FROM employees WHERE is_active = TRUE;`
-     - SQL Server: `SELECT * FROM employees WHERE is_active = 1;`
+5. **Boolean Values**: Use `1` and `0` for `TRUE` and `FALSE`.
 
-6: **Joins**: Avoid MySQL-specific features such as `USING` in joins. Always write explicit `ON` conditions.
-   - Example:
-     - MySQL: `SELECT * FROM a JOIN b USING (id);`
-     - SQL Server: `SELECT * FROM a JOIN b ON a.id = b.id;`
+6. **Joins**: Avoid `USING` in joins. Use explicit `ON` conditions.
+   - Example: `SELECT * FROM a JOIN b ON a.id = b.id;`
 
-7. **Aggregates in WHERE Clause**: Aggregates cannot appear in the `WHERE` clause. Use the `HAVING` clause for filtering aggregated results.
-   - Example:
-     - Invalid:
-       - `SELECT department, COUNT(*) FROM employees WHERE COUNT(*) > 10 GROUP BY department;`
-     - SQL Server (Correct):
-       - `SELECT department, COUNT(*) AS employee_count FROM employees GROUP BY department HAVING COUNT(*) > 10;`
+7. **Aggregates in WHERE Clause**: Use `HAVING` instead of `WHERE` for aggregates.
+   - Example: `SELECT department, COUNT(*) FROM employees GROUP BY department HAVING COUNT(*) > 10;`
 
-8. **Avoid Ambiguous Column References**: Always qualify column names with their table aliases or table names in queries involving multiple tables to avoid ambiguity.
+8. **Fully Qualify Column References (MANDATORY)**: Always use table names with column names in **all clauses** (`SELECT`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, etc.). This ensures clarity and avoids ambiguity in queries involving multiple tables.
    - Example:
-     - Ambiguous (Error):
-       - `SELECT CustomerID, FirstName, LastName FROM Customers INNER JOIN Sales ON Customers.CustomerID = Sales.CustomerID WHERE TotalPrice >= 400;`
-     - SQL Server (Correct):
-       - `SELECT Customers.CustomerID, Customers.FirstName, Customers.LastName FROM Customers INNER JOIN Sales ON Customers.CustomerID = Sales.CustomerID WHERE Sales.TotalPrice >= 400;`
+     - Ambiguous: `SELECT CustomerID, FirstName FROM Customers;`
+     - Correct: `SELECT Customers.CustomerID, Customers.FirstName FROM Customers;`
 
-9. **Ensure Proper Table Joins**: Always explicitly join tables when querying fields from multiple tables. Use the correct `ON` condition to connect related tables.
-   - Example:
-     - Incorrect:
-       - `SELECT COUNT(*) FROM Sales WHERE Customers.FirstName = ''John'';`
-     - SQL Server (Correct):
-       - `SELECT COUNT(*) FROM Sales INNER JOIN Customers ON Sales.CustomerID = Customers.CustomerID WHERE Customers.FirstName = ''John'';`
+9. **Proper Joins**: Always explicitly join tables using `ON`.
+   - Example: `SELECT COUNT(*) FROM Table1 INNER JOIN Table2 ON Table1.CustomerID = Table2.CustomerID;`
+
+10. **ORDER BY in Subqueries and Views**: Use `TOP`, `OFFSET`, or `FOR XML` with `ORDER BY` in subqueries.
+    - Example: `SELECT column FROM (SELECT TOP 100 PERCENT * FROM table ORDER BY column) AS Subquery;`
+
+11. **Do Not Omit Table Names**: Table names **must** be included with all column references, even if only one table is queried. 
+    - Example:
+      - Incorrect: `SELECT FirstName FROM Customers;`
+      - Correct: `SELECT Customers.FirstName FROM Customers;`
+
+12. **Consistency in Aliases (Optional)**: Use aliases when table names are long, but aliases must be consistent and applied to all columns.
+    - Example:
+      - Correct: `SELECT c.CustomerID, c.FirstName FROM Customers AS c;`
 ';
 
-DECLARE @SchemaPreamble NVARCHAR(MAX) ='
-You are able to read database schema information in JSON format.
-You can select tables and fields from this schema that you think 
-are likely to answer the prompt that will be given to you.
-
-Following is the JSON schema of the database you will examine:
+DECLARE @SchemaPreamble NVARCHAR(MAX) = '
+Use the provided database schema to generate SQL queries.
+You must fully qualify all column names with their table names in all clauses, regardless of ambiguity.
 ';
 
-DECLARE @SqlPostscript NVARCHAR(MAX) ='
-Generate SQL code only and make no other commentary.
+DECLARE @SqlPostscript NVARCHAR(MAX) = '
+Generate SQL code only. If you cannot create valid SQL following these guidelines, reply with ''No Reply''.
 
 Write a query for the following prompt:
 ';

@@ -9,6 +9,7 @@ using OllamaSqlClr.Models;
 using OllamaSqlClr.DataAccess;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace OllamaSqlClr.Services
 {
@@ -154,17 +155,30 @@ namespace OllamaSqlClr.Services
             if (isUnsafe || isNoReply)
             {
                 jsonTableResult = "{\"error\": \"Query was unsafe or 'no reply'\"}";
+                resultList.Add(new QueryFromPromptRow
+                {
+                    QueryGuid = Guid.NewGuid(),
+                    ModelName = modelName.Value,
+                    Prompt = prompt.Value,
+                    ProposedQuery = proposedQuery,
+                    Result = jsonTableResult,
+                    Timestamp = DateTime.UtcNow
+                });
+                return resultList;
             }
 
             try
             {
                 string cleanedQuery = CleanupQuery(proposedQuery);
-                string jsonQuery = $"SELECT * FROM ({cleanedQuery}) AS Data FOR JSON AUTO";
-                var dataTable = _databaseExecutor.ExecuteQuery(jsonQuery);
+                var dataTable = _databaseExecutor.ExecuteQuery(cleanedQuery);
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    jsonTableResult = dataTable.Rows[0][0].ToString();
+                    jsonTableResult = ConvertDataTableToJson(dataTable);
+                }
+                else
+                {
+                    jsonTableResult = "[]"; // Empty JSON array for no results
                 }
 
                 resultList.Add(new QueryFromPromptRow
@@ -191,6 +205,33 @@ namespace OllamaSqlClr.Services
             }
 
             return resultList;
+        }
+
+        private string ConvertDataTableToJson(DataTable table)
+        {
+            var jsonResult = new StringBuilder();
+            jsonResult.Append("[");
+
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                if (i > 0) jsonResult.Append(",");
+                var row = table.Rows[i];
+                jsonResult.Append("{");
+
+                for (int j = 0; j < table.Columns.Count; j++)
+                {
+                    if (j > 0) jsonResult.Append(",");
+                    string columnName = table.Columns[j].ColumnName;
+                    string cellValue = row[j]?.ToString() ?? "";
+
+                    jsonResult.Append($"\"{columnName}\": \"{cellValue}\"");
+                }
+
+                jsonResult.Append("}");
+            }
+
+            jsonResult.Append("]");
+            return jsonResult.ToString();
         }
 
         private string AskModelForQuery(string modelName, string prompt)
@@ -229,8 +270,8 @@ namespace OllamaSqlClr.Services
             cleanQuery = Regex.Replace(cleanQuery, @"003e", ">", RegexOptions.IgnoreCase);
 
             // Clean up code bracketing
-            cleanQuery = Regex.Replace(cleanQuery, @"```sql", " ", RegexOptions.IgnoreCase);
-            cleanQuery = Regex.Replace(cleanQuery, @"```", " ", RegexOptions.IgnoreCase);
+            cleanQuery = Regex.Replace(cleanQuery, @"```sql", "", RegexOptions.IgnoreCase);
+            cleanQuery = Regex.Replace(cleanQuery, @"`", "", RegexOptions.IgnoreCase);
 
             // Clean up newlines
             cleanQuery = Regex.Replace(cleanQuery, @"\n", " ", RegexOptions.IgnoreCase);
