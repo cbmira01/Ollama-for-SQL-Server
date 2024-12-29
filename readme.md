@@ -14,6 +14,7 @@ within SQL Server, including:
 - **Entity Extraction**: Identify and extract structured entities like names, dates, and locations from text.
 - **Conversational Responses**: Create interactive, natural language outputs for chat-like experiences.
 - **Sentiment Analysis**: Determine the emotional tone of textual data for insights.
+- **SQL Query Generation**: Generate SQL queries from natural-language prompts.
 
 This project enables SQL Server users to harness the power of LLMs without leaving their 
 database environment, making it ideal for data-driven NLP tasks.

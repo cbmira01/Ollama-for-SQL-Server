@@ -1,8 +1,8 @@
 
 /**
-    This script contains tests of the 'QueryFromPrompt' feature, in progress.
+    This script contains tests of the 'QueryFromPrompt' feature.
 
-	This function is most successful when using the Mistral model.
+	This function is most successful when the Mistral model is used.
 
     Make sure your local Ollama API server is running.
 **/

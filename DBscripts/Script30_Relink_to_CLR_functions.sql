@@ -24,7 +24,7 @@
     After running this script, take a look at the demonstration scripts:
     - Script40: Various sample function calls
     - Script50: A study of scored sentiment analysis
-    - Script60: A test of 'QueryFromPrompt' (in progress)
+    - Script60: A test of 'QueryFromPrompt'
 **/
 
 DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';

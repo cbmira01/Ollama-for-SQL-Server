@@ -15,10 +15,6 @@
 - **Description:** Classifies text data into predefined categories using an LLM.
 - **Usage:** Useful for tagging content, sentiment analysis, or organizing unstructured text.
 
-### GenerateSQLQuery Function
-- **Description:** Converts natural language questions into SQL queries.
-- **Usage:** Enables users to write queries in plain English, translated into SQL commands.
-
 ### TranslateText Function
 - **Description:** Translates text between languages using an LLM.
 - **Usage:** Ideal for applications requiring multilingual data accessibility.
@@ -45,13 +41,6 @@
 
 ### New Features
 
-- **QueryFromPrompt Function**:
-  - Implement execution of arbitrary database queries from natural language prompts.
-  - Would a database schema help the LLM? Can the LLM read structured (ie JSON) schema?
-  - How do I keep an LLM focused on producing valid SQL queries?
-  - Look at ganged or staged model queries to get from natural language to SQL code.
-  - Is there a T-SQL syntax checker?
-
 - **AskAllModels**
   - What would the TVF fill-row schema for this feaure look like?
   - Would this query be too slow? GPU context has to be dumped and recreated when models are switched.
@@ -60,6 +49,9 @@
 ---
 
 ### Improvements and maintenance
+
+- **QueryFromPrompt**
+  - This feature now passes tests on a small set of tables... How would it fare on something more realistic?
 
 - **Project configuration**
   - A lot of unexposed settings are cropping up all over.
@@ -71,12 +63,9 @@ requests has been deprecated. Currently, the `CompleteMultiplePrompts` function
 depends on the context array to link iterated queries. How would this scheme
 work going forward?
 
-- **Better model for SQL coding?** [SqlCoder:15b](https://ollama.com/library/sqlcoder:15b)
-
 ---
 
 ### Testing
-  - QueryFromPrompt will require integration testing
 
 ---
 

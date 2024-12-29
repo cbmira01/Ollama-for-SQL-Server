@@ -17,10 +17,13 @@ for the Ollama Completions for SQL Server project.
 
 ## Script 20
 
-`Script20` sets up tables to demonstrate the new CLR functions. It may be conceivably 
-extended with additional tables or more data if desired. This script will finally
-record the database schema in JSON format, available for consumption by LLM models 
-that need to understand the database structure.
+`Script20` sets up sample data tables to demonstrate the new CLR functions. They may be 
+conceivably extended with additional tables or more data if desired. 
+
+This script additionally sets up a KeyValuePair table to hold complex prompts for the 
+QueryFromPrompt feature, and to record the database schema in JSON format. This schema 
+is available for consumption by LLM models that may need to understand the current database 
+structure.
 
 `Script20` is normally run only once for initial installation.
 
@@ -38,8 +41,7 @@ function call will have model support for its completion.
 
 ## Script 40
 
-`Script40` is a demonstration of proper setup and call of the various new CLR
-functions.
+`Script40` is a demonstration of proper setup and call of the various new CLR functions.
 
 ## Script 50
 
@@ -47,5 +49,5 @@ functions.
 
 ## Script 60
 
-`Script60` is a demonstration of the QueryFromPrompt feature (in progress).
+`Script60` is a demonstration of the QueryFromPrompt feature.
 

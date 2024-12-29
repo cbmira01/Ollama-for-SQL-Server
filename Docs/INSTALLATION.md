@@ -53,10 +53,12 @@ This project was developed on, and deployed to, a machine with these specificati
 3. **Pull Ollama Models**: Pull one or more large language models to your Ollama API server.
    - [Refer to the Ollama library catalog](https://ollama.com/library)
    - LLM `llama3.2` is a good choice for general completions on natural language prompts.
+   - LLM `mistral` was very successful in producing SQL queries from natural-language prompts.
 
 4. **Optional**: A tool like **Postman** can interact with Ollama's API:
    - `GET` to `http://127.0.0.1:11434/api/tags`: Retrieve a list of models.
    - `POST` to `http://127.0.0.1:11434/api/generate`: Send prompts and receive completions.
+   - `POST` to `http://127.0.0.1:11434/api/show`: To get detailed information about a hosted model.
    - [Refer to the Ollama API reference](https://github.com/ollama/ollama/blob/main/docs/api.md)
 
 5. **Optional**: Self-hosted web interfaces can also interact with Ollama.
@@ -86,11 +88,11 @@ git clone https://github.com/cbmira01/Ollama-for-SQL-Server
 3. **Deploy to SQL Server**: Run T-SQL scripts for CLR assembly linkage
 
    - Ensure your Ollama API server is running with at least `llama3.2` installed.
-   - Ensure the `@RepositoryPath` symbol In `Script10` and `Script30` is set to your repo path.
+   - Ensure the `@RepositoryPath` symbols In `Script10` and `Script30` are set to your repo path.
    - Run `Script10` to set up the `TEST` database and enable CLR integration for it.
-   - Run `Script20` to set up demonstration tables and a schema in JSON format.
-   - Run `Script30` to link to the current assembly release and create the function links.
+   - Run `Script20` to set up sample data tables and a schema reference.
+   - Run `Script30` to link to the current CLR assembly release and create the function links.
    - Ensure the `Script30` sanity check to the Ollama API was successful.
    - Refer to the script documentation for more information.
-   - You can now run demonstrations of model completions from `Script40` and `Script50`.
+   - You can now run demonstrations of model completions from `Script40`, `Script50` and `Script60`.
 

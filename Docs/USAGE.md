@@ -2,11 +2,14 @@
 
 ## Using the SQL/CLR functions
 
-After deployment, three new functions can be used in SQL Server:
+After deployment, these new functions can be used in SQL Server:
 
 - `CompletePrompt`
 - `CompleteMultiplePrompts`
 - `GetAvailableModels`
+- `QueryFromPrompt`
+
+---
 
 ### CompletePrompt
 
@@ -21,6 +24,7 @@ SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 - `@askPrompt`: Main prompt or question.
 - `@morePrompt`: Additional context or information for the prompt.
 
+---
 
 ### CompleteMultiplePrompts
 
@@ -36,6 +40,7 @@ SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCom
 - `@morePrompt`: Additional context or information for the prompt.
 - `@numCompletions`: Number of prompt completions to retrieve.
 
+---
 
 ### GetAvailableModels
 
@@ -44,6 +49,26 @@ Retrieve information about all Ollama-hosted LLM models in a table.
 ```sql
 SELECT * FROM dbo.GetAvailableModels();
 ```
+
+---
+
+### QueryFromPrompt
+
+Send a natural-language prompt to a model and return an SQL query along with the result of its execution. 
+
+QueryFromPrompt is aware of the current database schema and will do its best effort to build an 
+SQL query, run it, and show its results in a standard (JSON) format.
+
+```sql
+SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+GO
+```
+
+**Parameters:**
+- `@modelName`: Name of a hosted model, such as 'llama3.2' or 'mistral'.
+- `@prompt`: Natural-language prompt to generate an SQL query.
+
+---
 
 ### Error Handling
 
@@ -66,11 +91,14 @@ DECLARE @morePrompt NVARCHAR(MAX) = 'Tell me about yourself, very briefly.';
 SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 GO
 ```
+
 Response:
 
 | (No column name)                                                                    |
 |-------------------------------------------------------------------------------------|
 | Nice to meet you! I'm an AI designed to provide information and answer questions... |
+
+---
 
 ### Example: CompleteMultiplePrompts Function
 
@@ -84,6 +112,7 @@ SELECT *
 FROM dbo.CompleteMultiplePrompts(@modelName, @askPrompt, @morePrompt, @numCompletions);
 GO
 ```
+
 Response:
 
 | CompletionGuid                           | CompletedBy | OllamaCompletion                                               |
@@ -92,12 +121,14 @@ Response:
 | 55AF396D-730E-4629-83CD-D0BAE431D928     | llama3.2    | Lower interest rates, better loan terms, and increased financial options.        |
 | 04C515A3-66A4-4976-9CB1-CD76FFE8D105     | llama3.2    | Savings on loans, lower interest rates, and greater financial security.          |
 
+---
 
 ### Example: GetAvailableModels
 
 ```sql
 SELECT * FROM dbo.GetAvailableModels();
 ```
+
 Response: 
 
 | ModelGuid                               | Name                | Model               | ReferToName | ModifiedAt               | Size       | Family | ParameterSize | QuantizationLevel | Digest                                                             |
@@ -109,4 +140,21 @@ Response:
 
 ---
 
-Further examples can be found in `Script40` and `Script50` in the `DB_Scripts` folder.
+### Example: QueryFromPrompt
+
+```sql
+DECLARE @modelName NVARCHAR(MAX) = 'mistral';
+DECLARE @prompt NVARCHAR(MAX) = 'What was the date and time of the earliest purchase?';
+
+SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+GO
+```
+
+Response:
+
+| QueryGuid                              | ModelName | Prompt                                   | ProposedQuery                      | Result                                   | Timestamp               |
+|----------------------------------------|-----------|------------------------------------------|-------------------------------------|------------------------------------------|-------------------------|
+| 5E968560-90CF-456A-A1AB-1C4BA6935715   | mistral   | What was the date and time of the earliest purchase? | SELECT TOP 1 SaleDate FROM Sales   | [{"SaleDate": "12/1/2024 10:15:00 AM"}] | 2024-12-29 05:13:47.593 |
+
+---
+Further examples can be found in `Script40`, `Script50` and `Script60` in the `DB_Scripts` folder.
