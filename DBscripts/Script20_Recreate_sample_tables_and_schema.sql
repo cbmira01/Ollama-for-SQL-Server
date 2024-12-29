@@ -214,6 +214,7 @@ INSERT INTO KeyValuePairs ([Key], [Value]) VALUES
 (N'sqlPostscript', @SqlPostscript);
 GO
 
+PRINT 'Large prompts have been stashed'
 -----------------------------------------------------------------------------
 -- Recreate the recreate the database schema (required for 'QueryFromPrompt')
 -----------------------------------------------------------------------------
@@ -267,22 +268,5 @@ FROM KeyValuePairs
 WHERE [Key] = N'schemaJson'
 ORDER BY [ID] DESC;
 GO
-
-/**
-Typical SchemaJson output: 
-
-{"tables":[{"name":"support_emails","columns":[{"name":"id","type":"int","primaryKey":"true"},{"name":"email_content","type":"nvarchar","maxLength":2000,"primaryKey":"false"},
-{"name":"sentiment","type":"nvarchar","maxLength":20,"primaryKey":"false"},{"name":"sentiment_level","type":"int","primaryKey":"false"}]},
-{"name":"Customers","columns":[{"name":"CustomerID","type":"int","primaryKey":"true"},{"name":"FirstName","type":"nvarchar","maxLength":50,"primaryKey":"false"},
-{"name":"LastName","type":"nvarchar","maxLength":50,"primaryKey":"false"},{"name":"Email","type":"nvarchar","maxLength":100,"primaryKey":"false"},
-{"name":"Phone","type":"nvarchar","maxLength":15,"primaryKey":"false"},{"name":"Address","type":"nvarchar","maxLength":255,"primaryKey":"false"}]},
-{"name":"Items","columns":[{"name":"ItemID","type":"int","primaryKey":"true"},{"name":"ItemName","type":"nvarchar","maxLength":100,"primaryKey":"false"},
-{"name":"Description","type":"nvarchar","maxLength":255,"primaryKey":"false"},{"name":"Price","type":"decimal","primaryKey":"false"},
-{"name":"StockQuantity","type":"int","primaryKey":"false"}]},{"name":"Sales","columns":[{"name":"SaleID","type":"int","primaryKey":"true"},
-{"name":"CustomerID","type":"int","primaryKey":"false"},{"name":"ItemID","type":"int","primaryKey":"false"},{"name":"SaleDate","type":"datetime","primaryKey":"false"},
-{"name":"Quantity","type":"int","primaryKey":"false"},{"name":"TotalPrice","type":"decimal","primaryKey":"false"}]},
-{"name":"DB_Schema","columns":[{"name":"ID","type":"int","primaryKey":"true"},{"name":"SchemaJson","type":"nvarchar","maxLength":-1,"primaryKey":"false"}]}]}
-
-**/
 
 PRINT 'Database schema created'
