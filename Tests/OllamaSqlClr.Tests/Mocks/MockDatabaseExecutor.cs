@@ -6,6 +6,8 @@ namespace OllamaSqlClr.Tests.Mocks
 {
     public class MockDatabaseExecutor : IDatabaseExecutor
     {
+        string IDatabaseExecutor.ConnectionString => throw new System.NotImplementedException();
+
         public DataTable ExecuteQuery(string query)
         {
             // Return a mock DataTable
@@ -18,7 +20,17 @@ namespace OllamaSqlClr.Tests.Mocks
 
         public void ExecuteNonQuery(string commandText)
         {
-            // No-op for testing
+            // Unimplemented test
+        }
+
+        public void ExecuteNonQuery(string commandText, SqlParameter[] parameters)
+        {
+            // Unimplemented test
+        }
+
+        public void ExecuteNonQuery(string commandText, SqlTransaction transaction, SqlParameter[] parameters)
+        {
+            // Unimplemented test
         }
 
         public SqlConnection GetConnection()

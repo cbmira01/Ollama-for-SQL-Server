@@ -28,6 +28,18 @@ namespace OllamaSqlClr.Tests.Mocks
             }
         }
 
+        public bool IsRejected(string query)
+        {
+            if (query == "mockRejected")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool IsNullOrEmpty(string query)
         {
             if (query == "mockNoReply")

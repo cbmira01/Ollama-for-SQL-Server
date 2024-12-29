@@ -6,6 +6,8 @@
 
         bool IsNoReply(string query);
 
+        bool IsRejected(string query);
+
         bool IsNullOrEmpty(string query);
     }
 }

@@ -10,6 +10,7 @@ using OllamaSqlClr.DataAccess;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Data.SqlClient;
 
 namespace OllamaSqlClr.Services
 {
@@ -149,12 +150,14 @@ namespace OllamaSqlClr.Services
             string jsonTableResult = "";
 
             string proposedQuery = AskModelForQuery(modelName.Value, prompt.Value);
+
             var isUnsafe = _queryValidator.IsUnsafe(proposedQuery);
             var isNoReply = _queryValidator.IsNoReply(proposedQuery);
+            var isRejected = _queryValidator.IsRejected(proposedQuery);
 
-            if (isUnsafe || isNoReply)
+            if (isUnsafe || isNoReply || isRejected)
             {
-                jsonTableResult = "{\"error\": \"Query was unsafe or 'no reply'\"}";
+                jsonTableResult = "{\"error\": \"Query was rejected\"}";
                 resultList.Add(new QueryFromPromptRow
                 {
                     QueryGuid = Guid.NewGuid(),
@@ -169,8 +172,7 @@ namespace OllamaSqlClr.Services
 
             try
             {
-                string cleanedQuery = CleanupQuery(proposedQuery);
-                var dataTable = _databaseExecutor.ExecuteQuery(cleanedQuery);
+                var dataTable = _databaseExecutor.ExecuteQuery(proposedQuery);
 
                 if (dataTable.Rows.Count > 0)
                 {
@@ -186,7 +188,7 @@ namespace OllamaSqlClr.Services
                     QueryGuid = Guid.NewGuid(),
                     ModelName = modelName.Value,
                     Prompt = prompt.Value,
-                    ProposedQuery = cleanedQuery,
+                    ProposedQuery = proposedQuery,
                     Result = jsonTableResult,
                     Timestamp = DateTime.UtcNow
                 });
@@ -241,22 +243,40 @@ namespace OllamaSqlClr.Services
             var schemaPreamble = GetValueFromKey("schemaPreamble");
             var schemaJson = GetValueFromKey("schemaJson");
             var sqlPostscript = GetValueFromKey("sqlPostscript");
+            var doubleCheck = GetValueFromKey("doubleCheck");
 
             var complexPrompt = $"{sqlPreamble} {sqlGuidelines} {schemaPreamble} {schemaJson} {sqlPostscript} {prompt}";
+            List<int> context = new List<int>();
+            string response = "";
 
-            try
+            for (int attempt = 0; attempt < 3; attempt++)  // TODO: Configure retries as needed
             {
-                var result = _apiClient.GetModelResponseToPrompt(complexPrompt, modelName);
-                string response = JsonHandler.GetStringField(result, "response");
-                return response;
+                try
+                {
+                    var result = _apiClient.GetModelResponseToPrompt(complexPrompt, modelName, context);
+                    response = CleanQuery(JsonHandler.GetStringField(result, "response"));
+                    context = JsonHandler.GetIntegerArray(result, "context");
+
+                    // Append the attempt number as a comment to the query
+                    response += $" -- attempt {attempt + 1}";
+
+                    if (ValidateQuery(response))
+                    {
+                        return response;
+                    }
+
+                    complexPrompt = $"{doubleCheck} {response}";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Attempt {attempt + 1} failed: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                return $"Error: {ex.Message}";
-            }
+
+            return "rejected";
         }
 
-        private string CleanupQuery(string dirtyQuery)
+        private string CleanQuery(string dirtyQuery)
         {
             if (string.IsNullOrEmpty(dirtyQuery))
             {
@@ -274,15 +294,33 @@ namespace OllamaSqlClr.Services
             cleanQuery = Regex.Replace(cleanQuery, @"```.*?$", " ", RegexOptions.Multiline);
             cleanQuery = Regex.Replace(cleanQuery, @"`", "", RegexOptions.IgnoreCase);
 
+            // Clean up trailing comments
+            cleanQuery = Regex.Replace(cleanQuery, @"--.*?$", "", RegexOptions.Multiline);
+
             // Clean up newlines
             cleanQuery = Regex.Replace(cleanQuery, @"\n", " ", RegexOptions.IgnoreCase);
 
             return cleanQuery;
         }
 
+        private bool ValidateQuery(string proposedQuery)
+        {
+            try
+            {
+                _databaseExecutor.ExecuteNonQuery(proposedQuery);
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                // var _ = ex;
+                Console.WriteLine($"Query validation failed: {ex.Message}");
+                return false;
+            }
+        }
+
         private Dictionary<string, string> _keyValueCache;
         private DateTime _lastCacheUpdate;
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(1); // Adjust as needed
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(1); // TODO: Configure as needed
 
         private void PopulateKeyValueCache()
         {

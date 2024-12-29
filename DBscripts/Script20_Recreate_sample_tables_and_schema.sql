@@ -216,11 +216,18 @@ If you cannot create valid SQL following these guidelines, reply with ''No Reply
 Write a query for the following prompt:
 ';
 
+DECLARE @DoubleCheck NVARCHAR(MAX) = '
+The SQL code you provided had a runtime error. Try again.
+Double-check your response against established SQL code guidelines and the database schema.
+MANDATORY! Reply with SQL code only, do not provide any other commentary.
+';
+
 INSERT INTO KeyValuePairs ([Key], [Value]) VALUES
 (N'sqlPreamble', @SqlPreamble),
 (N'sqlGuidelines', @SqlGuidelines),
 (N'schemaPreamble', @SchemaPreamble),
-(N'sqlPostscript', @SqlPostscript);
+(N'sqlPostscript', @SqlPostscript),
+(N'doubleCheck', @DoubleCheck);
 GO
 
 PRINT 'Large prompts have been stashed'

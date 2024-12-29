@@ -5,7 +5,15 @@ namespace OllamaSqlClr.DataAccess
 {
     public interface IDatabaseExecutor
     {
+        string ConnectionString { get; }
+
         DataTable ExecuteQuery(string query);
+
         void ExecuteNonQuery(string commandText);
+
+        void ExecuteNonQuery(string commandText, SqlParameter[] parameters);
+
+        void ExecuteNonQuery(string commandText, SqlTransaction transaction, SqlParameter[] parameters);
+
     }
 }
