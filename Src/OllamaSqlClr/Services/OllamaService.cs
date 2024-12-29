@@ -270,14 +270,12 @@ namespace OllamaSqlClr.Services
             cleanQuery = Regex.Replace(cleanQuery, @"003e", ">", RegexOptions.IgnoreCase);
 
             // Clean up code bracketing
-            cleanQuery = Regex.Replace(cleanQuery, @"```sql", "", RegexOptions.IgnoreCase);
+            cleanQuery = Regex.Replace(cleanQuery, @"```sql", " ", RegexOptions.IgnoreCase);
+            cleanQuery = Regex.Replace(cleanQuery, @"```.*?$", " ", RegexOptions.Multiline);
             cleanQuery = Regex.Replace(cleanQuery, @"`", "", RegexOptions.IgnoreCase);
 
             // Clean up newlines
             cleanQuery = Regex.Replace(cleanQuery, @"\n", " ", RegexOptions.IgnoreCase);
-
-            // Clean out semicolons
-            cleanQuery = Regex.Replace(cleanQuery, @";", " ", RegexOptions.IgnoreCase);
 
             return cleanQuery;
         }

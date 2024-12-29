@@ -15,7 +15,7 @@ USE [TEST];
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Find all entries in support_emails where sentiment is glad.';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'How much has John Doe spent in total?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Tell me yes or no, is there a customer by the name of John Doe?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Tell me yes or no, is there a customer by the name of Jason Argonaut?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'How many times has John Doe purchased anything?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What customers have first names that start with the letter J?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Give me a list of items sold, sorted in reverse alphabetical order by the name of the item.';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What was the date and time of the earliest purchase?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
 
 ---------------------------------------------------------------------------------
@@ -87,5 +87,5 @@ GO
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What was the time of day of the latest purchase?';
 
-SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
+SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO

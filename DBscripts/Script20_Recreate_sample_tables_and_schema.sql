@@ -172,8 +172,15 @@ Follow these SQL Server guidelines. Always adhere strictly to these rules:
 6. **Joins**: Avoid `USING` in joins. Use explicit `ON` conditions.
    - Example: `SELECT * FROM a JOIN b ON a.id = b.id;`
 
-7. **Aggregates in WHERE Clause**: Use `HAVING` instead of `WHERE` for aggregates.
-   - Example: `SELECT department, COUNT(*) FROM employees GROUP BY department HAVING COUNT(*) > 10;`
+7. **Aggregates in Conditions**: Avoid mixing aggregates (e.g., `COUNT`, `SUM`) with row-level conditions in `WHERE` or `CASE`. 
+        Use `HAVING` for filtering aggregated results or subqueries to isolate aggregation.
+- Examples:
+   - Invalid WHERE clause: `SELECT department FROM employees WHERE COUNT(*) > 10;`  
+   - Correct WHERE clause:  `SELECT department FROM employees GROUP BY department HAVING COUNT(*) > 10;`
+   - Invalid CASE Statement:   `SELECT CASE WHEN COUNT(*) > 1 THEN ''Multiple''   ELSE ''Single''   END AS result FROM employees;`
+   - Correct Subquery: `SELECT CASE WHEN (SELECT COUNT(*) FROM employees) > 1 THEN ''Multiple''  ELSE  ''Single'' END AS result;`
+
+Use aggregates only in `HAVING`, subqueries, or after `GROUP BY`.
 
 8. **Fully Qualify Column References (MANDATORY)**: Always use table names with column names in **all clauses** (`SELECT`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, etc.). This ensures clarity and avoids ambiguity in queries involving multiple tables.
    - Example:
@@ -202,7 +209,9 @@ You must fully qualify all column names with their table names in all clauses, r
 ';
 
 DECLARE @SqlPostscript NVARCHAR(MAX) = '
-Generate SQL code only. If you cannot create valid SQL following these guidelines, reply with ''No Reply''.
+Generate SQL code only. Make no other commentary about the query.
+
+If you cannot create valid SQL following these guidelines, reply with ''No Reply''.
 
 Write a query for the following prompt:
 ';
