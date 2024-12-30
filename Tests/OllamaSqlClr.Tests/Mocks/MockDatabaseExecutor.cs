@@ -28,11 +28,6 @@ namespace OllamaSqlClr.Tests.Mocks
             // Unimplemented test
         }
 
-        public void ExecuteNonQuery(string commandText, SqlTransaction transaction, SqlParameter[] parameters)
-        {
-            // Unimplemented test
-        }
-
         public SqlConnection GetConnection()
         {
             return null; // No connection needed in test context

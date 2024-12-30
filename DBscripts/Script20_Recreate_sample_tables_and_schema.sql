@@ -232,7 +232,7 @@ GO
 
 PRINT 'Large prompts have been stashed'
 -----------------------------------------------------------------------------
--- Recreate the recreate the database schema (required for 'QueryFromPrompt')
+-- Recreate the database schema (required for 'QueryFromPrompt')
 -----------------------------------------------------------------------------
 INSERT INTO KeyValuePairs ([Key], [Value])
 SELECT 
@@ -285,4 +285,4 @@ WHERE [Key] = N'schemaJson'
 ORDER BY [ID] DESC;
 GO
 
-PRINT 'Database schema created'
+PRINT 'Key-value pairs created'

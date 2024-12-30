@@ -51,22 +51,4 @@ public class DatabaseExecutor : IDatabaseExecutor
             cmd.ExecuteNonQuery();
         }
     }
-
-    public void ExecuteNonQuery(string commandText, SqlTransaction transaction, params SqlParameter[] parameters)
-    {
-        if (transaction == null)
-        {
-            throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null when executing with a transaction.");
-        }
-
-        using (var cmd = new SqlCommand(commandText, transaction.Connection, transaction))
-        {
-            if (parameters != null)
-            {
-                cmd.Parameters.AddRange(parameters);
-            }
-
-            cmd.ExecuteNonQuery();
-        }
-    }
 }

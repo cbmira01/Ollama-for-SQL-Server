@@ -13,7 +13,5 @@ namespace OllamaSqlClr.DataAccess
 
         void ExecuteNonQuery(string commandText, SqlParameter[] parameters);
 
-        void ExecuteNonQuery(string commandText, SqlTransaction transaction, SqlParameter[] parameters);
-
     }
 }
