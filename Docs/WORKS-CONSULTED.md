@@ -27,4 +27,37 @@ This document lists references, resources, and materials consulted during the de
 - [Ollama API reference](https://github.com/ollama/ollama/blob/main/docs/api.md)
 - [Ollama library of LLMs](https://ollama.com/library)
 
-_Last updated: November 25, 2024_
+## Pexels Stock Photo Service
+
+Thanks are due [Pexels Stock](https://www.pexels.com) for images used for testing visual LLM models.
+
+### About Pexels
+
+Pexels provides high quality and completely free stock photos licensed under the Pexels license. 
+All photos are nicely tagged, searchable and also easy to discover through our discover pages.
+
+### Pexels License, Legal Simplicity
+
+All photos and videos on Pexels can be downloaded and used for free.
+
+### What is allowed?
+
+  - All photos and videos on Pexels are free to use.
+
+  - Attribution is not required. Giving credit to the photographer or Pexels is not necessary but always appreciated.
+
+  - You can modify the photos and videos from Pexels. Be creative and edit them as you like.
+
+### What is not allowed?
+
+  - Identifiable people may not appear in a bad light or in a way that is offensive.
+
+  - Don't sell unaltered copies of a photo or video, e.g. as a poster, print or on a physical product without modifying it first.
+
+  - Don't imply endorsement of your product by people or brands on the imagery.
+
+  - Don't redistribute or sell the photos and videos on other stock photo or wallpaper platforms.
+
+  - Don't use the photos or videos as part of your trade-mark, design-mark, trade-name, business name or service mark.
+
+_Last updated: January 3, 2025_

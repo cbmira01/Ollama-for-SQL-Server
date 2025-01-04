@@ -55,6 +55,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagrams", "Diagrams", "{88
 		Docs\diagrams\diagram.txt = Docs\diagrams\diagram.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{2571F675-F557-4447-AA54-D264E2FD012C}"
+	ProjectSection(SolutionItems) = preProject
+		Images\pexels-anntarazevich-5910755-motivation.jpg = Images\pexels-anntarazevich-5910755-motivation.jpg
+		Images\pexels-anntarazevich-6230961-scrabble-words.jpg = Images\pexels-anntarazevich-6230961-scrabble-words.jpg
+		Images\pexels-brunoscramgnon-596134-moon.jpg = Images\pexels-brunoscramgnon-596134-moon.jpg
+		Images\pexels-pixabay-33287-dogs.jpg = Images\pexels-pixabay-33287-dogs.jpg
+		Images\pexels-pixabay-45201-cat.jpg = Images\pexels-pixabay-45201-cat.jpg
+		Images\pexels-pixabay-459236-horse.jpg = Images\pexels-pixabay-459236-horse.jpg
+		Images\pexels-pixabay-66898-elephants.jpg = Images\pexels-pixabay-66898-elephants.jpg
+		Images\pexels-simon73-698275-tree.jpg = Images\pexels-simon73-698275-tree.jpg
+		Images\pexels-tdcat-59523-puppy.jpg = Images\pexels-tdcat-59523-puppy.jpg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
