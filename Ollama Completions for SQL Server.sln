@@ -57,6 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagrams", "Diagrams", "{88
 		Docs\diagrams\diagram.txt = Docs\diagrams\diagram.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadImageFiles", "LoadImageFiles\LoadImageFiles.csproj", "{0BF465D9-80CC-49D8-BE51-7752ECED87DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F} = {1953EB01-2AF3-4CC2-9812-61A516641640}
 		{6FC9999C-2339-4816-9598-1E111E3E076A} = {7498E09B-F2AD-4C5E-AE93-6AABD5316894}
 		{880D8954-0C56-4F12-8E85-3519C6C9C906} = {7498E09B-F2AD-4C5E-AE93-6AABD5316894}
+		{0BF465D9-80CC-49D8-BE51-7752ECED87DD} = {83575C05-E240-402E-815A-2BD58757771C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD4CE94F-7ED2-4950-9FF5-7696F87D990E}
