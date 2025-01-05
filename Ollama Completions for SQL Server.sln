@@ -19,10 +19,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", 
 		DBscripts\Script00_SQLCLR_utilities.sql = DBscripts\Script00_SQLCLR_utilities.sql
 		DBscripts\Script10_Recreate_TEST_database_and_trusted_assemblies.sql = DBscripts\Script10_Recreate_TEST_database_and_trusted_assemblies.sql
 		DBscripts\Script20_Recreate_sample_tables_and_schema.sql = DBscripts\Script20_Recreate_sample_tables_and_schema.sql
+		DBscripts\Script22_Load_image_data.sql = DBscripts\Script22_Load_image_data.sql
 		DBscripts\Script30_Relink_to_CLR_functions.sql = DBscripts\Script30_Relink_to_CLR_functions.sql
 		DBscripts\Script40_Sample_function_calls.sql = DBscripts\Script40_Sample_function_calls.sql
 		DBscripts\Script50_Sentiment_analysis.sql = DBscripts\Script50_Sentiment_analysis.sql
 		DBscripts\Script60_Query_from_prompt_example.sql = DBscripts\Script60_Query_from_prompt_example.sql
+		DBscripts\Script70_Image_classification.sql = DBscripts\Script70_Image_classification.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonClrLibrary", "Src\JsonClrLibrary\JsonClrLibrary.csproj", "{09C49120-5019-4B68-A16D-E44EA8F2B521}"
@@ -53,19 +55,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagrams", "Diagrams", "{880D8954-0C56-4F12-8E85-3519C6C9C906}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\diagrams\diagram.txt = Docs\diagrams\diagram.txt
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{2571F675-F557-4447-AA54-D264E2FD012C}"
-	ProjectSection(SolutionItems) = preProject
-		Images\pexels-anntarazevich-5910755-motivation.jpg = Images\pexels-anntarazevich-5910755-motivation.jpg
-		Images\pexels-anntarazevich-6230961-scrabble-words.jpg = Images\pexels-anntarazevich-6230961-scrabble-words.jpg
-		Images\pexels-brunoscramgnon-596134-moon.jpg = Images\pexels-brunoscramgnon-596134-moon.jpg
-		Images\pexels-pixabay-33287-dogs.jpg = Images\pexels-pixabay-33287-dogs.jpg
-		Images\pexels-pixabay-45201-cat.jpg = Images\pexels-pixabay-45201-cat.jpg
-		Images\pexels-pixabay-459236-horse.jpg = Images\pexels-pixabay-459236-horse.jpg
-		Images\pexels-pixabay-66898-elephants.jpg = Images\pexels-pixabay-66898-elephants.jpg
-		Images\pexels-simon73-698275-tree.jpg = Images\pexels-simon73-698275-tree.jpg
-		Images\pexels-tdcat-59523-puppy.jpg = Images\pexels-tdcat-59523-puppy.jpg
 	EndProjectSection
 EndProject
 Global
