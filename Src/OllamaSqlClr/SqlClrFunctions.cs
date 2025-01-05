@@ -73,7 +73,7 @@ namespace OllamaSqlClr
 
         #endregion
 
-        #region "Implemented SQL/CLR functions"
+        #region Implemented SQL/CLR functions
 
         [SqlFunction(DataAccess = DataAccessKind.Read)]
         public static SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
@@ -132,9 +132,22 @@ namespace OllamaSqlClr
             }
         }
 
+        [SqlFunction(DataAccess = DataAccessKind.Read)]
+        public static SqlString ExamineImage(SqlString modelName, SqlString prompt, SqlBytes imageData)
+        {
+            try
+            {
+                return OllamaServiceInstance.ExamineImage(modelName, prompt, imageData);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error in ExamineImage: ", ex);
+            }
+        }
+
         #endregion 
 
-        #region "FillRow methods"
+        #region FillRow methods
 
         public static void FillRow_CompleteMultiplePrompts(
             object completionObj,

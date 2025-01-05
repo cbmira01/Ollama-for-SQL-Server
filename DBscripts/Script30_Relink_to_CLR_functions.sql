@@ -23,10 +23,10 @@
     Make sure the @RepositoryPath symbol is set to your local repository location.
 
     After running this script, take a look at the demonstration scripts:
-    - Script40: Various sample CLR function calls
-    - Script50: A study of scored sentiment analysis
-    - Script60: A test of 'QueryFromPrompt', productions of SQL queries from user prompts
-    - Script70: Image classification studies
+        - Script40: Various sample CLR function calls
+        - Script50: A study of scored sentiment analysis
+        - Script60: A test of 'QueryFromPrompt', productions of SQL queries from user prompts
+        - Script70: Image classification studies
 
 *************************************************************************************************/
 
@@ -52,6 +52,9 @@ BEGIN
 
 	IF OBJECT_ID('dbo.QueryFromPrompt', 'FT') IS NOT NULL
 		DROP FUNCTION dbo.QueryFromPrompt;
+
+	IF OBJECT_ID('dbo.ExamineImage', 'FS') IS NOT NULL
+		DROP FUNCTION dbo.ExamineImage;
 
 	-- Drop the assembly only after all dependent objects are removed
 	IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
@@ -129,6 +132,15 @@ RETURNS TABLE
     [Timestamp] DATETIME
 )
 AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[QueryFromPrompt];
+GO
+
+CREATE FUNCTION dbo.ExamineImage(
+    @modelName NVARCHAR(MAX), 
+    @askPrompt NVARCHAR(MAX), 
+    @imageData VARBINARY(MAX)
+)
+RETURNS NVARCHAR(MAX)
+AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[ExamineImage];
 GO
 
 -----------------------------------------------------------

@@ -142,7 +142,7 @@ namespace OllamaSqlClr.Services
             }
         }
 
-        #region "Query from prompt feature"
+        #region Query from prompt feature
 
         public IEnumerable QueryFromPrompt(SqlString modelName, SqlString prompt)
         {
@@ -368,5 +368,37 @@ namespace OllamaSqlClr.Services
 
         #endregion
 
+        public SqlString ExamineImage(SqlString modelName, SqlString prompt, SqlBytes imageData)
+        {
+            if (string.IsNullOrEmpty(modelName.Value))
+            {
+                throw new ArgumentException("Model name cannot be null or empty.", nameof(modelName));
+            }
+
+            if (string.IsNullOrEmpty(prompt.Value))
+            {
+                throw new ArgumentException("Prompt cannot be null or empty.", nameof(prompt));
+            }
+
+            if (imageData == null || imageData.IsNull)
+            {
+                throw new ArgumentNullException(nameof(imageData), "Image data cannot be null.");
+            }
+
+            // Convert SqlBytes to Base64 string
+            byte[] imageBytes = imageData.Value;
+            string base64Image = Convert.ToBase64String(imageBytes);
+
+            try
+            {
+                var result = _apiClient.GetModelResponseToImage(prompt.Value, modelName.Value, base64Image);
+                string response = JsonHandler.GetStringField(result, "response");
+                return new SqlString(response);
+            }
+            catch (Exception ex)
+            {
+                return new SqlString($"Error: {ex.Message}");
+            }
+        }
     }
 }

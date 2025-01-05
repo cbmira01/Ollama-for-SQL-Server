@@ -55,6 +55,16 @@ namespace OllamaSqlClr.Tests.Mocks
                 new KeyValuePair<string, object>("digest", "abcd1234")
             };
         }
+
+        public List<KeyValuePair<string, object>> GetModelResponseToImage(string prompt, string modelName, string base64Image)
+        {
+            return new List<KeyValuePair<string, object>>
+            {
+                new KeyValuePair<string, object>("response", $"Mocked response for model '{modelName}' and prompt '{prompt}'"),
+                new KeyValuePair<string, object>("modelName", modelName),
+                new KeyValuePair<string, object>("prompt", prompt)
+            };
+        }
     }
 }
 
