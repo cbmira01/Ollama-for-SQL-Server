@@ -1,10 +1,12 @@
 
 
-/**
-    Demonstrations of LLM completions in SQL Server
+/*************************************************************************************************
+
+    Demonstrations of LLM completions in SQL Server.
 
     Make sure your local Ollama API server is running.
-**/
+
+*************************************************************************************************/
 
 
 USE [TEST];

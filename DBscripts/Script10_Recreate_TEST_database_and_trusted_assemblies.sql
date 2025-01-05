@@ -1,6 +1,7 @@
 
 
-/**
+/*************************************************************************************************
+
     This script will:
         - drop and recreate the TEST database
         - enable CLR integration for UNSAFE assemblies
@@ -9,7 +10,10 @@
     Make sure the @RepositoryPath symbol is set to your local repository location.
 
     After this script, run Script20 to recreate the demonstration tables.
-**/
+
+    After this script, Script22 can be run to load data for image classification studies.
+
+*************************************************************************************************/
 
 DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
 

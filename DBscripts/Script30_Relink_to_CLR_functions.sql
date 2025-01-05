@@ -1,31 +1,34 @@
 
 
-/**
+/*************************************************************************************************
     
     This script will:
-    - drop all CLR functions and the existing CLR assembly reference
-    - recreate the link to the most currently released CLR assembly
-    - recreate links to the CLR functions
-    - dump a list of all user-defined assemblies and all CLR functions
-    - run a short query to the Ollama API server
+        - drop all CLR functions and the existing CLR assembly reference
+        - recreate the link to the currently released CLR assembly
+        - recreate links to all the CLR functions
+        - dump a list of all user-defined assemblies and all CLR functions
+        - run a short query to the Ollama API server
 
     This script must be run every time the SQL/CLR project is rebuilt.
 
     These functions depend on the local Ollama API service being available...
         make sure your local Ollama API server is running.
 
-    Use Script10 to ensure that a TEST database is available on your database 
-        server with permissions for CLR integration.
+    Prior to this script, run Script10 to ensure that a TEST database is available 
+        on your database server with permissions for CLR integration.
 
-    Use Script20 to populate the TEST database with demonstration data.
+    Prior to this script, run Script20 to populate the TEST database with demonstration data.
+    Prior to this script, Script22 can be optionally run to load data for image classification studies.
 
     Make sure the @RepositoryPath symbol is set to your local repository location.
 
     After running this script, take a look at the demonstration scripts:
-    - Script40: Various sample function calls
+    - Script40: Various sample CLR function calls
     - Script50: A study of scored sentiment analysis
-    - Script60: A test of 'QueryFromPrompt'
-**/
+    - Script60: A test of 'QueryFromPrompt', productions of SQL queries from user prompts
+    - Script70: Image classification studies
+
+*************************************************************************************************/
 
 DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
 

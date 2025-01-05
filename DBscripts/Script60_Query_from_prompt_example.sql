@@ -1,11 +1,17 @@
 
-/**
-    This script contains tests of the 'QueryFromPrompt' feature.
+/*************************************************************************************************
 
-	This function is most successful when the Mistral model is used.
+    This script contains tests of the 'QueryFromPrompt' feature, to demonstrate production
+        of SQL queries from natural-language prompts.
+
+    Behind the scenes, LLMs are provided with the database schema produced in Script20,
+    along with heavy prompting to ensure the best SQL production.
+
+    Of the LLMs I tested, Mistral appears to perform the best at this coding task.
 
     Make sure your local Ollama API server is running.
-**/
+
+*************************************************************************************************/
 
 USE [TEST];
 

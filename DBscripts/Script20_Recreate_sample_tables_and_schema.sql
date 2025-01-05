@@ -1,13 +1,14 @@
 
 
-/**
+/*************************************************************************************************
 
     This script populates tables used to showcase CLR functions:
-    - Support emails used for sentiment analysis;
-    - Customer and sales data to demonstrate script construction from a natual language prompt;
-    - A stash of large prompts for the QueryFromPrompt feature;
-    - A current schema of the TEST database for consumption by the locally-hosted language models;
-**/
+    - Support emails used for sentiment analysis
+    - Customer and sales data to demonstrate SQL code construction from natual language prompts
+    - A stash of large prompts for the QueryFromPrompt feature
+    - A current schema of the TEST database for consumption by locally-hosted language models
+
+*************************************************************************************************/
 
 USE [TEST];
 
@@ -232,6 +233,7 @@ INSERT INTO KeyValuePairs ([Key], [Value]) VALUES
 GO
 
 PRINT 'Large prompts have been stashed'
+
 -----------------------------------------------------------------------------
 -- Recreate the database schema (required for 'QueryFromPrompt')
 -----------------------------------------------------------------------------
