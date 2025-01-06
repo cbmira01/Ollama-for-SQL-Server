@@ -19,13 +19,13 @@ USE [TEST];
 ---------------------------------------------------------------------------------
 
 -- Choose a filename
-DECLARE @FileName NVARCHAR(100) = 'pexels-brunoscramgnon-596134-moon.jpg';
--- DECLARE @FileName NVARCHAR(100) = 'pexels-anntarazevich-5910755-motivation.jpg';
--- DECLARE @FileName NVARCHAR(100) = 'pexels-anntarazevich-6230961-scrabble-words.jpg';
--- DECLARE @FileName NVARCHAR(100) = 'pexels-tdcat-59523-puppy.jpg';
--- DECLARE @FileName NVARCHAR(100) = 'pexels-pixabay-45201-cat.jpg';
+DECLARE @FileName NVARCHAR(100) = 'pexels-brunoscramgnon-596134-moon_resized.jpg';
+-- DECLARE @FileName NVARCHAR(100) = 'pexels-anntarazevich-5910755-motivation_resized.jpg';
+-- DECLARE @FileName NVARCHAR(100) = 'pexels-anntarazevich-6230961-scrabble-words_resized.jpg';
+-- DECLARE @FileName NVARCHAR(100) = 'pexels-tdcat-59523-puppy_resized.jpg';
+-- DECLARE @FileName NVARCHAR(100) = 'pexels-pixabay-45201-cat_resized.jpg';
 
-DECLARE @Prompt NVARCHAR(100) = 'Return a list of no more than ten words that describe this image.';
+DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';
 DECLARE @ModelName NVARCHAR(100) = 'llava';
 DECLARE @ImageData VARBINARY(MAX);
 

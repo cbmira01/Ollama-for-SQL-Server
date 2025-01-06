@@ -11,6 +11,9 @@ using System.Data;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Data.SqlClient;
+using static System.Net.Mime.MediaTypeNames;
+using System.IO;
+
 
 namespace OllamaSqlClr.Services
 {
@@ -368,6 +371,8 @@ namespace OllamaSqlClr.Services
 
         #endregion
 
+        #region Image classification feature
+
         public SqlString ExamineImage(SqlString modelName, SqlString prompt, SqlBytes imageData)
         {
             if (string.IsNullOrEmpty(modelName.Value))
@@ -400,5 +405,7 @@ namespace OllamaSqlClr.Services
                 return new SqlString($"Error: {ex.Message}");
             }
         }
+
+        #endregion
     }
 }

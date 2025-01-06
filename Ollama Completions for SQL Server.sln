@@ -59,6 +59,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagrams", "Diagrams", "{88
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadImageFiles", "LoadImageFiles\LoadImageFiles.csproj", "{0BF465D9-80CC-49D8-BE51-7752ECED87DD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{0876E0EC-03D4-44C7-B0A5-56DDA8C50422}"
+	ProjectSection(SolutionItems) = preProject
+		Images\pexels-anntarazevich-5910755-motivation_resized.jpg = Images\pexels-anntarazevich-5910755-motivation_resized.jpg
+		Images\pexels-anntarazevich-6230961-scrabble-words_resized.jpg = Images\pexels-anntarazevich-6230961-scrabble-words_resized.jpg
+		Images\pexels-brunoscramgnon-596134-moon_resized.jpg = Images\pexels-brunoscramgnon-596134-moon_resized.jpg
+		Images\pexels-pixabay-33287-dogs_resized.jpg = Images\pexels-pixabay-33287-dogs_resized.jpg
+		Images\pexels-pixabay-45201-cat_resized.jpg = Images\pexels-pixabay-45201-cat_resized.jpg
+		Images\pexels-pixabay-459236-horse_resized.jpg = Images\pexels-pixabay-459236-horse_resized.jpg
+		Images\pexels-pixabay-66898-elephants_resized.jpg = Images\pexels-pixabay-66898-elephants_resized.jpg
+		Images\pexels-simon73-698275-tree_resized.jpg = Images\pexels-simon73-698275-tree_resized.jpg
+		Images\pexels-tdcat-59523-puppy_resized.jpg = Images\pexels-tdcat-59523-puppy_resized.jpg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
