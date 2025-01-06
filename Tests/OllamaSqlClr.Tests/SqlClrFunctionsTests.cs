@@ -180,5 +180,28 @@ namespace OllamaSqlClr.Tests
             Assert.False(resultEnumerator.MoveNext());
             Assert.False(expectedEnumerator.MoveNext());
         }
+
+        [Fact]
+        public void Test07_ExamineImage_ReturnsExpectedResponse()
+        {
+            // Arrange
+            var modelName = new SqlString("llava");
+            var prompt = new SqlString("What do you see in this image?");
+
+            var imageDataBytes = new byte[] { 1, 2, 3, 4, 5 };
+            var imageData = new SqlBytes(imageDataBytes);
+
+            var expectedResponse = new SqlString("I see a cat.");
+
+            _mockOllamaService
+                .Setup(service => service.ExamineImage(modelName, prompt, imageData))
+                .Returns(expectedResponse);
+
+            // Act
+            var result = SqlClrFunctions.ExamineImage(modelName, prompt, imageData);
+
+            // Assert
+            Assert.Equal(expectedResponse, result);
+        }
     }
 }

@@ -31,6 +31,17 @@ namespace JsonClrLibrary
             return new KeyValuePair<string, object>(key, objectList);
         }
 
+        // Overloaded CreateArray method for List<string>
+        public static KeyValuePair<string, object> CreateArray(string key, List<string> items)
+        {
+            // If items is null, create an empty List<object>
+            var objectList = items != null
+                ? new List<object>(items.ConvertAll(item => (object)item))
+                : new List<object>();
+
+            return new KeyValuePair<string, object>(key, objectList);
+        }
+
         public static List<object> CreateArray(params object[] items)
         {
             return new List<object>(items);

@@ -93,11 +93,15 @@ namespace OllamaSqlClr.Helpers
             string modelName, 
             string base64Image)
         {
+            var base64ImageList = new List<string> { base64Image };
+            var noContext = new List<int> { };
+
             var requestPayload = JsonBuilder.CreateAnonymousObject(
                 JsonBuilder.CreateField("model", modelName),
                 JsonBuilder.CreateField("prompt", prompt),
                 JsonBuilder.CreateField("stream", false),
-                JsonBuilder.CreateField("image", base64Image)
+                JsonBuilder.CreateArray("images", base64ImageList),
+                JsonBuilder.CreateArray("context", noContext)
             );
 
             string requestJson = JsonHandler.Serialize(requestPayload);

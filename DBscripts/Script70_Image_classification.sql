@@ -39,7 +39,7 @@ GO
 ---------------------------------------------------------------------------------
 
 -- Choose a prompt
-DECLARE @Prompt NVARCHAR(100) = 'Return a list of no more than ten words that describe this image.';
+DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';
 -- DECLARE @Prompt NVARCHAR(100) = 'Answering only YES or NO, are there any animals depicted in this image?';
 -- DECLARE @Prompt NVARCHAR(100) = 'Answering only YES or NO, are there any letters or numbers depicted in this image?';
 
@@ -50,4 +50,56 @@ SELECT
     FileName,
     dbo.ExamineImage(@ModelName, @Prompt, ImageData) AS Result
 FROM Images;
+GO
+
+--------------------------------------------------------------------------------------
+-- Run a prompt against all images using a cursor, send output to the Messages panel
+--------------------------------------------------------------------------------------
+
+-- Choose a prompt
+DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';
+-- DECLARE @Prompt NVARCHAR(100) = 'Answering only YES or NO, are there any animals depicted in this image?';
+-- DECLARE @Prompt NVARCHAR(100) = 'Answering only YES or NO, are there any letters or numbers depicted in this image?';
+
+DECLARE @ModelName NVARCHAR(100) = 'llava';
+
+-- Declare variables to store individual row data
+DECLARE @FileName NVARCHAR(255);
+DECLARE @ImageData VARBINARY(MAX);
+DECLARE @Result NVARCHAR(MAX);
+DECLARE @RequestGUID UNIQUEIDENTIFIER;
+
+-- Declare a cursor for the Images table
+DECLARE ImageCursor CURSOR FOR
+SELECT FileName, ImageData
+FROM Images;
+
+-- Open the cursor
+OPEN ImageCursor;
+
+-- Fetch the first row
+FETCH NEXT FROM ImageCursor INTO @FileName, @ImageData;
+
+-- Loop through the cursor
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    -- Generate a unique identifier for each request
+    SET @RequestGUID = NEWID();
+
+    -- Process the current row and call the ExamineImage function
+    SELECT @Result = dbo.ExamineImage(@ModelName, @Prompt, @ImageData);
+
+    -- Output the results
+    PRINT 'RequestGUID: ' + CAST(@RequestGUID AS NVARCHAR(36));
+    PRINT 'FileName: ' + @FileName;
+    PRINT 'Result: ' + @Result;
+    PRINT '';
+
+    -- Fetch the next row
+    FETCH NEXT FROM ImageCursor INTO @FileName, @ImageData;
+END;
+
+-- Close and deallocate the cursor
+CLOSE ImageCursor;
+DEALLOCATE ImageCursor;
 GO

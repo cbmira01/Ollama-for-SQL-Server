@@ -68,6 +68,21 @@ namespace JsonClrLibrary.Tests
         }
 
         [Fact]
+        public void CreateArray_WithListOfStrings_ReturnsKeyValuePairWithListOfStrings()
+        {
+            string key = "strings";
+            var items = new List<string> { "one", "two", "three" };
+
+            var result = JsonBuilder.CreateArray(key, items);
+
+            Assert.Equal(key, result.Key);
+            Assert.IsType<List<object>>(result.Value);
+            var objects = (List<object>)result.Value;
+            Assert.Equal(items.Count, objects.Count);
+            Assert.All(objects, item => Assert.IsType<string>(item));
+        }
+
+        [Fact]
         public void CreateAnonymousObject_ReturnsListOfFields()
         {
             var field1 = JsonBuilder.CreateField("name", "Alice");
