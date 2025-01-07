@@ -24,13 +24,17 @@
 
     After running this script, take a look at the demonstration scripts:
         - Script40: Various sample CLR function calls
-        - Script50: A study of scored sentiment analysis
-        - Script60: A test of 'QueryFromPrompt', productions of SQL queries from user prompts
+        - Script50: Studies of scored sentiment analysis
+        - Script60: 'QueryFromPrompt', productions of SQL queries from user prompts
         - Script70: Image classification studies
 
 *************************************************************************************************/
 
+--------------------------------------------------------------------------------------------
+-- Ensure the @RepositoryPath symbol is set to your local repository location
 DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+--------------------------------------------------------------------------------------------
+
 
 ----------------------------------------------
 -- Use the target database with CLR enabled 
@@ -136,7 +140,7 @@ GO
 
 CREATE FUNCTION dbo.ExamineImage(
     @modelName NVARCHAR(MAX), 
-    @askPrompt NVARCHAR(MAX), 
+    @prompt NVARCHAR(MAX), 
     @imageData VARBINARY(MAX)
 )
 RETURNS NVARCHAR(MAX)

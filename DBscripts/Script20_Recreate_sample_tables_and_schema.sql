@@ -2,15 +2,33 @@
 
 /*************************************************************************************************
 
-    This script populates tables used to showcase CLR functions:
-    - Support emails used for sentiment analysis
-    - Customer and sales data to demonstrate SQL code construction from natual language prompts
-    - A stash of large prompts for the QueryFromPrompt feature
-    - A current schema of the TEST database for consumption by locally-hosted language models
+    This script creates and  populates tables used to showcase CLR functions:
+
+        - Images table (refer to Script22 for image file loading)
+
+        - Support emails used for sentiment analysis
+
+        - Customer and sales data to demonstrate SQL code construction from natual language prompts
+
+        - A stash of large prompts for the QueryFromPrompt feature
+
+        - A current schema of the TEST database for consumption by locally-hosted language models
 
 *************************************************************************************************/
 
 USE [TEST];
+
+---------------------------------------------------------------------------------
+-- Recreate the Images table if it exists
+---------------------------------------------------------------------------------
+IF OBJECT_ID('dbo.Images', 'U') IS NOT NULL
+    DROP TABLE dbo.Images;
+
+CREATE TABLE Images (
+    Id INT PRIMARY KEY IDENTITY,
+    FileName NVARCHAR(255) NOT NULL,
+    ImageData VARBINARY(MAX) NOT NULL
+);
 
 -------------------------------------------------------
 -- Recreate the sentiment analysis support emails

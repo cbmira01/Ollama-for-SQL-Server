@@ -3,7 +3,7 @@
 ## Testing and Debugging
 
 This guide explains how to test and debug the components of `Ollama Completions for SQL Server`, 
-via console programs, unit tests, and remote debugging. Use of the Visual Studio IDE is assumed.
+via console programs, unit tests, and remote debugging. Use of Visual Studio is assumed.
 
 ---
 
@@ -17,7 +17,7 @@ Two console programs are available for integration testing:
    - Click **Start** to run the tests.
    - Build and test results will appear in the `Output` window.
 
-2. **Integration Tests with the Ollama Server**:
+2. **Integration Tests with the Ollama API Server**:
    - Ensure the Ollama server is running.
    - Configure the solution to `Debug`.
    - Set the `OllamaSqlClr.Tests` project as the `Startup Project`.
@@ -78,14 +78,21 @@ When making changes:
    - Try to implement something from the [ROADMAP](./ROADMAP.md).
    - Or try to improve an existing feature.
    - Or try something new!
+   - Write test code along with your new work.
+
 2. **Build and Test**
    - Build the solution in `Debug` configuration and ensure all tests pass.
+
 3. **Create a Release Build**
-   - Build the solution in `Release` configuration to generate the assembly.
-4. **Redeploy Assembly**
-   - Run `Script30` to recreate the CLR function and assembly links.
+   - Build the solution in `Release` configuration to generate the CLR assembly.
+
+4. **Redeploy the Assembly**
+   - Run `Script30` to deploy to SQL Server (recreate the CLR function and assembly links).
+   - Establish data to test against your new work.
+
 5. **Debug Remotely**
    - Attach the debugger to SQL Server as described above.
+   - Use an API development tool like Postman to isolate API requests and responses.
 
 ---
 

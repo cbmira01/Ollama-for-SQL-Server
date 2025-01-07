@@ -15,7 +15,10 @@
 
 *************************************************************************************************/
 
+--------------------------------------------------------------------------------------------
+-- Ensure the @RepositoryPath symbol is set to your local repository location
 DECLARE @RepositoryPath NVARCHAR(200) = 'C:\Users\cmirac2\Source\PrivateRepos\Ollama-for-SQL-Server';
+--------------------------------------------------------------------------------------------
 
 USE [master];
 

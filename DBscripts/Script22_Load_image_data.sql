@@ -1,30 +1,30 @@
 
 /*************************************************************************************************
 
-    This script recreates the Images table for image classification studies.
+    The Images table can be populated with image files in one of two ways:
 
-    The Images table can be populated with image files in two ways:
-        - Run console program 'LoadImageFiles' (without using xp_cmdshell).
-        - Enable xp_cmdshell (requires copying image files into an accessible directory).
+        - Via console program 'LoadImageFiles' (this script not required).
 
-    To optionally use xp_cmdshell to load image files, follow these steps:
+        - Bulk-insert via this script (requires image files copied into an accessible folder).
+
+    To bulk-insert image files, follow these steps:
 
         1. Set the @EnableXpCmdshell symbol to '1' to enable the code section.
 
         2. Create a folder that xp_cmdshell is able to read.
             xp_cmdshell should be able to read files in the C:\Temp\Images folder.
 
-        3. Set the @ImagesPath symbol to the readable directory.
+        3. Set the @ImagesPath symbol to the readable folder.
 
-        4. Copy JPEG files from <repository_root>\Images folder into the readable folder.
+        4. Copy image files from the <repository_root>\Images folder into the readable folder.
 
-        5. Run the entire script to drop/create the Images table and bulk-insert the image files.
+        5. Run this script.
 
-    Before running this script, run Script10 to ensure that a TEST database 
-        is available on your database server.
+    Before running this script, note that:
 
-    Before running this script, it is recommended to run Script20 to populate the 
-        TEST database with other demonstration data.
+        - Script10 establishes the TEST database along with its CLR permissions.
+
+        - Script20 recreates the Images table.
 
     Demonstrations of image classifications by model completions can be found in Script70.
 
@@ -32,25 +32,15 @@
 
 ----------------------------------------------------------------------------------------
 -- Ensure these symbols are set properly:
+
 --      - Set @EnableXpCmdshell to 1 to enable the xp_cmdshell section, or 0 to skip it.
---      - Set @ImagesPath to a directory readable by xp_cmdshell.
 DECLARE @EnableXpCmdshell BIT = 0;
+
+--      - Set @ImagesPath to a directory readable by xp_cmdshell.
 DECLARE @ImagesPath NVARCHAR(200) = 'C:\Temp\Images\';
 ----------------------------------------------------------------------------------------
 
 USE [TEST];
-
----------------------------------------------------------------------------------
--- Recreate Images table if it exists
----------------------------------------------------------------------------------
-IF OBJECT_ID('dbo.Images', 'U') IS NOT NULL
-    DROP TABLE dbo.Images;
-
-CREATE TABLE Images (
-    Id INT PRIMARY KEY IDENTITY,
-    FileName NVARCHAR(255) NOT NULL,
-    ImageData VARBINARY(MAX) NOT NULL
-);
 
 ---------------------------------------------------------------------------------
 -- Optionally run xp_cmdshell to load image files

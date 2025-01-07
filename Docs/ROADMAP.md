@@ -50,12 +50,9 @@
 
 ### Improvements and maintenance
 
-- **QueryFromPrompt**
-  - This feature now passes tests on a small set of tables... How would it fare on something more realistic?
-
 - **Project configuration**
-  - A lot of unexposed settings are cropping up all over.
-  - New features are going to need highly tweaked LLM prompts.
+  - A number of unexposed settings are cropping up.
+  - New features may need highly tweaked LLM prompts.
   - Configure at build time, or via SQL queries?
 
 - **Ollama context field deprecated**: With Ollama 0.5.4 (Dec 2024), the context field in 

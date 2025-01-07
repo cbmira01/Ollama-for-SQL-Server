@@ -29,7 +29,8 @@ This document lists references, resources, and materials consulted during the de
 
 ## Pexels Stock Photo Service
 
-Thanks are due [Pexels Stock](https://www.pexels.com) for images used for testing visual LLM models.
+Thanks are due [Pexels Stock](https://www.pexels.com) and their contributing artists 
+for images used in demonstrations of visual LLM models.
 
 ### About Pexels
 
@@ -60,4 +61,4 @@ All photos and videos on Pexels can be downloaded and used for free.
 
   - Don't use the photos or videos as part of your trade-mark, design-mark, trade-name, business name or service mark.
 
-_Last updated: January 3, 2025_
+_Last updated: January 7, 2025_
