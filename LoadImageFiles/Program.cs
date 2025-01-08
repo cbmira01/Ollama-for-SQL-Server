@@ -4,11 +4,13 @@ using System.IO;
 
 /***
  * 
- * This program will load image files into the TEST database Images table.
+ * This program will load JPEG image files into the TEST database Images table.
  * 
- * Only unique filenames are loaded into the table.
+ * Script20 establishes the Images table (among other things).
  * 
- * Script22 contains an alternative way to load image files.
+ * Only unique filenames are loaded.
+ * 
+ * Script22 contains an alternative way to bulk-insert image files.
  * 
  ***/
 

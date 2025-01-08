@@ -12,11 +12,11 @@
 
 *************************************************************************************************/
 
-USE [TEST];
  
 ---------------------------------------------------------------------------------
 -- Run a prompt against a chosen image
 ---------------------------------------------------------------------------------
+USE [TEST];
 
 -- Choose a filename
 DECLARE @FileName NVARCHAR(100) = 'pexels-brunoscramgnon-596134-moon_resized.jpg';
@@ -37,6 +37,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Run a prompt against all images
 ---------------------------------------------------------------------------------
+USE [TEST];
 
 -- Choose a prompt
 DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';
@@ -55,6 +56,7 @@ GO
 --------------------------------------------------------------------------------------
 -- Run a prompt against all images using a cursor, send output to the Messages panel
 --------------------------------------------------------------------------------------
+USE [TEST];
 
 -- Choose a prompt
 DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';

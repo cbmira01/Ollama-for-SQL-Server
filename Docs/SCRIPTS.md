@@ -28,7 +28,7 @@ structure.
 
 ## Script 22
 
-`Script22` is one option for bulk-inserting image files into the Images table. 
+`Script22` is one option for bulk-inserting JPEG image files into the Images table. 
 
 The preconditions for running this script are:
     - that Script10 has established the TEST database;
@@ -36,7 +36,9 @@ The preconditions for running this script are:
     - that image files are available in a folder that xp_cmdshell can read;
     - and that the bulk-insert code is enabled in this script.
 
-The other option for loading image files is by running the `LoadImageFiles` console program.
+The other option for loading JPEG image files is by running the `LoadImageFiles` console program.
+
+Good results can be had from the Llava model by resizing images down to no more than 500 x 500 pixels.
 
 ## Script 30
 

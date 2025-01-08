@@ -11,12 +11,12 @@
 
 *************************************************************************************************/
 
-Use [TEST];
-GO
 
 --------------------------------------------------------------------
 -- Sentiment analysis
 --------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @prompt NVARCHAR(MAX) = '
 You are providing a sentiment label for a support email. 
@@ -37,6 +37,8 @@ GO
 --------------------------------------------------------------------
 -- Keyword discovery
 --------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @prompt NVARCHAR(MAX) = '
 You are an expert in extracting keywords from support emails.
@@ -47,7 +49,7 @@ Do not include any further explanation.
 SELECT 
     id,
     email_content,
-    dbo.CompletePrompt(@modelName, @prompt, email_content) AS keywords
+    dbo.CompletePrompt(@modelName, @prompt, email_content) AS Keywords
 FROM 
     support_emails;
 GO
@@ -56,9 +58,11 @@ GO
 --------------------------------------------------------------------
 -- Email routing
 --------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @prompt NVARCHAR(MAX) = '
-You are an expert in routing customer support emails
+You are an expert in routing customer support emails.
 Route this email to either "factory", "sales", "warranty", or "marketing".
 Provide one-word answers without any further explanation. 
 ';
@@ -66,7 +70,7 @@ Provide one-word answers without any further explanation.
 SELECT 
     id,
     email_content,
-    dbo.CompletePrompt(@modelName, @prompt, email_content) AS keywords
+    dbo.CompletePrompt(@modelName, @prompt, email_content) AS RouteTo
 FROM 
     support_emails;
 GO

@@ -13,11 +13,12 @@
 
 *************************************************************************************************/
 
-USE [TEST];
 
 ---------------------------------------------------------------------------------
 -- This query returns support email rows with glad sentiment
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Find all entries in support_emails where sentiment is glad.';
 
@@ -27,6 +28,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to exhibit foreign keys, conditionals, and aggregate
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'How much has John Doe spent in total?';
 
@@ -36,8 +39,10 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to find existence of a customer
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
-DECLARE @prompt NVARCHAR(MAX) = 'Tell me yes or no, is there a customer by the name of John Doe?';
+DECLARE @prompt NVARCHAR(MAX) = 'Is there a customer with last name of Doe? Answer yes or no.';
 
 SELECT [ProposedQuery], [Result] FROM dbo.QueryFromPrompt(@modelName, @prompt);
 GO
@@ -45,6 +50,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to find existence of a customer
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Tell me yes or no, is there a customer by the name of Jason Argonaut?';
 
@@ -54,6 +61,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to count the number of sales
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'How many times has John Doe purchased anything?';
 
@@ -63,6 +72,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to test string searching
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What customers have first names that start with the letter J?';
 
@@ -72,6 +83,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to produce sorted list
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Give me a list of items sold, sorted in reverse alphabetical order by the name of the item.';
 
@@ -81,6 +94,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to test date/time handling
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What was the date and time of the earliest purchase?';
 
@@ -90,6 +105,8 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to test date/time handling
 ---------------------------------------------------------------------------------
+USE [TEST];
+
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What was the time of day of the latest purchase?';
 
