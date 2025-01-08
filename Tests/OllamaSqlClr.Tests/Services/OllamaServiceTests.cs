@@ -11,6 +11,7 @@ using OllamaSqlClr.DataAccess;
 using OllamaSqlClr.Models;
 using JsonClrLibrary;
 using System.Linq;
+using Moq.Protected;
 
 namespace OllamaSqlClr.Tests.Services
 {
@@ -139,5 +140,61 @@ namespace OllamaSqlClr.Tests.Services
             Assert.Equal("Model1", resultList[0].Name);
             Assert.Equal("ModelType1", resultList[0].Model);
         }
+
+        [Fact(Skip = "Still trying to figure out how to unit test this method.")]
+        public void Test04_QueryFromPrompt_ReturnsProposedQueryAndResults()
+        {
+            // Arrange
+            var modelName = new SqlString("mistral");
+            var prompt = new SqlString("What was the date and time of the earliest purchase?");
+            var proposedQuery = "SELECT MIN(SaleDate) AS [Earliest Purchase Date] FROM Sales; -- attempt 1";
+
+            var mockDatabaseExecutor = new Mock<IDatabaseExecutor>();
+            var mockApiClient = new Mock<IOllamaApiClient>();
+
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("Earliest Purchase Date");
+            dataTable.Rows.Add("12/1/2024 10:15:00 AM"); // Mocked data
+
+            // Mock database executor to return a DataTable
+            mockDatabaseExecutor.Setup(db => db.ExecuteQuery(proposedQuery)).Returns(dataTable);
+
+            // Mock API client to return a mocked response
+            mockApiClient.Setup(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName.Value, It.IsAny<List<int>>()))
+                .Returns(new List<KeyValuePair<string, object>> {
+                    new KeyValuePair<string, object>("response", proposedQuery),
+                    new KeyValuePair<string, object>("context", new List<int> { 1, 2, 3 })
+                });
+
+            // Create a partial mock of the service
+            var serviceMock = new Mock<OllamaService>(mockApiClient.Object, mockDatabaseExecutor.Object) { CallBase = true };
+
+            // Mock the private methods
+            serviceMock
+                .Protected()
+                .Setup<string>("CleanQuery", ItExpr.IsAny<string>())
+                .Returns(proposedQuery);
+
+            serviceMock
+                .Protected()
+                .Setup<string>("ConvertDataTableToJson", ItExpr.IsAny<DataTable>())
+                .Returns("[{\"Earliest Purchase Date\": \"12/1/2024 10:15:00 AM\"}]");
+
+            // Act
+            var result = serviceMock.Object.QueryFromPrompt(modelName, prompt);
+            var resultList = result.Cast<QueryFromPromptRow>().ToList();
+
+            // Assert
+            Assert.Collection(resultList,
+                item =>
+                {
+                    Assert.Equal(proposedQuery, item.ProposedQuery);
+                    Assert.Equal("[{\"Earliest Purchase Date\": \"12/1/2024 10:15:00 AM\"}]", item.Result);
+                });
+        }
+
+        [Fact(Skip = "This unit test is in progress.")]
+        public void Test05_ExamineImage_ReturnsModelResponse()
+        { }
     }
 }
