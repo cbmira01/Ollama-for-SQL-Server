@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using Xunit;
 
 namespace JsonClrLibrary.Tests
@@ -216,6 +217,66 @@ namespace JsonClrLibrary.Tests
             double result = JsonHandler.GetDoubleByPath(data, "nested.value");
 
             Assert.Equal(3.14159, result, 5);
+        }
+
+        [Fact]
+        public void DataTableToJson_ValidTable_ReturnsCorrectJson()
+        {
+            // Arrange
+            var table = new DataTable();
+            table.Columns.Add("Id", typeof(int));
+            table.Columns.Add("Name", typeof(string));
+            table.Columns.Add("IsActive", typeof(bool));
+
+            table.Rows.Add(1, "Alice", true);
+            table.Rows.Add(2, "Bob", false);
+
+            string expectedJson = "[{ \"Id\": \"1\", \"Name\": \"Alice\", \"IsActive\": \"True\"}," +
+                                  "{ \"Id\": \"2\", \"Name\": \"Bob\", \"IsActive\": \"False\"}]";
+
+            // Act
+            string actualJson = JsonHandler.DataTableToJson(table);
+
+            // Assert
+            Assert.Equal(expectedJson, actualJson);
+        }
+
+        [Fact]
+        public void DataTableToJson_EmptyTable_ReturnsEmptyJsonArray()
+        {
+            // Arrange
+            var table = new DataTable();
+            table.Columns.Add("Id", typeof(int));
+            table.Columns.Add("Name", typeof(string));
+
+            string expectedJson = "[]";
+
+            // Act
+            string actualJson = JsonHandler.DataTableToJson(table);
+
+            // Assert
+            Assert.Equal(expectedJson, actualJson);
+        }
+
+        [Fact]
+        public void DataTableToJson_TableWithNullValues_ReturnsJsonWithNulls()
+        {
+            // Arrange
+            var table = new DataTable();
+            table.Columns.Add("Id", typeof(int));
+            table.Columns.Add("Name", typeof(string));
+
+            table.Rows.Add(1, "Alice");
+            table.Rows.Add(2, DBNull.Value);
+
+            string expectedJson = "[{ \"Id\": \"1\", \"Name\": \"Alice\"}," +
+                                  "{ \"Id\": \"2\", \"Name\": \"\"}]";
+
+            // Act
+            string actualJson = JsonHandler.DataTableToJson(table);
+
+            // Assert
+            Assert.Equal(expectedJson, actualJson);
         }
     }
 }

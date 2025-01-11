@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -7,6 +8,9 @@ namespace JsonClrLibrary
 {
     public class JsonHandler
     {
+
+        #region Public methods
+
         public static string Serialize(List<KeyValuePair<string, object>> data)
         {
             return Serialize(data, new HashSet<string>());
@@ -18,7 +22,32 @@ namespace JsonClrLibrary
             return ParseObject(json, ref index);
         }
 
-        #region "DumpJson"
+        public static string DataTableToJson(DataTable table)
+        {
+            var jsonResult = new StringBuilder();
+            jsonResult.Append("[");
+
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                if (i > 0) jsonResult.Append(",");
+                var row = table.Rows[i];
+                jsonResult.Append("{");
+
+                for (int j = 0; j < table.Columns.Count; j++)
+                {
+                    if (j > 0) jsonResult.Append(",");
+                    string columnName = table.Columns[j].ColumnName;
+                    string cellValue = row[j]?.ToString() ?? "";
+
+                    jsonResult.Append($" \"{columnName}\": \"{EscapeString(cellValue)}\"");
+                }
+
+                jsonResult.Append("}");
+            }
+
+            jsonResult.Append("]");
+            return jsonResult.ToString();
+        }
 
         public static void DumpJson(string json)
         {
@@ -28,113 +57,9 @@ namespace JsonClrLibrary
             Console.WriteLine(); // Ensures the console cursor moves to the next line
         }
 
-        private static void DumpValue(object value, int indentLevel, bool inline)
-        {
-            string indent = new string(' ', indentLevel * 2);
-
-            switch (value)
-            {
-                case List<KeyValuePair<string, object>> obj:
-                    Console.Write("{");
-                    if (!inline) Console.WriteLine();
-                    int count = obj.Count;
-                    for (int i = 0; i < count; i++)
-                    {
-                        var kvp = obj[i];
-                        if (!inline) Console.Write(new string(' ', (indentLevel + 1) * 2));
-                        Console.Write("\"" + kvp.Key + "\": ");
-                        DumpValue(kvp.Value, indentLevel + 1, inline: false);
-                        if (i < count - 1)
-                        {
-                            Console.Write(",");
-                        }
-                        if (!inline) Console.WriteLine();
-                    }
-                    if (!inline) Console.Write(new string(' ', indentLevel * 2));
-                    Console.Write("}");
-                    break;
-
-                case List<object> array:
-                    if (IsSimpleArray(array))
-                    {
-                        Console.Write($"[\n{indent}{indent}");
-                        for (int i = 0; i < array.Count; i++)
-                        {
-                            DumpValue(array[i], indentLevel + 1, inline: true);
-                            if (i < array.Count - 1)
-                            {
-                                Console.Write(", ");
-                            }
-
-                            if ((i+1)%15 == 0) 
-                            {
-                                Console.Write($"\n{indent}{indent}");
-                            }
-                        }
-                        Console.Write($"\n{indent}{indent}]");
-                    }
-                    else
-                    {
-                        // Print complex arrays vertically
-                        Console.Write("[");
-                        if (!inline) Console.WriteLine();
-                        int arrCount = array.Count;
-                        for (int i = 0; i < arrCount; i++)
-                        {
-                            if (!inline) Console.Write(new string(' ', (indentLevel + 1) * 2));
-                            DumpValue(array[i], indentLevel + 1, inline: false);
-                            if (i < arrCount - 1)
-                            {
-                                Console.Write(",");
-                            }
-                            if (!inline) Console.WriteLine();
-                        }
-                        if (!inline) Console.Write(new string(' ', indentLevel * 2));
-                        Console.Write("]");
-                    }
-                    break;
-
-                case string str:
-                    Console.Write("\"" + EscapeString(str) + "\"");
-                    break;
-
-                case bool boolVal:
-                    Console.Write(boolVal ? "true" : "false");
-                    break;
-
-                case int _:
-                case long _:
-                case double _:
-                    Console.Write(value.ToString());
-                    break;
-
-                case DateTime dateTimeVal:
-                    Console.Write("\"" + dateTimeVal.ToString("o") + "\"");
-                    break;
-
-                case null:
-                    Console.Write("null");
-                    break;
-
-                default:
-                    Console.Write("\"" + EscapeString(value.ToString()) + "\"");
-                    break;
-            }
-        }
-
-        private static bool IsSimpleType(object value)
-        {
-            return value is string || value is int || value is long || value is double || value is bool || value is null || value is DateTime;
-        }
-
-        private static bool IsSimpleArray(List<object> array)
-        {
-            return array.All(item => IsSimpleType(item));
-        }
-
         #endregion
 
-        #region "Get fields of object or simple type"
+        #region Get fields of object or simple type
 
         public static object GetField(List<KeyValuePair<string, object>> data, string key)
         {
@@ -217,7 +142,7 @@ namespace JsonClrLibrary
 
         #endregion
 
-        #region "Get arrays of object or simple types"
+        #region Get arrays of object or simple types
 
         public static List<int> GetIntegerArray(List<KeyValuePair<string, object>> data, string key)
         {
@@ -289,7 +214,7 @@ namespace JsonClrLibrary
 
         #endregion
 
-        #region "Get fields of object or simple types by path"
+        #region Get fields of object or simple types by path
 
         public static object GetFieldByPath(List<KeyValuePair<string, object>> data, string path)
         {
@@ -456,7 +381,7 @@ namespace JsonClrLibrary
 
         #endregion
 
-        #region "Get arrays of object or simple types by path"
+        #region Get arrays of object or simple types by path
 
         public static List<object> GetListByPath(List<KeyValuePair<string, object>> data, string path)
         {
@@ -517,7 +442,7 @@ namespace JsonClrLibrary
 
         #endregion
 
-        #region "Helper methods"
+        #region Helper methods
 
         private static string Serialize(List<KeyValuePair<string, object>> data, HashSet<string> parentKeys)
         {
@@ -795,6 +720,110 @@ namespace JsonClrLibrary
         private static void SkipWhitespace(string json, ref int index)
         {
             while (index < json.Length && char.IsWhiteSpace(json[index])) index++;
+        }
+
+        private static void DumpValue(object value, int indentLevel, bool inline)
+        {
+            string indent = new string(' ', indentLevel * 2);
+
+            switch (value)
+            {
+                case List<KeyValuePair<string, object>> obj:
+                    Console.Write("{");
+                    if (!inline) Console.WriteLine();
+                    int count = obj.Count;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var kvp = obj[i];
+                        if (!inline) Console.Write(new string(' ', (indentLevel + 1) * 2));
+                        Console.Write("\"" + kvp.Key + "\": ");
+                        DumpValue(kvp.Value, indentLevel + 1, inline: false);
+                        if (i < count - 1)
+                        {
+                            Console.Write(",");
+                        }
+                        if (!inline) Console.WriteLine();
+                    }
+                    if (!inline) Console.Write(new string(' ', indentLevel * 2));
+                    Console.Write("}");
+                    break;
+
+                case List<object> array:
+                    if (IsSimpleArray(array))
+                    {
+                        Console.Write($"[\n{indent}{indent}");
+                        for (int i = 0; i < array.Count; i++)
+                        {
+                            DumpValue(array[i], indentLevel + 1, inline: true);
+                            if (i < array.Count - 1)
+                            {
+                                Console.Write(", ");
+                            }
+
+                            if ((i + 1) % 15 == 0)
+                            {
+                                Console.Write($"\n{indent}{indent}");
+                            }
+                        }
+                        Console.Write($"\n{indent}{indent}]");
+                    }
+                    else
+                    {
+                        // Print complex arrays vertically
+                        Console.Write("[");
+                        if (!inline) Console.WriteLine();
+                        int arrCount = array.Count;
+                        for (int i = 0; i < arrCount; i++)
+                        {
+                            if (!inline) Console.Write(new string(' ', (indentLevel + 1) * 2));
+                            DumpValue(array[i], indentLevel + 1, inline: false);
+                            if (i < arrCount - 1)
+                            {
+                                Console.Write(",");
+                            }
+                            if (!inline) Console.WriteLine();
+                        }
+                        if (!inline) Console.Write(new string(' ', indentLevel * 2));
+                        Console.Write("]");
+                    }
+                    break;
+
+                case string str:
+                    Console.Write("\"" + EscapeString(str) + "\"");
+                    break;
+
+                case bool boolVal:
+                    Console.Write(boolVal ? "true" : "false");
+                    break;
+
+                case int _:
+                case long _:
+                case double _:
+                    Console.Write(value.ToString());
+                    break;
+
+                case DateTime dateTimeVal:
+                    Console.Write("\"" + dateTimeVal.ToString("o") + "\"");
+                    break;
+
+                case null:
+                    Console.Write("null");
+                    break;
+
+                default:
+                    Console.Write("\"" + EscapeString(value.ToString()) + "\"");
+                    break;
+            }
+        }
+
+        private static bool IsSimpleType(object value)
+        {
+            return value is string || value is int || value is long || value is double || value is bool || value is null || value is DateTime;
+        }
+
+        private static bool IsSimpleArray(List<object> array)
+        {
+            return array.All(item => IsSimpleType(item));
         }
 
         #endregion

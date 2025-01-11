@@ -33,7 +33,7 @@ namespace LoadImageFiles
                     return;
                 }
 
-                string[] imageFiles = Directory.GetFiles(imagesPath, "*.jpg", SearchOption.TopDirectoryOnly);
+                string[] imageFiles = Directory.GetFiles(imagesPath, "*.*", SearchOption.TopDirectoryOnly);
 
                 if (imageFiles.Length == 0)
                 {

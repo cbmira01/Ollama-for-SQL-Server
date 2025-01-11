@@ -11,9 +11,6 @@ using System.Data;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Data.SqlClient;
-using static System.Net.Mime.MediaTypeNames;
-using System.IO;
-
 
 namespace OllamaSqlClr.Services
 {
@@ -179,7 +176,7 @@ namespace OllamaSqlClr.Services
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    jsonTableResult = ConvertDataTableToJson(dataTable);
+                    jsonTableResult = JsonHandler.DataTableToJson(dataTable);
                 }
                 else
                 {
@@ -210,33 +207,6 @@ namespace OllamaSqlClr.Services
             }
 
             return resultList;
-        }
-
-        private string ConvertDataTableToJson(DataTable table)
-        {
-            var jsonResult = new StringBuilder();
-            jsonResult.Append("[");
-
-            for (int i = 0; i < table.Rows.Count; i++)
-            {
-                if (i > 0) jsonResult.Append(",");
-                var row = table.Rows[i];
-                jsonResult.Append("{");
-
-                for (int j = 0; j < table.Columns.Count; j++)
-                {
-                    if (j > 0) jsonResult.Append(",");
-                    string columnName = table.Columns[j].ColumnName;
-                    string cellValue = row[j]?.ToString() ?? "";
-
-                    jsonResult.Append($"\"{columnName}\": \"{cellValue}\"");
-                }
-
-                jsonResult.Append("}");
-            }
-
-            jsonResult.Append("]");
-            return jsonResult.ToString();
         }
 
         private string AskModelForQuery(string modelName, string prompt)
