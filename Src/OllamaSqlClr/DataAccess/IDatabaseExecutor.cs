@@ -13,5 +13,7 @@ namespace OllamaSqlClr.DataAccess
 
         void ExecuteNonQuery(string commandText, SqlParameter[] parameters);
 
+        bool TryQuery(string query);
+
     }
 }

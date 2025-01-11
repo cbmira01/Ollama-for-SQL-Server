@@ -42,12 +42,22 @@ namespace OllamaSqlClr.Tests.Mocks
 
         public bool IsNullOrEmpty(string query)
         {
-            if (query == "mockNoReply")
+            if (query == "mockNullOrEmpty")
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
+        }
+
+        public string CleanQuery(string query)
+        {
+            if (query == "mockNullOrEmpty")
+            {
+                return "mockNullOrEmpty";
+            }
+
+            return "mockCleanQuery";
         }
     }
 }

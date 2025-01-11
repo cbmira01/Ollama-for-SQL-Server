@@ -16,6 +16,8 @@ namespace OllamaSqlClr.Services
 {
     public class OllamaService : IOllamaService
     {
+        #region Service class constructor
+
         private readonly string _sqlConnection;
         private readonly string _apiUrl;
 
@@ -51,6 +53,10 @@ namespace OllamaSqlClr.Services
             _sqlQueryHelper = sqlQueryHelper ?? new SqlQueryHelper(_databaseExecutor);
         }
 
+        #endregion
+
+        #region CompletePrompt feature
+
         public SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
         {
             var prompt = $"{askPrompt.Value} {morePrompt.Value}";
@@ -65,6 +71,10 @@ namespace OllamaSqlClr.Services
                 return new SqlString($"Error: {ex.Message}");
             }
         }
+
+        #endregion
+
+        #region CompleteMultiplePrompt feature
 
         public IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions)
         {
@@ -106,6 +116,10 @@ namespace OllamaSqlClr.Services
             }
         }
 
+        #endregion
+
+        #region GetAvailableModels feature
+
         public IEnumerable GetAvailableModels()
         {
             var availableModels = new List<ModelInformationRow>();
@@ -141,6 +155,8 @@ namespace OllamaSqlClr.Services
                 return new List<ModelInformationRow> { new ModelInformationRow { ModelGuid = Guid.Empty, Name = $"Error: {ex.Message}" } };
             }
         }
+
+        #endregion
 
         #region Query from prompt feature
 
@@ -222,18 +238,19 @@ namespace OllamaSqlClr.Services
             List<int> context = new List<int>();
             string response = "";
 
-            for (int attempt = 0; attempt < 3; attempt++)  // TODO: Configure retries as needed
+            var retryLimit = 3;  // TODO: Configure retries as needed
+            for (int attempt = 0; attempt < retryLimit; attempt++) 
             {
                 try
                 {
                     var result = _apiClient.GetModelResponseToPrompt(complexPrompt, modelName, context);
-                    response = CleanQuery(JsonHandler.GetStringField(result, "response"));
+                    response = _queryValidator.CleanQuery(JsonHandler.GetStringField(result, "response"));
                     context = JsonHandler.GetIntegerArray(result, "context");
 
                     // Append the attempt number as a comment to the query
                     response += $" -- attempt {attempt + 1}";
 
-                    if (ValidateQuery(response))
+                    if (_databaseExecutor.TryQuery(response))
                     {
                         return response;
                     }
@@ -249,47 +266,46 @@ namespace OllamaSqlClr.Services
             return "rejected";
         }
 
-        private string CleanQuery(string dirtyQuery)
+        #endregion
+
+        #region Image classification feature
+
+        public SqlString ExamineImage(SqlString modelName, SqlString prompt, SqlBytes imageData)
         {
-            if (string.IsNullOrEmpty(dirtyQuery))
+            if (string.IsNullOrEmpty(modelName.Value))
             {
-                return dirtyQuery;
+                throw new ArgumentException("Model name cannot be null or empty.", nameof(modelName));
             }
 
-            // Replace '003c' (hex for '<') with the '<' symbol
-            string cleanQuery = Regex.Replace(dirtyQuery, @"003c", "<", RegexOptions.IgnoreCase);
+            if (string.IsNullOrEmpty(prompt.Value))
+            {
+                throw new ArgumentException("Prompt cannot be null or empty.", nameof(prompt));
+            }
 
-            // Replace '003e' (hex for '>') with the '>' symbol
-            cleanQuery = Regex.Replace(cleanQuery, @"003e", ">", RegexOptions.IgnoreCase);
+            if (imageData == null || imageData.IsNull)
+            {
+                throw new ArgumentNullException(nameof(imageData), "Image data cannot be null.");
+            }
 
-            // Clean up code bracketing
-            cleanQuery = Regex.Replace(cleanQuery, @"```sql", " ", RegexOptions.IgnoreCase);
-            cleanQuery = Regex.Replace(cleanQuery, @"```.*?$", " ", RegexOptions.Multiline);
-            cleanQuery = Regex.Replace(cleanQuery, @"`", "", RegexOptions.IgnoreCase);
+            // Convert SqlBytes to Base64 string
+            byte[] imageBytes = imageData.Value;
+            string base64Image = Convert.ToBase64String(imageBytes);
 
-            // Clean up trailing comments
-            cleanQuery = Regex.Replace(cleanQuery, @"--.*?$", "", RegexOptions.Multiline);
-
-            // Clean up newlines
-            cleanQuery = Regex.Replace(cleanQuery, @"\n", " ", RegexOptions.IgnoreCase);
-
-            return cleanQuery;
-        }
-
-        private bool ValidateQuery(string proposedQuery)
-        {
             try
             {
-                _databaseExecutor.ExecuteNonQuery(proposedQuery);
-                return true;
+                var result = _apiClient.GetModelResponseToImage(prompt.Value, modelName.Value, base64Image);
+                string response = JsonHandler.GetStringField(result, "response");
+                return new SqlString(response);
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                // var _ = ex;
-                Console.WriteLine($"Query validation failed: {ex.Message}");
-                return false;
+                return new SqlString($"Error: {ex.Message}");
             }
         }
+
+        #endregion
+
+        #region Service class private fields and methods
 
         private Dictionary<string, string> _keyValueCache;
         private DateTime _lastCacheUpdate;
@@ -337,43 +353,6 @@ namespace OllamaSqlClr.Services
             return _keyValueCache != null && _keyValueCache.TryGetValue(key, out var value)
                 ? value
                 : null;
-        }
-
-        #endregion
-
-        #region Image classification feature
-
-        public SqlString ExamineImage(SqlString modelName, SqlString prompt, SqlBytes imageData)
-        {
-            if (string.IsNullOrEmpty(modelName.Value))
-            {
-                throw new ArgumentException("Model name cannot be null or empty.", nameof(modelName));
-            }
-
-            if (string.IsNullOrEmpty(prompt.Value))
-            {
-                throw new ArgumentException("Prompt cannot be null or empty.", nameof(prompt));
-            }
-
-            if (imageData == null || imageData.IsNull)
-            {
-                throw new ArgumentNullException(nameof(imageData), "Image data cannot be null.");
-            }
-
-            // Convert SqlBytes to Base64 string
-            byte[] imageBytes = imageData.Value;
-            string base64Image = Convert.ToBase64String(imageBytes);
-
-            try
-            {
-                var result = _apiClient.GetModelResponseToImage(prompt.Value, modelName.Value, base64Image);
-                string response = JsonHandler.GetStringField(result, "response");
-                return new SqlString(response);
-            }
-            catch (Exception ex)
-            {
-                return new SqlString($"Error: {ex.Message}");
-            }
         }
 
         #endregion

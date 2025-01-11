@@ -1,54 +1,70 @@
-﻿using OllamaSqlClr.DataAccess;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Data;
 using System;
-using System.Security.Cryptography;
 
-public class DatabaseExecutor : IDatabaseExecutor
+namespace OllamaSqlClr.DataAccess
 {
-    public string ConnectionString { get; }
-
-    public DatabaseExecutor(string connectionString = "context connection=true")
+    public class DatabaseExecutor : IDatabaseExecutor
     {
-        ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-    }
+        public string ConnectionString { get; }
 
-    public DataTable ExecuteQuery(string query)
-    {
-        using (var connection = new SqlConnection(ConnectionString))
-        using (var cmd = new SqlCommand(query, connection))
-        using (var adapter = new SqlDataAdapter(cmd))
+        public DatabaseExecutor(string connectionString = "context connection=true")
         {
-            connection.Open();
-            var resultTable = new DataTable();
-            adapter.Fill(resultTable);
-            return resultTable;
+            ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
-    }
 
-    public void ExecuteNonQuery(string commandText)
-    {
-
-        using (var connection = new SqlConnection(ConnectionString))
-        using (var cmd = new SqlCommand(commandText, connection))
+        public DataTable ExecuteQuery(string query)
         {
-            connection.Open();
-            cmd.ExecuteNonQuery();
-        }
-    }
-
-    public void ExecuteNonQuery(string commandText, params SqlParameter[] parameters)
-    {
-        using (var connection = new SqlConnection(ConnectionString))
-        using (var cmd = new SqlCommand(commandText, connection))
-        {
-            if (parameters != null)
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var cmd = new SqlCommand(query, connection))
+            using (var adapter = new SqlDataAdapter(cmd))
             {
-                cmd.Parameters.AddRange(parameters);
+                connection.Open();
+                var resultTable = new DataTable();
+                adapter.Fill(resultTable);
+                return resultTable;
             }
+        }
 
-            connection.Open();
-            cmd.ExecuteNonQuery();
+        public void ExecuteNonQuery(string commandText)
+        {
+
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var cmd = new SqlCommand(commandText, connection))
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void ExecuteNonQuery(string commandText, params SqlParameter[] parameters)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var cmd = new SqlCommand(commandText, connection))
+            {
+                if (parameters != null)
+                {
+                    cmd.Parameters.AddRange(parameters);
+                }
+
+                connection.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public bool TryQuery(string proposedQuery)
+        {
+            try
+            {
+                ExecuteNonQuery(proposedQuery);
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                // var _ = ex;
+                Console.WriteLine($"Query trial failed: {ex.Message}");
+                return false;
+            }
         }
     }
 }

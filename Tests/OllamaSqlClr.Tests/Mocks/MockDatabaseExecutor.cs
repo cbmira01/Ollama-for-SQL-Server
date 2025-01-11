@@ -28,6 +28,16 @@ namespace OllamaSqlClr.Tests.Mocks
             // Unimplemented test
         }
 
+        public bool TryQuery(string query) 
+        {
+            if (query == "mockSuccessfulQuery") 
+            { 
+                return true;
+            }
+
+            return false;
+        }
+
         public SqlConnection GetConnection()
         {
             return null; // No connection needed in test context

@@ -28,5 +28,32 @@ namespace OllamaSqlClr.Helpers
             }
             return false;
         }
+
+        public string CleanQuery(string dirtyQuery)
+        {
+            if (string.IsNullOrEmpty(dirtyQuery))
+            {
+                return dirtyQuery;
+            }
+
+            // Replace '003c' (hex for '<') with the '<' symbol
+            string cleanQuery = Regex.Replace(dirtyQuery, @"003c", "<", RegexOptions.IgnoreCase);
+
+            // Replace '003e' (hex for '>') with the '>' symbol
+            cleanQuery = Regex.Replace(cleanQuery, @"003e", ">", RegexOptions.IgnoreCase);
+
+            // Clean up code bracketing
+            cleanQuery = Regex.Replace(cleanQuery, @"```sql", " ", RegexOptions.IgnoreCase);
+            cleanQuery = Regex.Replace(cleanQuery, @"```.*?$", " ", RegexOptions.Multiline);
+            cleanQuery = Regex.Replace(cleanQuery, @"`", "", RegexOptions.IgnoreCase);
+
+            // Clean up trailing comments
+            cleanQuery = Regex.Replace(cleanQuery, @"--.*?$", "", RegexOptions.Multiline);
+
+            // Clean up newlines
+            cleanQuery = Regex.Replace(cleanQuery, @"\n", " ", RegexOptions.IgnoreCase);
+
+            return cleanQuery;
+        }
     }
 }

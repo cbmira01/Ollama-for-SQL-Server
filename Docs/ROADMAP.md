@@ -46,6 +46,14 @@
   - Would this query be too slow? GPU context has to be dumped and recreated when models are switched.
   - Would being able to specify a subset list of models be useful?
 
+- **Depoloyment Manager**
+  - A console program to coordinate project deployment
+  - Check environment for running services (SQL Server, Ollama)
+  - Determine repository root directory
+  - Run SQL scripts to build SQL/CLR database, tables, and assembly links
+  - SQL Server to Ollama sanity checks
+  - Supercedes Scriptxx scheme
+
 ---
 
 ### Improvements and maintenance
@@ -62,11 +70,9 @@ work going forward?
 
 ---
 
-### Testing
+### Testing and documentation
 
----
-
-### Documentation
+- Service helper classes need unit tests.
 - Explore "diagrams as code" to visualize system interactions.
 
 ---

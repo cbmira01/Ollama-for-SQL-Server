@@ -9,6 +9,8 @@
         bool IsRejected(string query);
 
         bool IsNullOrEmpty(string query);
+
+        string CleanQuery(string query);
     }
 }
 
