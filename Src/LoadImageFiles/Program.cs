@@ -22,7 +22,7 @@ namespace LoadImageFiles
 
         static void Main(string[] args)
         {
-            string repoRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
+            string repoRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\"));
             string imagesPath = Path.Combine(repoRoot, "Images");
 
             try
