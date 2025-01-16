@@ -24,8 +24,6 @@ namespace OllamaSqlClr.Services
         private readonly IQueryValidator _queryValidator;
         private readonly IQueryLogger _queryLogger;
         private readonly IOllamaApiClient _apiClient;
-        private readonly ISqlCommandHelper _sqlCommandHelper;
-        private readonly ISqlQueryHelper _sqlQueryHelper;
         private readonly IDatabaseExecutor _databaseExecutor;
 
         public OllamaService(
@@ -35,8 +33,6 @@ namespace OllamaSqlClr.Services
             IQueryValidator queryValidator = null,
             IQueryLogger queryLogger = null,
             IOllamaApiClient apiClient = null,
-            ISqlCommandHelper sqlCommandHelper = null,
-            ISqlQueryHelper sqlQueryHelper = null,
             IDatabaseExecutor databaseExecutor = null)
         {
             _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
@@ -44,13 +40,9 @@ namespace OllamaSqlClr.Services
 
             // Initialize helpers
             _databaseExecutor = databaseExecutor ?? new DatabaseExecutor(_sqlConnection);
-
             _queryValidator = queryValidator ?? new QueryValidator();
             _apiClient = apiClient ?? new OllamaApiClient(_apiUrl);
-
             _queryLogger = queryLogger ?? new QueryLogger(_databaseExecutor);
-            _sqlCommandHelper = sqlCommandHelper ?? new SqlCommandHelper(_databaseExecutor);
-            _sqlQueryHelper = sqlQueryHelper ?? new SqlQueryHelper(_databaseExecutor);
         }
 
         #endregion

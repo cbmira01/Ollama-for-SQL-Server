@@ -50,8 +50,6 @@
     <Compile Include="Mocks\MockDatabaseExecutor.cs" />
     <Compile Include="Mocks\MockOllamaApiClient.cs" />
     <Compile Include="Mocks\MockQueryLogger.cs" />
-    <Compile Include="Mocks\MockSqlCommandHelper.cs" />
-    <Compile Include="Mocks\MockSqlQueryHelper.cs" />
     <Compile Include="Mocks\MockQueryValidator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
