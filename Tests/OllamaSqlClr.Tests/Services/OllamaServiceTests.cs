@@ -61,7 +61,7 @@ namespace OllamaSqlClr.Tests.Services
             var result = _ollamaService.CompletePrompt(modelName, askPrompt, morePrompt);
 
             // Assert
-            Assert.Equal(expectedResponse, result.Value);
+            Assert.Equal(expectedResponse, result);
             _mockApiClient.Verify(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName), Times.Once);
         }
 

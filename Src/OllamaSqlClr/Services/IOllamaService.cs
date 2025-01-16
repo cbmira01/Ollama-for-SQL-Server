@@ -3,7 +3,7 @@ using System.Data.SqlTypes;
 
 public interface IOllamaService
 {
-    SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt);
+    string CompletePrompt(string modelName, string askPrompt, string morePrompt);
 
     IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions);
 

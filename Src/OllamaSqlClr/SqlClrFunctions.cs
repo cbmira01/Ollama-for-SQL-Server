@@ -80,7 +80,8 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.CompletePrompt(modelName, askPrompt, morePrompt);
+                string result = OllamaServiceInstance.CompletePrompt(modelName.Value, askPrompt.Value, morePrompt.Value);
+                return new SqlString(result);
             }
             catch (Exception ex)
             {

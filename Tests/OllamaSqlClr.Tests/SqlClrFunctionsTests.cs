@@ -50,10 +50,10 @@ namespace OllamaSqlClr.Tests
         public void Test03_CompletePrompt_ReturnsExpectedResponse()
         {
             // Arrange
-            var modelName = new SqlString("llama3.2");
-            var askPrompt = new SqlString("What causes rain?");
-            var morePrompt = new SqlString("Explain briefly.");
-            var expectedResponse = new SqlString("Rain is caused by moisture in the air condensing.");
+            var modelName = "llama3.2";
+            var askPrompt = "What causes rain?";
+            var morePrompt = "Explain briefly.";
+            var expectedResponse = "Rain is caused by moisture in the air condensing.";
 
             _mockOllamaService
                 .Setup(service => service.CompletePrompt(modelName, askPrompt, morePrompt))

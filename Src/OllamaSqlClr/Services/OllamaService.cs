@@ -26,8 +26,6 @@ namespace OllamaSqlClr.Services
         private readonly IOllamaApiClient _apiClient;
         private readonly IDatabaseExecutor _databaseExecutor;
 
-        #region Service class constructor
-
         public OllamaService(
             string sqlConnection,
             string apiUrl,
@@ -51,18 +49,18 @@ namespace OllamaSqlClr.Services
 
         #region CompletePrompt feature
 
-        public SqlString CompletePrompt(SqlString modelName, SqlString askPrompt, SqlString morePrompt)
+        public string CompletePrompt(string modelName, string askPrompt, string morePrompt)
         {
-            var prompt = $"{askPrompt.Value} {morePrompt.Value}";
+            var prompt = $"{askPrompt} {morePrompt}";
             try
             {
-                var result = _apiClient.GetModelResponseToPrompt(prompt, modelName.Value);
+                var result = _apiClient.GetModelResponseToPrompt(prompt, modelName);
                 string response = JsonHandler.GetStringField(result, "response");
-                return new SqlString(response);
+                return response;
             }
             catch (Exception ex)
             {
-                return new SqlString($"Error: {ex.Message}");
+                return $"Error: {ex.Message}";
             }
         }
 
