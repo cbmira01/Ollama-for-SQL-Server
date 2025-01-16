@@ -18,7 +18,7 @@
 ---------------------------------------------------------------------------------
 USE [TEST];
 
--- Choose a filename
+-- Choose an image
 DECLARE @FileName NVARCHAR(100) = 'pexels-brunoscramgnon-596134-moon_resized.jpg';
 -- DECLARE @FileName NVARCHAR(100) = 'pexels-anntarazevich-5910755-motivation_resized.jpg';
 -- DECLARE @FileName NVARCHAR(100) = 'pexels-anntarazevich-6230961-scrabble-words_resized.jpg';
@@ -29,9 +29,11 @@ DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';
 DECLARE @ModelName NVARCHAR(100) = 'llava';
 DECLARE @ImageData VARBINARY(MAX);
 
-SELECT @ImageData = ImageData FROM Images WHERE FileName = @FileName;
-
-SELECT dbo.ExamineImage(@ModelName, @Prompt, @ImageData) AS Result;
+SELECT dbo.ExamineImage(
+           @ModelName,
+           @Prompt,
+           (SELECT ImageData FROM Images WHERE FileName = @FileName)
+       ) AS Result;
 GO
 
 ---------------------------------------------------------------------------------
