@@ -26,6 +26,8 @@ namespace OllamaSqlClr.Services
         private readonly IOllamaApiClient _apiClient;
         private readonly IDatabaseExecutor _databaseExecutor;
 
+        #region Service class constructor
+
         public OllamaService(
             string sqlConnection,
             string apiUrl,

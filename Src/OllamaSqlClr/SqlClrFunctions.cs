@@ -10,7 +10,7 @@ namespace OllamaSqlClr
 {
     public static class SqlClrFunctions
     {
-        #region Ollama service instance construction 
+        #region Construct Ollama service instance 
 
         private static string _sqlConnection;
         private static string _apiUrl;
@@ -119,7 +119,6 @@ namespace OllamaSqlClr
             FillRowMethodName = "FillRow_QueryFromPrompt",
             DataAccess = DataAccessKind.Read
          )]
-
         public static IEnumerable QueryFromPrompt(SqlString modelname, SqlString prompt)
         {
             try
