@@ -68,23 +68,23 @@ namespace OllamaSqlClr.Services
 
         #region CompleteMultiplePrompt feature
 
-        public IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions)
+        public IEnumerable CompleteMultiplePrompts(string modelName, string askPrompt, string morePrompt, int numCompletions)
         {
-            var prompt = $"{askPrompt.Value} {morePrompt.Value}";
+            var prompt = $"{askPrompt} {morePrompt}";
             var completions = new List<CompletionRow>();
             List<int> context = null;
 
             try
             {
-                for (int i = 0; i < numCompletions.Value; i++)
+                for (int i = 0; i < numCompletions; i++)
                 {
-                    var result = _apiClient.GetModelResponseToPrompt(prompt, modelName.Value, context);
+                    var result = _apiClient.GetModelResponseToPrompt(prompt, modelName, context);
                     string response = JsonHandler.GetStringField(result, "response");
 
                     var completion = new CompletionRow
                     {
                         CompletionGuid = Guid.NewGuid(),
-                        ModelName = modelName.Value,
+                        ModelName = modelName,
                         OllamaCompletion = response
                     };
                     completions.Add(completion);
@@ -100,7 +100,7 @@ namespace OllamaSqlClr.Services
                 var errorCompletion = new CompletionRow
                 {
                     CompletionGuid = Guid.Empty,
-                    ModelName = modelName.Value,
+                    ModelName = modelName,
                     OllamaCompletion = $"Error: {ex.Message}"
                 };
 
@@ -152,12 +152,12 @@ namespace OllamaSqlClr.Services
 
         #region Query from prompt feature
 
-        public IEnumerable QueryFromPrompt(SqlString modelName, SqlString prompt)
+        public IEnumerable QueryFromPrompt(string modelName, string prompt)
         {
             var resultList = new List<QueryFromPromptRow>();
             string jsonTableResult = "";
 
-            string proposedQuery = AskModelForQuery(modelName.Value, prompt.Value);
+            string proposedQuery = AskModelForQuery(modelName, prompt);
 
             var isUnsafe = _queryValidator.IsUnsafe(proposedQuery);
             var isNoReply = _queryValidator.IsNoReply(proposedQuery);
@@ -169,8 +169,8 @@ namespace OllamaSqlClr.Services
                 resultList.Add(new QueryFromPromptRow
                 {
                     QueryGuid = Guid.NewGuid(),
-                    ModelName = modelName.Value,
-                    Prompt = prompt.Value,
+                    ModelName = modelName,
+                    Prompt = prompt,
                     ProposedQuery = proposedQuery,
                     Result = jsonTableResult,
                     Timestamp = DateTime.UtcNow
@@ -194,8 +194,8 @@ namespace OllamaSqlClr.Services
                 resultList.Add(new QueryFromPromptRow
                 {
                     QueryGuid = Guid.NewGuid(),
-                    ModelName = modelName.Value,
-                    Prompt = prompt.Value,
+                    ModelName = modelName,
+                    Prompt = prompt,
                     ProposedQuery = proposedQuery,
                     Result = jsonTableResult,
                     Timestamp = DateTime.UtcNow
@@ -206,8 +206,8 @@ namespace OllamaSqlClr.Services
                 resultList.Add(new QueryFromPromptRow
                 {
                     QueryGuid = Guid.NewGuid(),
-                    ModelName = modelName.Value,
-                    Prompt = prompt.Value,
+                    ModelName = modelName,
+                    Prompt = prompt,
                     ProposedQuery = proposedQuery,
                     Result = $"{{\"error\": \"{ex.Message}\"}}",
                     Timestamp = DateTime.UtcNow
@@ -262,36 +262,35 @@ namespace OllamaSqlClr.Services
 
         #region Image classification feature
 
-        public SqlString ExamineImage(SqlString modelName, SqlString prompt, SqlBytes imageData)
+        public string ExamineImage(string modelName, string prompt, byte[] imageData)
         {
-            if (string.IsNullOrEmpty(modelName.Value))
+            if (string.IsNullOrEmpty(modelName))
             {
                 throw new ArgumentException("Model name cannot be null or empty.", nameof(modelName));
             }
 
-            if (string.IsNullOrEmpty(prompt.Value))
+            if (string.IsNullOrEmpty(prompt))
             {
                 throw new ArgumentException("Prompt cannot be null or empty.", nameof(prompt));
             }
 
-            if (imageData == null || imageData.IsNull)
+            if (imageData == null)
             {
                 throw new ArgumentNullException(nameof(imageData), "Image data cannot be null.");
             }
 
             // Convert SqlBytes to Base64 string
-            byte[] imageBytes = imageData.Value;
-            string base64Image = Convert.ToBase64String(imageBytes);
+            string base64Image = Convert.ToBase64String(imageData);
 
             try
             {
-                var result = _apiClient.GetModelResponseToImage(prompt.Value, modelName.Value, base64Image);
+                var result = _apiClient.GetModelResponseToImage(prompt, modelName, base64Image);
                 string response = JsonHandler.GetStringField(result, "response");
-                return new SqlString(response);
+                return response;
             }
             catch (Exception ex)
             {
-                return new SqlString($"Error: {ex.Message}");
+                return $"Error: {ex.Message}";
             }
         }
 

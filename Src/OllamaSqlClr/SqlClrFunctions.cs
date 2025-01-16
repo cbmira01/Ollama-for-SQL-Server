@@ -94,7 +94,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.CompleteMultiplePrompts(modelName, askPrompt, morePrompt, numCompletions);
+                return OllamaServiceInstance.CompleteMultiplePrompts(modelName.Value, askPrompt.Value, morePrompt.Value, numCompletions.Value);
             }
             catch (Exception ex)
             {
@@ -120,11 +120,11 @@ namespace OllamaSqlClr
             FillRowMethodName = "FillRow_QueryFromPrompt",
             DataAccess = DataAccessKind.Read
          )]
-        public static IEnumerable QueryFromPrompt(SqlString modelname, SqlString prompt)
+        public static IEnumerable QueryFromPrompt(SqlString modelName, SqlString prompt)
         {
             try
             {
-                return OllamaServiceInstance.QueryFromPrompt(modelname, prompt);
+                return OllamaServiceInstance.QueryFromPrompt(modelName.Value, prompt.Value);
             }
             catch (Exception ex)
             {
@@ -137,7 +137,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.ExamineImage(modelName, prompt, imageData);
+                return OllamaServiceInstance.ExamineImage(modelName.Value, prompt.Value, imageData.Value);
             }
             catch (Exception ex)
             {

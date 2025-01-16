@@ -5,12 +5,12 @@ public interface IOllamaService
 {
     string CompletePrompt(string modelName, string askPrompt, string morePrompt);
 
-    IEnumerable CompleteMultiplePrompts(SqlString modelName, SqlString askPrompt, SqlString morePrompt, SqlInt32 numCompletions);
+    IEnumerable CompleteMultiplePrompts(string modelName, string askPrompt, string morePrompt, int numCompletions);
 
     IEnumerable GetAvailableModels();
 
-    IEnumerable QueryFromPrompt(SqlString modelName, SqlString prompt);
+    IEnumerable QueryFromPrompt(string modelName, string prompt);
 
-    SqlString ExamineImage(SqlString modelName, SqlString askPrompt, SqlBytes imageData);
+    string ExamineImage(string modelName, string askPrompt, byte[] imageData);
 
 }

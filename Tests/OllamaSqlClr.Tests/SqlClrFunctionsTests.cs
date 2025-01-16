@@ -82,7 +82,7 @@ namespace OllamaSqlClr.Tests
             };
 
             _mockOllamaService
-                .Setup(service => service.CompleteMultiplePrompts(modelName, askPrompt, morePrompt, numCompletions))
+                .Setup(service => service.CompleteMultiplePrompts(modelName.Value, askPrompt.Value, morePrompt.Value, numCompletions.Value))
                 .Returns(expectedResult);
 
             // Act
@@ -151,7 +151,7 @@ namespace OllamaSqlClr.Tests
 
             // Mock the service to return the expected result
             _mockOllamaService
-                .Setup(service => service.QueryFromPrompt(modelName, prompt))
+                .Setup(service => service.QueryFromPrompt(modelName.Value, prompt.Value))
                 .Returns(expectedResult);
 
             // Act
@@ -191,10 +191,10 @@ namespace OllamaSqlClr.Tests
             var imageDataBytes = new byte[] { 1, 2, 3, 4, 5 };
             var imageData = new SqlBytes(imageDataBytes);
 
-            var expectedResponse = new SqlString("I see a cat.");
+            var expectedResponse = "I see a cat.";
 
             _mockOllamaService
-                .Setup(service => service.ExamineImage(modelName, prompt, imageData))
+                .Setup(service => service.ExamineImage(modelName.Value, prompt.Value, imageData.Value))
                 .Returns(expectedResponse);
 
             // Act

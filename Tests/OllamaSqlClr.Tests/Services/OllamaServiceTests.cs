@@ -69,19 +69,19 @@ namespace OllamaSqlClr.Tests.Services
         public void Test02_CompleteMultiplePrompts_ReturnsMultipleCompletions_WithContextUpdate()
         {
             // Arrange
-            var modelName = new SqlString("llama3.2");
-            var askPrompt = new SqlString("What causes rain?");
-            var morePrompt = new SqlString("Explain briefly.");
-            var numCompletions = new SqlInt32(2);
+            var modelName = "llama3.2";
+            var askPrompt = "What causes rain?";
+            var morePrompt = "Explain briefly.";
+            var numCompletions = 2;
 
             var responseList = new List<CompletionRow>
             {
-                new CompletionRow { CompletionGuid = Guid.NewGuid(), ModelName = modelName.Value, OllamaCompletion = "Rain is caused by moisture condensing." },
-                new CompletionRow { CompletionGuid = Guid.NewGuid(), ModelName = modelName.Value, OllamaCompletion = "Rain forms when clouds become saturated." }
+                new CompletionRow { CompletionGuid = Guid.NewGuid(), ModelName = modelName, OllamaCompletion = "Rain is caused by moisture condensing." },
+                new CompletionRow { CompletionGuid = Guid.NewGuid(), ModelName = modelName, OllamaCompletion = "Rain forms when clouds become saturated." }
             };
 
             _mockApiClient
-                .SetupSequence(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName.Value, It.IsAny<List<int>>()))
+                .SetupSequence(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName, It.IsAny<List<int>>()))
                 .Returns(new List<KeyValuePair<string, object>> {
                     new KeyValuePair<string, object>("response", "Rain is caused by moisture condensing."),
                     new KeyValuePair<string, object>("context", new List<int> { 1, 2, 3 }) // Mock context
@@ -139,8 +139,8 @@ namespace OllamaSqlClr.Tests.Services
         public void Test04_QueryFromPrompt_ReturnsProposedQueryAndResults()
         {
             // Arrange
-            var modelName = new SqlString("mistral");
-            var prompt = new SqlString("What was the date and time of the earliest purchase?");
+            var modelName = "mistral";
+            var prompt = "What was the date and time of the earliest purchase?";
             var proposedQuery = "SELECT MIN(SaleDate) AS [Earliest Purchase Date] FROM Sales; -- attempt 1";
 
             var mockDatabaseExecutor = new Mock<IDatabaseExecutor>();
@@ -154,7 +154,7 @@ namespace OllamaSqlClr.Tests.Services
             mockDatabaseExecutor.Setup(db => db.ExecuteQuery(proposedQuery)).Returns(dataTable);
 
             // Mock API client to return a mocked response
-            mockApiClient.Setup(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName.Value, It.IsAny<List<int>>()))
+            mockApiClient.Setup(api => api.GetModelResponseToPrompt(It.IsAny<string>(), modelName, It.IsAny<List<int>>()))
                 .Returns(new List<KeyValuePair<string, object>> {
                     new KeyValuePair<string, object>("response", proposedQuery),
                     new KeyValuePair<string, object>("context", new List<int> { 1, 2, 3 })
