@@ -13,15 +13,31 @@ namespace DeploymentManager
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("===== Deployment Manager =====");
+                Console.WriteLine("===== Ollama Completions for SQL Server =====");
+                Console.WriteLine("============ Deployment Manager =============");
+                Console.WriteLine();
+                Console.WriteLine($"Respository root directory: {null}");
+                Console.WriteLine();
                 Console.WriteLine("Choose an option:");
-                Console.WriteLine("1. Set up database");
-                Console.WriteLine("2. Set up CLR assemblies");
-                Console.WriteLine("3. Create tables");
-                Console.WriteLine("4. Load data");
-                Console.WriteLine("5. Run Experiment 1");
-                Console.WriteLine("6. Run Experiment 2");
-                Console.WriteLine("0. Exit");
+                Console.WriteLine();
+                Console.WriteLine("--- Environment checks ---");
+                Console.WriteLine("   1. Check external services");
+                Console.WriteLine("   2. List models hosted on Ollama");
+                Console.WriteLine();
+                Console.WriteLine("--- Perform for initial installation ---");
+                Console.WriteLine("   3. Establish the CLR database");
+                Console.WriteLine("   4. Establish empty tables");
+                Console.WriteLine("   5. Populate configuration and schema data");
+                Console.WriteLine("   6. Populate data for demonstrations");
+                Console.WriteLine();
+                Console.WriteLine("--- Perform after every RELEASE build ---");
+                Console.WriteLine("   7. Relink to the CLR assembly and recreate external functions");
+                Console.WriteLine();
+                Console.WriteLine("--- Check or revert current deployment ---");
+                Console.WriteLine("   8. Check the current deployment");
+                Console.WriteLine("   9. Revert the current deployment (drop everything)");
+                Console.WriteLine();
+                Console.WriteLine("   0. Exit");
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
@@ -51,7 +67,7 @@ namespace DeploymentManager
                         Console.WriteLine("Exiting Deployment Manager. Goodbye!");
                         return;
                     default:
-                        Console.WriteLine("Invalid choice. Press any key to try again...");
+                        Console.WriteLine("Invalid choice, press any key to try again...");
                         Console.ReadKey();
                         continue;
                 }
