@@ -13,7 +13,7 @@ namespace DeploymentManager.Commands
 
             try
             {
-                if (IsSqlServerReady()) 
+                if (IsSqlServerReady(settings["SqlServerConnection"])) 
                 {
                     Console.WriteLine($"    SQL Server is ready!");
                 }
@@ -22,17 +22,19 @@ namespace DeploymentManager.Commands
                     Console.WriteLine($"    SQL Server is NOT ready.");
                     Console.WriteLine($"    Via the SQL Server Configuration Manager, make sure MSSQLSERVER and its agent are in a running state.");
                 }
+
                 Console.WriteLine();
 
-                if (IsOllamaApiServerReady())
+                if (IsOllamaApiServerReady(settings["ApiUrl"]))
                 {
                     Console.Write($"    Ollama API server is ready!");
                 }
                 else
                 {
                     Console.WriteLine($"    Ollama API server is NOT ready.");
-                    Console.WriteLine($"    Check your MSI or Docker installation of Ollama, ensure it is serving on {settings["ApiUrl"]}");
+                    Console.WriteLine($"    Check your MSI or Docker installation of Ollama, make sure it is serving on {settings["ApiUrl"]}");
                 }
+
                 Console.WriteLine();
             }
             catch (Exception ex)
@@ -41,14 +43,43 @@ namespace DeploymentManager.Commands
             }
         }
 
-        private static bool IsSqlServerReady()
+        private static bool IsSqlServerReady(string connectionString)
         {
-            return true;   // TODO: finish this test
+            try
+            {
+                using (var connection = new System.Data.SqlClient.SqlConnection(connectionString))
+                {
+                    connection.Open();
+                }
+                return true; // SQL Server is available
+            }
+            catch (Exception ex)
+            {
+                var _ = ex;
+                return false;
+            }
         }
 
-        private static bool IsOllamaApiServerReady() 
+
+
+        private static bool IsOllamaApiServerReady(string apiUrl)
         {
-            return true;   // TODO: finish this test
+            try
+            {
+                var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(apiUrl);
+                request.Method = "GET";
+                request.Timeout = 5000; // 5 seconds timeout
+
+                using (var response = (System.Net.HttpWebResponse)request.GetResponse())
+                {
+                    return response.StatusCode == System.Net.HttpStatusCode.OK;
+                }
+            }
+            catch (Exception ex)
+            {
+                var _ = ex;
+                return false;
+            }
         }
     }
 }

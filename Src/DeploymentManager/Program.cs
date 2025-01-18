@@ -17,7 +17,9 @@ namespace DeploymentManager
                 settingsDict[key] = ConfigurationManager.AppSettings[key];
             }
 
-            settingsDict["ConnectionString"] = ConfigurationManager.ConnectionStrings["SqlServerContextConnection"].ConnectionString;
+            settingsDict["SqlClrContextConnection"] = ConfigurationManager.ConnectionStrings["SqlClrContextConnection"].ConnectionString;
+            settingsDict["SqlServerConnection"] = ConfigurationManager.ConnectionStrings["SqlServerConnection"].ConnectionString;
+
             settingsDict["RepoRootDirectory"] = FindRepoRoot();
             settingsDict["ScriptsDirectory"] = $"{FindRepoRoot()}\\Src\\DeploymentManager\\Scripts";
             settingsDict["ImagesDirectory"] = $"{FindRepoRoot()}\\Images";
