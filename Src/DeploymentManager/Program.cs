@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.IO;
 using DeploymentManager.Commands;
 
 namespace DeploymentManager
@@ -7,16 +9,23 @@ namespace DeploymentManager
     {
         static void Main(string[] args)
         {
-            string connectionString = "your-connection-string-here";
-            string scriptsDirectory = @"Scripts";
+            string connectionString = ConfigurationManager.ConnectionStrings["SqlServerContextConnection"].ConnectionString;
+
+            string repoRootDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\"));
+            string scriptsDirectory = $"{repoRootDirectory}Src\\DeploymentManager\\Scripts\\";
+            string imagesDirectory = $"{repoRootDirectory}Images\\";
 
             while (true)
             {
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("===== Ollama Completions for SQL Server =====");
                 Console.WriteLine("============ Deployment Manager =============");
                 Console.WriteLine();
-                Console.WriteLine($"Respository root directory: {null}");
+                Console.WriteLine($"Respository root directory: {repoRootDirectory}");
+                Console.WriteLine($"         Scripts directory: {scriptsDirectory}");
+                Console.WriteLine($"          Images directory: {imagesDirectory}");
+                Console.WriteLine($"Database connection string: \"{connectionString}\"");
                 Console.WriteLine();
                 Console.WriteLine("Choose an option:");
                 Console.WriteLine();
@@ -46,26 +55,45 @@ namespace DeploymentManager
                 switch (choice)
                 {
                     case "1":
-                        command = new SetUpDatabaseCommand(connectionString, $"{scriptsDirectory}/setup-database.sql");
+                        command = new CheckExternalServicesCommand(connectionString, null);
                         break;
-                    //case "2":
-                    //    command = new SetUpCLRAssembliesCommand(connectionString, $"{scriptsDirectory}/setup-clr.sql");
-                    //    break;
-                    //case "3":
-                    //    command = new CreateTablesCommand(connectionString, $"{scriptsDirectory}/create-tables.sql");
-                    //    break;
-                    //case "4":
-                    //    command = new LoadDataCommand(connectionString, $"{scriptsDirectory}/load-data.sql");
-                    //    break;
-                    //case "5":
-                    //    command = new RunExperiment1Command(connectionString, $"{scriptsDirectory}/experiment1.sql");
-                    //    break;
-                    //case "6":
-                    //    command = new RunExperiment2Command(connectionString, $"{scriptsDirectory}/experiment2.sql");
-                    //    break;
+
+                    case "2":
+                        command = new ListHostedModelsCommand(null, null);
+                        break;
+
+                    case "3":
+                        command = new EstablishClrDatabaseCommand(connectionString, $"{scriptsDirectory}/establish-clr--database.sql");
+                        break;
+
+                    case "4":
+                        command = new EstablishEmptyTablesCommand(connectionString, $"{scriptsDirectory}/establish-empty-tables.sql");
+                        break;
+
+                    case "5":
+                        command = new PopulateConfigAndSchemaCommand(connectionString, $"{scriptsDirectory}/populate-config-and-schema.sql");
+                        break;
+
+                    case "6":
+                        command = new PopulateDemoDataCommand(connectionString, $"{scriptsDirectory}/populate-demo-data.sql");
+                        break;
+
+                    case "7":
+                        command = new RelinkClrAssemblyCommand(connectionString, $"{scriptsDirectory}/relink-clr-assembly.sql");
+                        break;
+
+                    case "8":
+                        command = new CheckThisDeploymentCommand(connectionString, $"{scriptsDirectory}/check-this-deployment.sql");
+                        break;
+
+                    case "9":
+                        command = new RevertThisDeploymentCommand(connectionString, $"{scriptsDirectory}/revert-this-deployment.sql");
+                        break;
+
                     case "0":
                         Console.WriteLine("Exiting Deployment Manager. Goodbye!");
                         return;
+
                     default:
                         Console.WriteLine("Invalid choice, press any key to try again...");
                         Console.ReadKey();
