@@ -26,7 +26,7 @@ namespace OllamaSqlClr
         static SqlClrFunctions()
         {
             // Default configuration for local setup
-            Configure("context connection=true", "http://127.0.0.1:11434");
+            Configure("context connection=true", "http://127.0.0.1:11434");  // TODO: Get this URL from Deployment Manager
         }
 
         public static void Configure(string sqlConnection, string apiUrl)

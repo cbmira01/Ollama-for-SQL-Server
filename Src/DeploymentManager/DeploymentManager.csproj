@@ -45,15 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CheckExternalServicesCommand.cs" />
-    <Compile Include="Commands\CheckThisDeploymentCommand.cs" />
-    <Compile Include="Commands\EstablishClrDatabaseCommand.cs" />
-    <Compile Include="Commands\EstablishEmptyTablesCommand.cs" />
-    <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\ListHostedModelsCommand.cs" />
-    <Compile Include="Commands\PopulateConfigAndSchemaCommand.cs" />
-    <Compile Include="Commands\PopulateDemoDataCommand.cs" />
-    <Compile Include="Commands\RelinkClrAssemblyCommand.cs" />
-    <Compile Include="Commands\RevertThisDeploymentCommand.cs" />
+    <Compile Include="Commands\LoadImageFiles.cs" />
+    <Compile Include="Commands\RunScript.cs" />
     <Compile Include="DatabaseExecutor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,7 +59,6 @@
   <ItemGroup>
     <Content Include="Scripts\check-this-deployment.sql" />
     <Content Include="Scripts\establish-clr-database.sql" />
-    <Content Include="Scripts\establish-empty-tables.sql" />
     <Content Include="Scripts\populate-configuration-and-schema.sql" />
     <Content Include="Scripts\populate-demo-data.sql" />
     <Content Include="Scripts\relink-clr-assembly.sql" />

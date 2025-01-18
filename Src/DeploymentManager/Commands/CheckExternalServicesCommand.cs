@@ -1,43 +1,54 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 
 namespace DeploymentManager.Commands
 {
-    public class CheckExternalServicesCommand : ICommand
+    public static class CheckExternalServicesCommand
     {
-        private readonly string _connectionString;
-        private readonly string _scriptPath;
-
-        public CheckExternalServicesCommand(string connectionString, string scriptPath)
+        public static void Execute(Dictionary<string, string> settings)
         {
-            _connectionString = connectionString;
-            _scriptPath = scriptPath;
-        }
-
-        public void Execute()
-        {
-            Console.WriteLine("STARTING TO DO SOMETHING...");
+            Console.WriteLine();
+            Console.WriteLine("Checking external services...");
+            Console.WriteLine();
 
             try
             {
-                // Validate the script path
-                //if (!File.Exists(_scriptPath))
-                //{
-                //    Console.WriteLine($"Error: SQL script not found at {_scriptPath}");
-                //    return;
-                //}
+                if (IsSqlServerReady()) 
+                {
+                    Console.WriteLine($"    SQL Server is ready!");
+                }
+                else 
+                {
+                    Console.WriteLine($"    SQL Server is NOT ready.");
+                    Console.WriteLine($"    Via the SQL Server Configuration Manager, make sure MSSQLSERVER and its agent are in a running state.");
+                }
+                Console.WriteLine();
 
-                // Load and execute the SQL script
-                //string sqlScript = File.ReadAllText(_scriptPath);
-                //var dbExecutor = new DatabaseExecutor(_connectionString);
-                //dbExecutor.ExecuteSql(sqlScript);
-
-                Console.WriteLine("SUCCESS MESSAGE");
+                if (IsOllamaApiServerReady())
+                {
+                    Console.Write($"    Ollama API server is ready!");
+                }
+                else
+                {
+                    Console.WriteLine($"    Ollama API server is NOT ready.");
+                    Console.WriteLine($"    Check your MSI or Docker installation of Ollama, ensure it is serving on {settings["ApiUrl"]}");
+                }
+                Console.WriteLine();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while DOING SOMETHING: {ex.Message}");
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
+        }
+
+        private static bool IsSqlServerReady()
+        {
+            return true;   // TODO: finish this test
+        }
+
+        private static bool IsOllamaApiServerReady() 
+        {
+            return true;   // TODO: finish this test
         }
     }
 }

@@ -8,7 +8,7 @@ namespace OllamaSqlClr.DataAccess
     {
         public string ConnectionString { get; }
 
-        public DatabaseExecutor(string connectionString = "context connection=true")
+        public DatabaseExecutor(string connectionString = "context connection=true")  // TODO Get this connection string from Deployment Manager
         {
             ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }

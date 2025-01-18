@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using DeploymentManager.Commands;
@@ -9,11 +10,17 @@ namespace DeploymentManager
     {
         static void Main(string[] args)
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["SqlServerContextConnection"].ConnectionString;
+            var settingsDict = new Dictionary<string, string>();
 
-            string repoRootDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\"));
-            string scriptsDirectory = $"{repoRootDirectory}Src\\DeploymentManager\\Scripts\\";
-            string imagesDirectory = $"{repoRootDirectory}Images\\";
+            foreach (string key in ConfigurationManager.AppSettings.AllKeys)
+            {
+                settingsDict[key] = ConfigurationManager.AppSettings[key];
+            }
+
+            settingsDict["ConnectionString"] = ConfigurationManager.ConnectionStrings["SqlServerContextConnection"].ConnectionString;
+            settingsDict["RepoRootDirectory"] = FindRepoRoot();
+            settingsDict["ScriptsDirectory"] = $"{FindRepoRoot()}\\Src\\DeploymentManager\\Scripts";
+            settingsDict["ImagesDirectory"] = $"{FindRepoRoot()}\\Images";
 
             while (true)
             {
@@ -22,10 +29,14 @@ namespace DeploymentManager
                 Console.WriteLine("===== Ollama Completions for SQL Server =====");
                 Console.WriteLine("============ Deployment Manager =============");
                 Console.WriteLine();
-                Console.WriteLine($"Respository root directory: {repoRootDirectory}");
-                Console.WriteLine($"         Scripts directory: {scriptsDirectory}");
-                Console.WriteLine($"          Images directory: {imagesDirectory}");
-                Console.WriteLine($"Database connection string: \"{connectionString}\"");
+
+                Console.WriteLine("Current configuration settings:");
+                Console.WriteLine();
+                foreach (var kvp in settingsDict)
+                {
+                    Console.WriteLine($"    {kvp.Key}:  \"{kvp.Value}\"");
+                }
+
                 Console.WriteLine();
                 Console.WriteLine("Choose an option:");
                 Console.WriteLine();
@@ -34,10 +45,10 @@ namespace DeploymentManager
                 Console.WriteLine("   2. List models hosted on Ollama");
                 Console.WriteLine();
                 Console.WriteLine("--- Perform for initial installation ---");
-                Console.WriteLine("   3. Establish the CLR database");
-                Console.WriteLine("   4. Establish empty tables");
-                Console.WriteLine("   5. Populate configuration and schema data");
-                Console.WriteLine("   6. Populate data for demonstrations");
+                Console.WriteLine("   3. Establish the CLR database and its tables");
+                Console.WriteLine("   4. Populate configuration and schema data");
+                Console.WriteLine("   5. Populate data for demonstrations");
+                Console.WriteLine("   6. Populate image table");
                 Console.WriteLine();
                 Console.WriteLine("--- Perform after every RELEASE build ---");
                 Console.WriteLine("   7. Relink to the CLR assembly and recreate external functions");
@@ -50,44 +61,43 @@ namespace DeploymentManager
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
-                ICommand command = null;
 
                 switch (choice)
                 {
                     case "1":
-                        command = new CheckExternalServicesCommand(connectionString, null);
+                        CheckExternalServicesCommand.Execute(settingsDict);
                         break;
 
                     case "2":
-                        command = new ListHostedModelsCommand(null, null);
+                        ListHostedModelsCommand.Execute(settingsDict);
                         break;
 
                     case "3":
-                        command = new EstablishClrDatabaseCommand(connectionString, $"{scriptsDirectory}/establish-clr--database.sql");
+                        RunScript.Execute(settingsDict, "establish-clr-database.sql");
                         break;
 
                     case "4":
-                        command = new EstablishEmptyTablesCommand(connectionString, $"{scriptsDirectory}/establish-empty-tables.sql");
+                        RunScript.Execute(settingsDict, "populate-config-and-schema.sql");
                         break;
 
                     case "5":
-                        command = new PopulateConfigAndSchemaCommand(connectionString, $"{scriptsDirectory}/populate-config-and-schema.sql");
+                        RunScript.Execute(settingsDict, "populate-demo-data.sql");
                         break;
 
                     case "6":
-                        command = new PopulateDemoDataCommand(connectionString, $"{scriptsDirectory}/populate-demo-data.sql");
+                        LoadImageFiles.Execute(settingsDict);
                         break;
 
                     case "7":
-                        command = new RelinkClrAssemblyCommand(connectionString, $"{scriptsDirectory}/relink-clr-assembly.sql");
+                        RunScript.Execute(settingsDict, "relink-clr-assembly.sql");
                         break;
 
                     case "8":
-                        command = new CheckThisDeploymentCommand(connectionString, $"{scriptsDirectory}/check-this-deployment.sql");
+                        RunScript.Execute(settingsDict, "check-this-deployment.sql");
                         break;
 
                     case "9":
-                        command = new RevertThisDeploymentCommand(connectionString, $"{scriptsDirectory}/revert-this-deployment.sql");
+                        RunScript.Execute(settingsDict, "revert-this-deployment.sql");
                         break;
 
                     case "0":
@@ -100,12 +110,22 @@ namespace DeploymentManager
                         continue;
                 }
 
-                Console.Clear();
-                command.Execute();
-
+                Console.WriteLine();
                 Console.WriteLine("Press any key to return to the main menu...");
                 Console.ReadKey();
             }
+        }
+
+        static string FindRepoRoot()
+        {
+            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            while (!Directory.Exists(Path.Combine(currentDir, ".git")) &&
+                   Directory.GetParent(currentDir) != null)
+            {
+                currentDir = Directory.GetParent(currentDir).FullName;
+            }
+
+            return currentDir;
         }
     }
 }

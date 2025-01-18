@@ -1,42 +1,30 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 
 namespace DeploymentManager.Commands
 {
-    public class ListHostedModelsCommand : ICommand
+    public static class ListHostedModelsCommand
     {
-        private readonly string _connectionString;
-        private readonly string _scriptPath;
-
-        public ListHostedModelsCommand(string connectionString, string scriptPath)
+        public static void Execute(Dictionary<string, string> settings)
         {
-            _connectionString = connectionString;
-            _scriptPath = scriptPath;
-        }
-
-        public void Execute()
-        {
-            Console.WriteLine("STARTING TO DO SOMETHING...");
+            Console.WriteLine();
+            Console.WriteLine("List of hosted models on Ollama...");
+            Console.WriteLine();
 
             try
             {
-                // Validate the script path
-                //if (!File.Exists(_scriptPath))
-                //{
-                //    Console.WriteLine($"Error: SQL script not found at {_scriptPath}");
-                //    return;
-                //}
-
-                // Load and execute the SQL script
-                //string sqlScript = File.ReadAllText(_scriptPath);
-                //var dbExecutor = new DatabaseExecutor(_connectionString);
-                //dbExecutor.ExecuteSql(sqlScript);
-
-                Console.WriteLine("SUCCESS MESSAGE");
+                // API GET to get hosted models
+                // Display the list of models, by an index number
+                // User can choose a model by index, or exit
+                // User can compose a prompt, or use a default prompt
+                // Default prompt: "Can SQL Server and Ollama work together? Answer briefly."
+                // API POST the request, get a response
+                // Display the response
+                // Exit
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while DOING SOMETHING: {ex.Message}");
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
     }
