@@ -55,7 +55,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\JsonClrLibrary\JsonClrLibrary.csproj">
+      <Project>{09c49120-5019-4b68-a16d-e44ea8f2b521}</Project>
+      <Name>JsonClrLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\check-this-deployment.sql" />
     <Content Include="Scripts\establish-clr-database.sql" />

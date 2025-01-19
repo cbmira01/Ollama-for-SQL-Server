@@ -1,5 +1,4 @@
-﻿using System.Data.SqlTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -8,9 +7,6 @@ using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using OllamaSqlClr.DataAccess;
 using System.Data;
-using System.Text.RegularExpressions;
-using System.Text;
-using System.Data.SqlClient;
 
 namespace OllamaSqlClr.Services
 {
