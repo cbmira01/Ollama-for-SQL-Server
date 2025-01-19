@@ -1,13 +1,11 @@
 ﻿
-PRINT 'line 0';
+PRINT 'check-this-deployment.sql';
 
 USE [TEST];
 
 -----------------------------------------------------------
--- List user-defined assemblies
+PRINT 'List of user-defined CLR assemblies';
 -----------------------------------------------------------
-PRINT 'line x';
-
 SELECT 
     [name],
     [clr_name],
@@ -16,10 +14,8 @@ FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
 -----------------------------------------------------------
--- List all external CLR functions
+PRINT 'List of all external CLR functions';
 -----------------------------------------------------------
-PRINT 'line y';
-
 SELECT 
     -- asm.name AS AssemblyName,
     -- asm.permission_set_desc AS AssemblyPermissionSet,
@@ -33,14 +29,14 @@ JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
 --WHERE obj.type IN ('FN', 'TF', 'IF'); -- FN = Scalar function, TF = Table-valued function, IF = Inline function
 GO
 
------------------------------------------------------------
--- Dump the schema JSON
------------------------------------------------------------
-PRINT 'line z';
-
+----------------------------------------------------------------------------------
+PRINT 'Dump of the database schema (required for code-generation demonstrations)';
+----------------------------------------------------------------------------------
 SELECT TOP 1 
     [Key], [Value]
 FROM KeyValuePairs
 WHERE [Key] = N'schemaJson'
 ORDER BY [ID] DESC;
 GO
+
+PRINT 'Goodbye...';

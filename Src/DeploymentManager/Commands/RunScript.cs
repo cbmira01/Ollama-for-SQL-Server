@@ -83,6 +83,7 @@ namespace DeploymentManager.Commands
                         }
 
                         transaction.Commit();
+                        Console.WriteLine();
                         Console.WriteLine("All commands executed successfully.");
                     }
                     catch
@@ -112,7 +113,7 @@ namespace DeploymentManager.Commands
                     // Process any messages that came before first result set
                     while (messageQueue.Count > 0)
                     {
-                        WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "SQL Message: ");
+                        WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "[INFO]: ");
                     }
 
                     do
@@ -120,7 +121,7 @@ namespace DeploymentManager.Commands
                         // Process any accumulated messages before each result set
                         while (messageQueue.Count > 0)
                         {
-                            WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "SQL Message: ");
+                            WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "[INFO]: ");
                         }
 
                         if (reader.FieldCount > 0)
@@ -132,7 +133,7 @@ namespace DeploymentManager.Commands
                     // Process any remaining messages after all result sets
                     while (messageQueue.Count > 0)
                     {
-                        WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "SQL Message: ");
+                        WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "[INFO]: ");
                     }
                 }
             }
@@ -140,7 +141,6 @@ namespace DeploymentManager.Commands
 
         private static void ProcessDataResults(SqlDataReader reader)
         {
-            Console.WriteLine();
             WriteColoredLine("=== Result Set ===", ConsoleColor.Yellow);
 
             while (reader.Read())
@@ -158,14 +158,15 @@ namespace DeploymentManager.Commands
 
         private static void WriteColoredLine(string message, ConsoleColor color, string prefix = "")
         {
+            Console.WriteLine();
             Console.ForegroundColor = color;
             Console.WriteLine($"{prefix}{message}");
             Console.ResetColor();
-            Console.WriteLine();
         }
 
         private static void LogSqlError(SqlException ex)
         {
+            Console.WriteLine();
             Console.WriteLine("SQL error occurred while running the script:");
             Console.WriteLine($"Error Number: {ex.Number}");
             Console.WriteLine($"Error Message: {ex.Message}");
@@ -174,6 +175,7 @@ namespace DeploymentManager.Commands
 
         private static void LogError(Exception ex)
         {
+            Console.WriteLine();
             Console.WriteLine($"An error occurred while running the script: {ex.Message}");
         }
     }
