@@ -47,13 +47,13 @@ namespace DeploymentManager
                 Console.WriteLine("   2. List models hosted on Ollama");
                 Console.WriteLine();
                 Console.WriteLine("       --- Perform for initial installation ---");
-                Console.WriteLine("   3. Establish the CLR database and its tables");
-                Console.WriteLine("   4. Populate configuration and schema data");
-                Console.WriteLine("   5. Populate data for demonstrations");
-                Console.WriteLine("   6. Populate image table");
+                Console.WriteLine("   3. Establish the 'AI_Lab' database, its tables and CLR permissions");
+                Console.WriteLine("   4. Populate complex prompts and database schema");
+                Console.WriteLine("   5. Populate demonstration tables");
+                Console.WriteLine("   6. Populate the images table");
                 Console.WriteLine();
                 Console.WriteLine("       --- Perform after every RELEASE build ---");
-                Console.WriteLine("   7. Relink to the CLR assembly and recreate external functions");
+                Console.WriteLine("   7. Relink CLR assembly, recreate functions, run sanity check");
                 Console.WriteLine();
                 Console.WriteLine("       --- Check or revert current deployment ---");
                 Console.WriteLine("   8. Check the current deployment");
@@ -67,11 +67,11 @@ namespace DeploymentManager
                 switch (choice)
                 {
                     case "1":
-                        CheckExternalServicesCommand.Execute(settingsDict);
+                        CheckExternalServices.Execute(settingsDict);
                         break;
 
                     case "2":
-                        ListHostedModelsCommand.Execute(settingsDict);
+                        ListHostedModels.Execute(settingsDict);
                         break;
 
                     case "3":

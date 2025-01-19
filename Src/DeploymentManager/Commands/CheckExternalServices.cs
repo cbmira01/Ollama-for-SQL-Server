@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DeploymentManager.Commands
 {
-    public static class CheckExternalServicesCommand
+    public static class CheckExternalServices
     {
         public static void Execute(Dictionary<string, string> settings)
         {
@@ -59,8 +59,6 @@ namespace DeploymentManager.Commands
                 return false;
             }
         }
-
-
 
         private static bool IsOllamaApiServerReady(string apiUrl)
         {

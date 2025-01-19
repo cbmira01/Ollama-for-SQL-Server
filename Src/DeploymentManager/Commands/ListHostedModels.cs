@@ -8,7 +8,7 @@ using JsonClrLibrary;
 
 namespace DeploymentManager.Commands
 {
-    public static class ListHostedModelsCommand
+    public static class ListHostedModels
     {
         public static void Execute(Dictionary<string, string> settings)
         {
