@@ -54,8 +54,8 @@ namespace DeploymentManager.Commands
                 // Step 4: Compose a prompt
                 Console.WriteLine();
                 string defaultPrompt = "Who are you and what can you do? Answer briefly.";
-                Console.WriteLine($"Default prompt: {defaultPrompt}");
-                Console.Write("Enter your prompt (or press Enter to use the default): ");
+                Console.WriteLine($"Default prompt: \"{defaultPrompt}\"");
+                Console.Write("Enter your prompt (or press Enter to use the default prompt): ");
                 string prompt = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(prompt))
@@ -68,7 +68,7 @@ namespace DeploymentManager.Commands
 
                 if (!string.IsNullOrEmpty(response))
                 {
-                    Console.WriteLine("Model Response:");
+                    Console.Write("Model Response: ");
                     Console.WriteLine(response);
                 }
                 else
