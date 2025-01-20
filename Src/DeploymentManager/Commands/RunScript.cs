@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace DeploymentManager.Commands
 {
     public static class RunScript
     {
         private const int DefaultCommandTimeout = 300; // 5 minutes
+        private static Dictionary<string, string> _settings;
+        private static string _scriptName;
 
         public static void Execute(Dictionary<string, string> settings, string scriptName)
         {
             if (!PromptUserConfirmation(scriptName))
                 return;
 
-            var scriptPath = GetScriptPath(settings, scriptName);
+            _settings = settings;
+            _scriptName = scriptName;
+
+            var scriptPath = GetScriptPath();
             var commands = ParseScriptCommands(scriptPath);
 
             try
             {
-                ExecuteCommands(commands, settings["SqlServerConnection"]);
+                ExecuteCommands(settings, commands);
             }
             catch (SqlException ex)
             {
@@ -47,9 +53,9 @@ namespace DeploymentManager.Commands
             return true;
         }
 
-        private static string GetScriptPath(Dictionary<string, string> settings, string scriptName)
+        private static string GetScriptPath()
         {
-            var scriptPath = Path.Combine(settings["ScriptsDirectory"], scriptName);
+            var scriptPath = Path.Combine(_settings["ScriptsDirectory"], _scriptName);
             if (!File.Exists(scriptPath))
             {
                 throw new FileNotFoundException($"The script file \"{scriptPath}\" was not found.");
@@ -66,38 +72,53 @@ namespace DeploymentManager.Commands
             );
         }
 
-        private static void ExecuteCommands(string[] commands, string connectionString)
+        private static void ExecuteCommands(Dictionary<string, string> settings, string[] commands)
         {
+            var connectionString = settings["SqlServerConnection"];
+
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
 
-                using (var transaction = connection.BeginTransaction())
+                try
                 {
-                    try
-                    {
-                        foreach (var command in commands)
-                        {
-                            if (string.IsNullOrWhiteSpace(command)) continue;
-                            ExecuteSingleCommand(command, connection, transaction);
-                        }
 
-                        transaction.Commit();
-                        Console.WriteLine();
-                        Console.WriteLine("All commands executed successfully.");
-                    }
-                    catch
+                    var declareStatements = new List<string>();
+                    declareStatements.Add(DeclarationTemplate("RepoRootDirectory"));
+
+                    var declareBlock = string.Join(Environment.NewLine, declareStatements);
+                    commands[0] = declareBlock + Environment.NewLine + commands[0];
+
+                    foreach (var command in commands)
                     {
-                        transaction.Rollback();
-                        throw;
+                        if (string.IsNullOrWhiteSpace(command)) continue;
+                        ExecuteSingleCommand(command, connection);
                     }
+
+                    Console.WriteLine();
+                    Console.WriteLine("All commands executed successfully.");
+                }
+                catch
+                {
+                    throw;
                 }
             }
         }
 
-        private static void ExecuteSingleCommand(string commandText, SqlConnection connection, SqlTransaction transaction)
+        private static string DeclarationTemplate(string symbol)
         {
-            using (var command = new SqlCommand(commandText, connection, transaction))
+            var value = _settings[symbol];
+
+            var declarePart = $"DECLARE @{symbol} NVARCHAR(MAX) = '{value}';";
+            var printPart = $"PRINT '[SYMBOL]: {symbol} = ' + @{symbol}";
+            var declaration = $"{declarePart}\n{printPart}\n";
+
+            return declaration;
+        }
+
+        private static void ExecuteSingleCommand(string commandText, SqlConnection connection)
+        {
+            using (var command = new SqlCommand(commandText, connection))
             {
                 command.CommandTimeout = DefaultCommandTimeout;
 
@@ -110,19 +131,10 @@ namespace DeploymentManager.Commands
 
                 using (var reader = command.ExecuteReader())
                 {
-                    // Process any messages that came before first result set
-                    while (messageQueue.Count > 0)
-                    {
-                        WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "[INFO]: ");
-                    }
-
                     do
                     {
                         // Process any accumulated messages before each result set
-                        while (messageQueue.Count > 0)
-                        {
-                            WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "[INFO]: ");
-                        }
+                        ProcessMessageQueue(messageQueue);
 
                         if (reader.FieldCount > 0)
                         {
@@ -131,11 +143,27 @@ namespace DeploymentManager.Commands
                     } while (reader.NextResult());
 
                     // Process any remaining messages after all result sets
-                    while (messageQueue.Count > 0)
-                    {
-                        WriteColoredLine(messageQueue.Dequeue(), ConsoleColor.DarkCyan, "[INFO]: ");
-                    }
+                    ProcessMessageQueue(messageQueue);
                 }
+            }
+        }
+
+        private static void ProcessMessageQueue(Queue<string> mQ)
+        {
+            while (mQ.Count > 0)
+            {
+                var prefix = "[INFO]: ";
+                var message = mQ.Dequeue();
+
+                // Filter out some non-helpful things out of the message stream
+                if (message.Contains("Run the RECONFIGURE statement to install")) continue;
+
+                // Flag certain script keywords
+                if (message.Contains("[SYMBOL]")) prefix = "";
+                if (message.Contains("[CHECK]")) prefix = "";
+                if (message.Contains("[STEP]")) prefix = "";
+
+                WriteColoredLine(message, ConsoleColor.DarkCyan, prefix);
             }
         }
 

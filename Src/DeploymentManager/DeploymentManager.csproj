@@ -48,7 +48,6 @@
     <Compile Include="Commands\ListHostedModels.cs" />
     <Compile Include="Commands\LoadImageFiles.cs" />
     <Compile Include="Commands\RunScript.cs" />
-    <Compile Include="DatabaseExecutor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
