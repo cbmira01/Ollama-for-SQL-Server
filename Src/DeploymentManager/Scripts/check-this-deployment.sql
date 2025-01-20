@@ -3,6 +3,9 @@
 PRINT '[CHECK]: scriptName is ''check-this-deployment.sql'' ';
 -------------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: Determine if the AI_Lab database has been established';
+-------------------------------------------------------------------------------------
 USE [master];
 
 IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'AI_Lab')

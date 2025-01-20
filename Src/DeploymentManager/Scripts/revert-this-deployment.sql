@@ -2,6 +2,19 @@
 PRINT '[CHECK]: scriptName is ''revert-this-deployment.sql'' ';
 -------------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: Determine if the AI_Lab database has been established';
+-------------------------------------------------------------------------------------
+USE [master];
+
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'AI_Lab')
+BEGIN
+    PRINT '[ERROR]: The AI_Lab database does not exist; it must be established.';
+    SET NOEXEC ON;
+END
+
+GO
+
 USE [AI_Lab];
 
 -------------------------------------------------------------------------------------
