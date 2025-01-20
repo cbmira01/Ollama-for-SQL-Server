@@ -28,7 +28,7 @@ USE [master];
 IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'AI_Lab')
 BEGIN
     PRINT '[ERROR]: The AI_Lab database does not exist; it must be established.';
-    SET NOEXEC ON;
+    SET NOEXEC ON;  -- Script execution is actually halted by DeploymentManager
 END
 
 GO
@@ -36,7 +36,7 @@ GO
 USE [AI_Lab];
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: Drop all CLR functions';
+PRINT '[STEP]: Drop each defined CLR functions';
 -------------------------------------------------------------------------------------
 BEGIN
     IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
@@ -148,24 +148,29 @@ AS EXTERNAL NAME [OllamaSqlClr].[OllamaSqlClr.SqlClrFunctions].[ExamineImage];
 GO
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: List of all user-defined assemblies and CLR functions';
+PRINT '[STEP]: List of user-defined CLR assemblies';
 -------------------------------------------------------------------------------------
 SELECT 
     [name],
     [clr_name],
     [create_date]
 FROM sys.assemblies WHERE is_user_defined = 1;
+GO
 
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: List of all external CLR functions';
+-------------------------------------------------------------------------------------
 SELECT 
-    asm.[name] AS AssemblyName,
+    -- asm.name AS AssemblyName,
     -- asm.permission_set_desc AS AssemblyPermissionSet,
     obj.name AS FunctionName,
     obj.type_desc AS ObjectType,
-    mod.assembly_class AS AssemblyClass
-    --mod.assembly_method AS AssemblyMethod
+    mod.assembly_class AS AssemblyClass,
+    mod.assembly_method AS AssemblyMethod
 FROM sys.assembly_modules mod
 JOIN sys.objects obj ON mod.object_id = obj.object_id
-JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id;
+JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
+--WHERE obj.type IN ('FN', 'TF', 'IF'); -- FN = Scalar function, TF = Table-valued function, IF = Inline function
 GO
 
 -------------------------------------------------------------------------------------

@@ -9,9 +9,19 @@ namespace DeploymentManager.Commands
 {
     public static class RunScript
     {
+        // Actions and console colors can be controlled by these keywords from SQL PRINT statements
+        private static readonly Dictionary<string, ConsoleColor> KeywordColors = new Dictionary<string, ConsoleColor>
+        {
+            { "[ERROR]", ConsoleColor.Red },
+            { "[SYMBOL]", ConsoleColor.DarkYellow },
+            { "[CHECK]", ConsoleColor.DarkYellow },
+            { "[STEP]", ConsoleColor.DarkCyan }
+        };
+
         private const int DefaultCommandTimeout = 300; // 5 minutes
         private static Dictionary<string, string> _settings;
         private static string _scriptName;
+        private static bool _errorDetected = false;
 
         public static void Execute(Dictionary<string, string> settings, string scriptName)
         {
@@ -20,6 +30,7 @@ namespace DeploymentManager.Commands
 
             _settings = settings;
             _scriptName = scriptName;
+            _errorDetected = false;
 
             var scriptPath = GetScriptPath();
             var commands = ParseScriptCommands(scriptPath);
@@ -83,7 +94,6 @@ namespace DeploymentManager.Commands
 
                 try
                 {
-
                     var declareStatements = new List<string>();
                     declareStatements.Add(DeclarationTemplate("RepoRootDirectory"));
 
@@ -93,11 +103,22 @@ namespace DeploymentManager.Commands
                     foreach (var command in commands)
                     {
                         if (string.IsNullOrWhiteSpace(command)) continue;
+
+                        // Stop processing if an error was detected
+                        if (_errorDetected)
+                        {
+                            WriteColoredLine("Skipping remaining commands due to previous error", ConsoleColor.Yellow);
+                            return;
+                        }
+
                         ExecuteSingleCommand(command, connection);
                     }
 
-                    Console.WriteLine();
-                    Console.WriteLine("All commands executed successfully.");
+                    if (!_errorDetected)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("All commands executed successfully.");
+                    }
                 }
                 catch
                 {
@@ -151,28 +172,35 @@ namespace DeploymentManager.Commands
 
         private static void ProcessMessageQueue(Queue<string> mQ)
         {
-            var keywords = new List<string> {
-                    "[SYMBOL]",
-                    "[CHECK]",
-                    "[STEP]",
-                    "[ERROR]"
-                };
-
             while (mQ.Count > 0)
             {
-                var prefix = "[INFO]: ";
                 var message = mQ.Dequeue();
 
-                // Filter some non-helpful things out of the message stream
+                // Filter out non-helpful messages
                 if (message.Contains("Run the RECONFIGURE statement to install")) continue;
 
-                // Flag certain script keywords
-                if (keywords.Any(k => message.Contains(k)))
-                {
-                    prefix = "";
-                }
+                // Determine if the message contains any of the defined keywords
+                var matchedKeyword = KeywordColors.Keys.FirstOrDefault(k => message.Contains(k));
 
-                WriteColoredLine(message, ConsoleColor.DarkCyan, prefix);
+                if (matchedKeyword != null)
+                {
+                    // Assign a color based on the keyword matched in the SQL PRINT
+                    var color = KeywordColors[matchedKeyword];
+                    var prefix = "";
+
+                    // Set error flag if it's an error message
+                    if (matchedKeyword == "[ERROR]")
+                    {
+                        _errorDetected = true;
+                    }
+
+                    WriteColoredLine(message, color, prefix);
+                }
+                else
+                {
+                    // Default case for informational messages
+                    WriteColoredLine(message, ConsoleColor.DarkGray, "[INFO]: ");
+                }
             }
         }
 
