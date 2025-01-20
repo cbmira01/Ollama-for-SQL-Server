@@ -114,6 +114,16 @@ FROM sys.trusted_assemblies;
 GO
 
 USE [AI_Lab];
+
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: Create the KeyValuePairs table';
+-------------------------------------------------------------------------------------
+CREATE TABLE KeyValuePairs (
+    [ID] INT PRIMARY KEY IDENTITY(1,1), 
+    [Key] NVARCHAR(20),
+    [Value] NVARCHAR(MAX)
+);
+
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: Create the Images table';
 -------------------------------------------------------------------------------------
@@ -124,7 +134,7 @@ CREATE TABLE Images (
 );
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: Create the support emails table';
+PRINT '[STEP]: Create the support_emails table';
 -------------------------------------------------------------------------------------
 CREATE TABLE support_emails (
     id INT IDENTITY(1,1) PRIMARY KEY,

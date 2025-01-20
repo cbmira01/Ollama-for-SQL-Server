@@ -1,3 +1,0 @@
-﻿
-PRINT 'Success...';
-

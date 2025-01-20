@@ -63,7 +63,7 @@
   <ItemGroup>
     <Content Include="Scripts\check-this-deployment.sql" />
     <Content Include="Scripts\establish-clr-database.sql" />
-    <Content Include="Scripts\populate-configuration-and-schema.sql" />
+    <Content Include="Scripts\populate-config-and-schema.sql" />
     <Content Include="Scripts\populate-demo-data.sql" />
     <Content Include="Scripts\relink-clr-assembly.sql" />
     <Content Include="Scripts\revert-this-deployment.sql" />
