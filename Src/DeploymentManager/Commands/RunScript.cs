@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace DeploymentManager.Commands
@@ -30,12 +31,12 @@ namespace DeploymentManager.Commands
             catch (SqlException ex)
             {
                 LogSqlError(ex);
-                throw;
+                return;
             }
             catch (Exception ex)
             {
                 LogError(ex);
-                throw;
+                return;
             }
         }
 
@@ -150,18 +151,26 @@ namespace DeploymentManager.Commands
 
         private static void ProcessMessageQueue(Queue<string> mQ)
         {
+            var keywords = new List<string> {
+                    "[SYMBOL]",
+                    "[CHECK]",
+                    "[STEP]",
+                    "[ERROR]"
+                };
+
             while (mQ.Count > 0)
             {
                 var prefix = "[INFO]: ";
                 var message = mQ.Dequeue();
 
-                // Filter out some non-helpful things out of the message stream
+                // Filter some non-helpful things out of the message stream
                 if (message.Contains("Run the RECONFIGURE statement to install")) continue;
 
                 // Flag certain script keywords
-                if (message.Contains("[SYMBOL]")) prefix = "";
-                if (message.Contains("[CHECK]")) prefix = "";
-                if (message.Contains("[STEP]")) prefix = "";
+                if (keywords.Any(k => message.Contains(k)))
+                {
+                    prefix = "";
+                }
 
                 WriteColoredLine(message, ConsoleColor.DarkCyan, prefix);
             }

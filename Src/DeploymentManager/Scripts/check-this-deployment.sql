@@ -3,11 +3,21 @@
 PRINT '[CHECK]: scriptName is ''check-this-deployment.sql'' ';
 -------------------------------------------------------------------------------------
 
+USE [master];
+
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'AI_Lab')
+BEGIN
+    PRINT '[ERROR]: The AI_Lab database does not exist; it must be established.';
+    SET NOEXEC ON;
+END
+
+GO
+
 USE [AI_Lab];
 
------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: List of user-defined CLR assemblies';
------------------------------------------------------------
+-------------------------------------------------------------------------------------
 SELECT 
     [name],
     [clr_name],
@@ -15,9 +25,9 @@ SELECT
 FROM sys.assemblies WHERE is_user_defined = 1;
 GO
 
------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: List of all external CLR functions';
------------------------------------------------------------
+-------------------------------------------------------------------------------------
 SELECT 
     -- asm.name AS AssemblyName,
     -- asm.permission_set_desc AS AssemblyPermissionSet,
@@ -50,12 +60,12 @@ BEGIN
     END
     ELSE
     BEGIN
-        PRINT 'The schemaJson key does not exist.';
+        PRINT '[ERROR]: The schemaJson key does not exist.';
     END
 END
 ELSE
 BEGIN
-    PRINT 'The KeyValuePairs table does not exist.';
+    PRINT '[ERROR]: The KeyValuePairs table does not exist.';
 END
 GO
 

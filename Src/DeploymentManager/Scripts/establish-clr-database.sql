@@ -6,9 +6,9 @@ PRINT '[CHECK]: Ensure the @RepoRootDirectory symbol is declared in this script.
 
 USE [master];
 
-----------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Recreate the AI_Lab database';
-----------------------------------------------
+-------------------------------------------------------------------------------------
 IF EXISTS (SELECT name FROM sys.databases WHERE name = 'AI_Lab')
 BEGIN
     -- Set database to single-user mode to terminate active connections
@@ -34,9 +34,9 @@ RECONFIGURE;
 EXEC sp_configure 'show advanced options', 0;
 RECONFIGURE;
 
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Delete this project''s trusted assemblies';
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 DECLARE @hash VARBINARY(64);
 
 -- Remove OllamaSqlClr trusted assembly if it exists
@@ -59,9 +59,9 @@ BEGIN
     EXEC sys.sp_drop_trusted_assembly @hash = @hash;
 END
 
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Define trusted assemblies for this project';
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 DECLARE @OllamaSqlClrRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
 DECLARE @JsonClrLibraryRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\JsonClrLibrary.dll';
 
@@ -72,9 +72,9 @@ DECLARE @AssemblyPath NVARCHAR(MAX);
 DECLARE @AssemblyHash VARBINARY(64);
 DECLARE @sql NVARCHAR(MAX);
 
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Trust the OllamaSqlClr assembly';
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 SET @AssemblyPath = @OllamaSqlClrAssemblyPath;
 
 SET @sql = N'
@@ -88,9 +88,9 @@ EXEC sp_executesql @sql, N'@AssemblyHashOut VARBINARY(64) OUTPUT', @AssemblyHash
 -- Add the assembly’s hash to the trusted assemblies
 EXEC sys.sp_add_trusted_assembly @hash = @AssemblyHash, @description = N'OllamaSqlClr';
 
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Trust the JsonClrLibrary assembly';
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 SET @AssemblyPath = @JsonClrLibraryAssemblyPath;
 
 SET @sql = N'
@@ -102,9 +102,9 @@ EXEC sp_executesql @sql, N'@AssemblyHashOut VARBINARY(64) OUTPUT', @AssemblyHash
 
 EXEC sys.sp_add_trusted_assembly @hash = @AssemblyHash, @description = N'JsonClrLibrary';
 
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Verify the assembly is now trusted';
--------------------------------------------------------------
+-------------------------------------------------------------------------------------
 SELECT
     [description],
     [create_date],
@@ -114,18 +114,18 @@ FROM sys.trusted_assemblies;
 GO
 
 USE [AI_Lab];
----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Create the Images table';
----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
 CREATE TABLE Images (
     Id INT PRIMARY KEY IDENTITY,
     FileName NVARCHAR(255) NOT NULL,
     ImageData VARBINARY(MAX) NOT NULL
 );
 
--------------------------------------------------------
+-------------------------------------------------------------------------------------
 PRINT '[STEP]: Create the support emails table';
--------------------------------------------------------
+-------------------------------------------------------------------------------------
 CREATE TABLE support_emails (
     id INT IDENTITY(1,1) PRIMARY KEY,
     email_content NVARCHAR(2000),
