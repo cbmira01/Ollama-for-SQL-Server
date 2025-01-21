@@ -16,7 +16,11 @@ namespace DeploymentManager.Commands
             var imagesDirectory = _settings["ImagesDirectory"];
 
             Console.WriteLine();
-            Console.WriteLine($"    Loading JPG, PNG and GIF images from {imagesDirectory}");
+            Console.WriteLine($"    Load JPG, PNG and GIF images from {imagesDirectory}");
+
+            if (!PromptUserConfirmation())
+                return;
+
             Console.WriteLine();
 
             try
@@ -136,6 +140,19 @@ namespace DeploymentManager.Commands
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        private static bool PromptUserConfirmation()
+        {
+            Console.Write($"        Continue?  N // ");
+            var response = Console.ReadLine()?.Trim().ToUpper() ?? "N";
+
+            if (response != "Y")
+            {
+                Console.WriteLine("Operation cancelled.");
+                return false;
+            }
+            return true;
         }
 
         private static void WriteLineInColor(string message, ConsoleColor color)
