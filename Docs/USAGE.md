@@ -23,7 +23,7 @@ SELECT dbo.CompletePrompt(@modelName, @askPrompt, @morePrompt);
 ```
 
 **Parameters:**
-- `@modelName`: Name of a hosted model, such as 'llama3.2' or 'mistral'.
+- `@modelName`: Name of a hosted model.
 - `@askPrompt`: Main prompt or question.
 - `@morePrompt`: Additional context or information for the prompt.
 
@@ -57,7 +57,7 @@ SELECT * FROM dbo.CompleteMultiplePrompts(@modelName, @ask, @morePrompt, @numCom
 ```
 
 **Parameters:**
-- `@modelName`: Name of a hosted model, such as 'llama3.2' or 'mistral'.
+- `@modelName`: Name of a hosted model.
 - `@askPrompt`: Main prompt or question.
 - `@morePrompt`: Additional context or information for the prompt.
 - `@numCompletions`: Number of prompt completions to retrieve.
@@ -118,8 +118,8 @@ Response:
 
 Send a natural-language prompt to a model and obtain an SQL query along with the result of its execution. 
 
-QueryFromPrompt is aware of the current database schema and will do its best effort to build an 
-SQL Server query, run it, and show its results in a standard (JSON) format.
+QueryFromPrompt is aware of the current database schema and will do its best effort to build an SQL Server query, 
+run it, and show its results in a standard (JSON) format.
 
 ```sql
 SELECT * FROM dbo.QueryFromPrompt(@modelName, @prompt);
@@ -127,7 +127,7 @@ GO
 ```
 
 **Parameters:**
-- `@modelName`: Name of a hosted model, such as 'llama3.2' or 'mistral'.
+- `@modelName`: Name of a hosted model.
 - `@prompt`: Natural-language prompt to generate an SQL query.
 
 ### Example
@@ -159,7 +159,7 @@ SELECT dbo.ExamineImage(@modelName, @prompt, @imageData);
 ```
 
 **Parameters:**
-- `@modelName`: Name of a hosted model (try `llava`)..
+- `@modelName`: Name of a hosted model.
 - `@prompt`: Main prompt or question.
 - `@imageData`: JPEG image data in VARBINARY(MAX) format.
 
@@ -196,8 +196,6 @@ In case of an error or exception, the response will include an error message:
     Exception: <Exception Message>
 ```
 
-Other usage examples of the new SQL/CLR functions can be found in scripts
-`Script40`, `Script50`, `Script60` and `Script70`,
-located in the `DB_Scripts` folder.
+Other usage examples of the new SQL/CLR functions can be found in the `DB_Scripts` solution folder.
 
 [`Using the new SQL/CLR functions`](#using-the-sqlclr-functions)

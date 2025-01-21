@@ -16,15 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1953EB01
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB_Scripts", "DB_Scripts", "{1D6C3F81-3588-492A-979A-D3FCCA8FA15E}"
 	ProjectSection(SolutionItems) = preProject
-		DBscripts\Script00_SQLCLR_utilities.sql = DBscripts\Script00_SQLCLR_utilities.sql
-		DBscripts\Script10_Recreate_TEST_database_and_trusted_assemblies.sql = DBscripts\Script10_Recreate_TEST_database_and_trusted_assemblies.sql
-		DBscripts\Script20_Recreate_sample_tables_and_schema.sql = DBscripts\Script20_Recreate_sample_tables_and_schema.sql
-		DBscripts\Script22_Load_image_data.sql = DBscripts\Script22_Load_image_data.sql
-		DBscripts\Script30_Relink_to_CLR_functions.sql = DBscripts\Script30_Relink_to_CLR_functions.sql
-		DBscripts\Script40_Sample_function_calls.sql = DBscripts\Script40_Sample_function_calls.sql
-		DBscripts\Script50_Sentiment_analysis.sql = DBscripts\Script50_Sentiment_analysis.sql
-		DBscripts\Script60_Query_from_prompt_example.sql = DBscripts\Script60_Query_from_prompt_example.sql
-		DBscripts\Script70_Image_classification.sql = DBscripts\Script70_Image_classification.sql
+		DBscripts\Image_classification.sql = DBscripts\Image_classification.sql
+		DBscripts\Produce_SQL_queries_from_prompts.sql = DBscripts\Produce_SQL_queries_from_prompts.sql
+		DBscripts\Sample_function_calls.sql = DBscripts\Sample_function_calls.sql
+		DBscripts\Sentiment_analysis.sql = DBscripts\Sentiment_analysis.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonClrLibrary", "Src\JsonClrLibrary\JsonClrLibrary.csproj", "{09C49120-5019-4B68-A16D-E44EA8F2B521}"
@@ -70,8 +65,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{0876E0
 		Images\pexels-tdcat-59523-puppy_resized.jpg = Images\pexels-tdcat-59523-puppy_resized.jpg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadImageFiles", "Src\LoadImageFiles\LoadImageFiles.csproj", "{0BF465D9-80CC-49D8-BE51-7752ECED87DD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentManager", "Src\DeploymentManager\DeploymentManager.csproj", "{89937183-7B5D-4E2B-BE97-2512B0249D3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeploymentManager.Tests", "Tests\DeploymentManager.Tests\DeploymentManager.Tests.csproj", "{0CF1044D-0B86-46CC-B7E8-39B01ABAE10C}"
@@ -98,10 +91,6 @@ Global
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0BF465D9-80CC-49D8-BE51-7752ECED87DD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{89937183-7B5D-4E2B-BE97-2512B0249D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{89937183-7B5D-4E2B-BE97-2512B0249D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89937183-7B5D-4E2B-BE97-2512B0249D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -121,7 +110,6 @@ Global
 		{26C28E76-3F64-4BAD-9408-2744C5CA7B4F} = {1953EB01-2AF3-4CC2-9812-61A516641640}
 		{6FC9999C-2339-4816-9598-1E111E3E076A} = {7498E09B-F2AD-4C5E-AE93-6AABD5316894}
 		{880D8954-0C56-4F12-8E85-3519C6C9C906} = {7498E09B-F2AD-4C5E-AE93-6AABD5316894}
-		{0BF465D9-80CC-49D8-BE51-7752ECED87DD} = {83575C05-E240-402E-815A-2BD58757771C}
 		{89937183-7B5D-4E2B-BE97-2512B0249D3B} = {83575C05-E240-402E-815A-2BD58757771C}
 		{0CF1044D-0B86-46CC-B7E8-39B01ABAE10C} = {1953EB01-2AF3-4CC2-9812-61A516641640}
 	EndGlobalSection

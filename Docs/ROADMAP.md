@@ -46,14 +46,6 @@
   - Would this query be too slow? GPU context has to be dumped and recreated when models are switched.
   - Would being able to specify a subset list of models be useful?
 
-- **Depoloyment Manager**
-  - A console program to coordinate project deployment
-  - Check environment for running services (SQL Server, Ollama)
-  - Determine repository root directory
-  - Run SQL scripts to build SQL/CLR database, tables, and assembly links
-  - SQL Server to Ollama sanity checks
-  - Supercedes Scriptxx scheme
-
 ---
 
 ### Improvements and maintenance
@@ -61,6 +53,7 @@
 - **Project configuration**
   - A number of unexposed settings are cropping up.
   - New features may need highly tweaked LLM prompts.
+  - Needs configuration: console programs, CLR service layer, SQL queries.
   - Configure at build time, or via SQL queries?
 
 - **Ollama context field deprecated**: With Ollama 0.5.4 (Dec 2024), the context field in 

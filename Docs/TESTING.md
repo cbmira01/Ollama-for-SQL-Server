@@ -31,7 +31,8 @@ Two console programs are available for integration testing:
 Unit tests are provided for:
 
    - The JSON library
-   - SQL/CLR function
+   - SQL/CLR functions
+   - The Ollama service layer
 
 To run unit tests:
 
@@ -43,7 +44,9 @@ To run unit tests:
 
 ### Debugging the SQL/CLR Functions Remotely
 
-You can attach a debugger to the SQL Server process to debug SQL/CLR functions. Follow these steps:
+You can attach a debugger to the SQL Server process to debug SQL/CLR functions remotely. 
+
+Here's how:
 
 1. **Preparation**
    - Run Visual Studio as an administrator.
@@ -53,7 +56,7 @@ You can attach a debugger to the SQL Server process to debug SQL/CLR functions. 
    - Set SQL Server and its agent to a running state. Note the process ID of the `SQL Server` service.
 
 2. **Recreate Assembly Links**
-   - Run `Script30` to recreate the CLR assembly and function links.
+   - Run the 'Relink CLR assembly' deployment step from the Deployement Manager.
 
 3. **Attach Debugger**
    - Open Visual Studio's **Debug** menu.
@@ -87,8 +90,8 @@ When making changes:
    - Build the solution in `Release` configuration to generate the CLR assembly.
 
 4. **Redeploy the Assembly**
-   - Run `Script30` to deploy to SQL Server (recreate the CLR function and assembly links).
-   - Establish data to test against your new work.
+   - Relink the CLR function and assembly links, via the Deployment Manager.
+   - Establish tables and data to test against your new work.
 
 5. **Debug Remotely**
    - Attach the debugger to SQL Server as described above.
