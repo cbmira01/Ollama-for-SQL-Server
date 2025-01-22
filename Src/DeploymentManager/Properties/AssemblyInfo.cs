@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DeploymentManager")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jefferson County Public Schools")]
+[assembly: AssemblyCompany("Calvin Miracle")]
 [assembly: AssemblyProduct("DeploymentManager")]
-[assembly: AssemblyCopyright("Copyright © Jefferson County Public Schools 2025")]
+[assembly: AssemblyCopyright("Copyright © Calvin Miracle 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
