@@ -3,9 +3,9 @@
 
     This script contains demonstrations of image classification.
 
-    Run the 'LoadImageFiles' console job, or Script22, to load image data into the TEST database.
+    The Deployment Manager has an option to load image data.
 
-    Image classification depends on a model that can work with JPEG images.
+    Image classification depends on a model that can work with images.
     The Llava model is a good choice for image classification.
 
     Make sure your local Ollama API server is running.
@@ -16,7 +16,7 @@
 ---------------------------------------------------------------------------------
 -- Run a prompt against a chosen image
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 -- Choose an image
 DECLARE @FileName NVARCHAR(100) = 'pexels-brunoscramgnon-596134-moon_resized.jpg';
@@ -39,7 +39,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Run a prompt against all images
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 -- Choose a prompt
 DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';
@@ -58,7 +58,7 @@ GO
 --------------------------------------------------------------------------------------
 -- Run a prompt against all images using a cursor, send output to the Messages panel
 --------------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 -- Choose a prompt
 DECLARE @Prompt NVARCHAR(100) = 'Do you recognize anything in this image?';

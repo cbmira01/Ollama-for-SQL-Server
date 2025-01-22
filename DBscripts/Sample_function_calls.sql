@@ -12,7 +12,7 @@
 -----------------------------------------------------------
 -- Call 'CompletePrompt' to get completions as projections
 -----------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @ask NVARCHAR(MAX) = 'Replying only on the words ''happy'' or ''not happy'', describe this sentiment: ';
@@ -40,7 +40,7 @@ GO
 
 --      note: this function demonstrates context linkage
 ------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @numCompletions INT = 10;
@@ -56,7 +56,7 @@ GO
 -------------------------------------------------------
 -- Marketing proposals
 -------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'llama3.2';
 DECLARE @task NVARCHAR(MAX) = '
@@ -78,7 +78,7 @@ GO
 -------------------------------------------------------
 -- Discover all models currently hosted on Ollama
 -------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 SELECT *
 FROM dbo.GetAvailableModels()

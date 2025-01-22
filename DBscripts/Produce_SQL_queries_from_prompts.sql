@@ -4,10 +4,10 @@
     This script contains tests of the 'QueryFromPrompt' feature, to demonstrate production
         of SQL queries from natural-language prompts.
 
-    Behind the scenes, LLMs are provided with the database schema produced in Script20,
-    along with heavy prompting to ensure the best SQL production.
+    Behind the scenes, the LLM is provided with a database schema, along with heavy prompting 
+        to ensure the best SQL production.
 
-    Of the LLMs I tested, Mistral appears to perform the best at this coding task.
+    Of the LLMs I've tested, the Mistral model appears to perform the best at this coding task.
 
     Make sure your local Ollama API server is running.
 
@@ -17,7 +17,7 @@
 ---------------------------------------------------------------------------------
 -- This query returns support email rows with glad sentiment
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Find all entries in support_emails where sentiment is glad.';
@@ -28,7 +28,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to exhibit foreign keys, conditionals, and aggregate
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'How much has John Doe spent in total?';
@@ -39,7 +39,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to find existence of a customer
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Is there a customer with last name of Doe? Answer yes or no.';
@@ -50,7 +50,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to find existence of a customer
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Tell me yes or no, is there a customer by the name of Jason Argonaut?';
@@ -61,7 +61,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to count the number of sales
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'How many times has John Doe purchased anything?';
@@ -72,7 +72,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to test string searching
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What customers have first names that start with the letter J?';
@@ -83,7 +83,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to produce sorted list
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'Give me a list of items sold, sorted in reverse alphabetical order by the name of the item.';
@@ -94,7 +94,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to test date/time handling
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What was the date and time of the earliest purchase?';
@@ -105,7 +105,7 @@ GO
 ---------------------------------------------------------------------------------
 -- Query to test date/time handling
 ---------------------------------------------------------------------------------
-USE [TEST];
+USE [AI_Lab];
 
 DECLARE @modelName NVARCHAR(MAX) = 'mistral';
 DECLARE @prompt NVARCHAR(MAX) = 'What was the time of day of the latest purchase?';
