@@ -186,9 +186,11 @@ DECLARE @modelName NVARCHAR(200) = 'llama3.2';
 DECLARE @ask NVARCHAR(200) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
 DECLARE @morePrompt NVARCHAR(200) = 'Tell me in forty words or less!';
 
-PRINT '    modelName = ' + @modelName;
-PRINT '    ask = ' + @ask;
-PRINT '    morePrompt = ' + @morePrompt;
+DECLARE @CRLF VARCHAR(2) = CHAR(13) + CHAR(10);
+PRINT 'Setup for sanity check: ' + @CRLF
+    + '    modelName = ' + @modelName + @CRLF
+    + '    ask = ' + @ask + @CRLF
+    + '    morePrompt = ' + @morePrompt;
 
 SELECT dbo.CompletePrompt(@modelName, @ask, @morePrompt) as Response;
 GO
