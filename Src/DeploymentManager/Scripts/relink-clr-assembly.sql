@@ -1,7 +1,6 @@
 ﻿
 -------------------------------------------------------------------------------------
 PRINT '[CHECK]: scriptName is ''relink-clr-assembly.sql'' ';
-PRINT '[CHECK]: Ensure the @RepoRootDirectory symbol is declared in this script.';
 -------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------
@@ -16,8 +15,15 @@ CREATE TABLE #variables
     VarValue NVARCHAR(200)
 );
 
--- Insert the initial value of @MySymbol into the temporary table
+PRINT '[CHECK]: Ensure the @RepoRootDirectory symbol is declared for this script.';
+-- Insert symbol names presented from Deployment Manager
 INSERT INTO #variables (VarName, VarValue) VALUES ('@RepoRootDirectory', @RepoRootDirectory);
+--INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol1', @Symbol1);
+--INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol2', @Symbol2);
+--INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol3', @Symbol3);
+
+SELECT * FROM #variables;
+
 GO
 
 -------------------------------------------------------------------------------------

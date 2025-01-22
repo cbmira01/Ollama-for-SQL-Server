@@ -37,7 +37,7 @@ namespace DeploymentManager.Commands
 
             try
             {
-                ExecuteCommands(settings, commands);
+                ExecuteCommands(commands);
             }
             catch (SqlException ex)
             {
@@ -84,9 +84,9 @@ namespace DeploymentManager.Commands
             );
         }
 
-        private static void ExecuteCommands(Dictionary<string, string> settings, string[] commands)
+        private static void ExecuteCommands(string[] commands)
         {
-            var connectionString = settings["SqlServerConnection"];
+            var connectionString = _settings["SqlServerConnection"];
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -95,7 +95,7 @@ namespace DeploymentManager.Commands
                 try
                 {
                     var declareStatements = new List<string>();
-                    declareStatements.Add(DeclarationTemplate("RepoRootDirectory"));
+                    declareStatements.Add(DeclareSymbol("RepoRootDirectory"));
 
                     var declareBlock = string.Join(Environment.NewLine, declareStatements);
                     commands[0] = declareBlock + Environment.NewLine + commands[0];
@@ -127,7 +127,7 @@ namespace DeploymentManager.Commands
             }
         }
 
-        private static string DeclarationTemplate(string symbol)
+        private static string DeclareSymbol(string symbol)
         {
             var value = _settings[symbol];
 
