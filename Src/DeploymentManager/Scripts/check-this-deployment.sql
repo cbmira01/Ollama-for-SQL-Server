@@ -17,6 +17,7 @@ END
 GO
 
 USE [AI_Lab];
+GO
 
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: List of user-defined CLR assemblies';

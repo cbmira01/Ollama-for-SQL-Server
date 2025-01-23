@@ -16,7 +16,8 @@ CREATE TABLE #variables
 );
 
 PRINT '[CHECK]: Ensure the @RepoRootDirectory symbol is declared for this script.';
--- Insert symbol names presented from Deployment Manager
+
+-- Insert symbol names conveyed from Deployment Manager
 INSERT INTO #variables (VarName, VarValue) VALUES ('@RepoRootDirectory', @RepoRootDirectory);
 --INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol1', @Symbol1);
 --INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol2', @Symbol2);
@@ -40,9 +41,10 @@ END
 GO
 
 USE [AI_Lab];
+GO
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: Drop each defined CLR functions';
+PRINT '[STEP]: Drop each defined CLR function';
 -------------------------------------------------------------------------------------
 BEGIN
     IF OBJECT_ID('dbo.CompletePrompt', 'FS') IS NOT NULL
@@ -60,13 +62,15 @@ BEGIN
     IF OBJECT_ID('dbo.ExamineImage', 'FS') IS NOT NULL
         DROP FUNCTION dbo.ExamineImage;
 END
+GO
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: Drop the old CLR assembly';
+PRINT '[STEP]: Drop link to the previous CLR assembly';
 -------------------------------------------------------------------------------------
 -- Drop the assembly only after all dependent objects are removed
 IF EXISTS (SELECT * FROM sys.assemblies WHERE name = 'OllamaSqlClr')
     DROP ASSEMBLY OllamaSqlClr;
+GO
 
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: Link to the most recent release of the CLR assembly';
@@ -187,7 +191,7 @@ DECLARE @ask NVARCHAR(200) = 'Do Ollama, Llama3.2, and SQL Server make a good te
 DECLARE @morePrompt NVARCHAR(200) = 'Tell me in forty words or less!';
 
 DECLARE @CRLF VARCHAR(2) = CHAR(13) + CHAR(10);
-PRINT 'Setup for sanity check: ' + @CRLF
+PRINT '[CHECK]: Setup for sanity check: ' + @CRLF
     + '    modelName = ' + @modelName + @CRLF
     + '    ask = ' + @ask + @CRLF
     + '    morePrompt = ' + @morePrompt;

@@ -16,6 +16,7 @@ END
 GO
 
 USE [AI_Lab];
+GO
 
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: Drop all CLR functions and the CLR assembly';
@@ -44,6 +45,7 @@ END
 GO
 
 USE [master];
+GO
 
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: Delete this project''s trusted assemblies';
@@ -70,6 +72,8 @@ BEGIN
     EXEC sys.sp_drop_trusted_assembly @hash = @hash;
 END
 
+GO
+
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: Drop the AI_Lab database';
 -------------------------------------------------------------------------------------
@@ -79,5 +83,7 @@ BEGIN
     ALTER DATABASE [AI_Lab] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
     DROP DATABASE [AI_Lab];
 END
+
+GO
 
 PRINT 'Goodbye...';
