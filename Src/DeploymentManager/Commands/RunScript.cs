@@ -132,7 +132,7 @@ namespace DeploymentManager.Commands
             var value = _settings[symbol];
 
             var declarePart = $"DECLARE @{symbol} NVARCHAR(MAX) = '{value}';";
-            var printPart = $"PRINT '[SYMBOL]: {symbol} = ' + @{symbol}";
+            var printPart = $"PRINT '[SYMBOL]: Supplied by Deployment Manager: {symbol} = ' + @{symbol}";
             var declaration = $"{declarePart}\n{printPart}\n";
 
             return declaration;

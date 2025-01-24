@@ -5,7 +5,7 @@
    - **Visual Studio 2022**: Community Edition is sufficient.
    - **.NET Framework 4.7.2 SDK**: Required to target CLR 4 for SQL Server 2022.
    - **SQL Server 2022 Express**: Ensure CLR integration can be enabled.
-   - **Ollama API server**: Hosted locally on `http://127.0.0.1:11434/` with one or more LLM models.
+   - **Ollama API server**: Hosted locally with one or more LLM models.
 
 ### Workstation specifications
 
@@ -20,10 +20,10 @@ This project was developed on, and deployed to, a machine with these specificati
 
 ---
 
-### Install SQL Server and client
+### Install and manage SQL Server
 
 1. **Database server**: 
-   - **SQL Server 2022 Express** Can run self-hosted, which is sufficient to demonstrate for this project.
+   - **SQL Server 2022 Express** Can run self-hosted, which is sufficient to demonstrate this project.
    - Do not deploy this project to a production server without careful study.
 
 2. **Server management**: Use **SQL Server Configuration Manager** to manage database services:
@@ -56,7 +56,7 @@ This project was developed on, and deployed to, a machine with these specificati
    - LLM `llava` is very successful at image analysis.
    - [Refer to the Ollama library](https://ollama.com/library)
 
-4. **Optional**: A tool like **Postman** can be useful when interacting with Ollama:
+4. **Optional**: An API development tool like **Postman** or **Hoppscotch** can be useful when interacting with Ollama:
    - `GET` to `http://127.0.0.1:11434/api/tags`: Retrieve a list of models.
    - `POST` to `http://127.0.0.1:11434/api/generate`: Send prompts and receive completions.
    - `POST` to `http://127.0.0.1:11434/api/show`: To get detailed information about a hosted model.
@@ -104,7 +104,7 @@ git clone https://github.com/cbmira01/Ollama-for-SQL-Server
 4. **Optional**: Demonstrations for image analysis and SQL code generation.
    - Complete the deployment steps above.
    - Different large language models excel in various tasks.
-   - For image analysis demonstrations, I recommend you use the `llava` model.
-   - For demonstrations of SQL code generation, I recommend you use the `mistral` model.
-   - Your own investigations may lead you to install and use other large language models.
+   - For image analysis demonstrations, I recommend you pull the `llava` model.
+   - For demonstrations of SQL code generation, I recommend you pull the `mistral` model.
+   - Your own investigations may lead you to pull and use other large language models.
 
