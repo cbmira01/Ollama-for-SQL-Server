@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using Configuration;
 
 namespace DeploymentManager.Commands
 {
     public static class LoadImageFiles
     {
-        private static Dictionary<string, string> _settings;
-
-        public static void Execute(Dictionary<string, string> settings)
+        public static void Execute()
         {
-            _settings = settings;
-            var imagesDirectory = _settings["ImagesDirectory"];
+            var imagesDirectory = AppConfig.ImagesDirectory;
 
             Console.WriteLine();
             Console.WriteLine($"    Load JPG, PNG and GIF images from {imagesDirectory}");
@@ -130,7 +127,7 @@ namespace DeploymentManager.Commands
 
         private static void ExecuteNonQuery(string query, Action<SqlCommand> configureCommand = null)
         {
-            using (var connection = new SqlConnection(_settings["SqlServerConnection"]))
+            using (var connection = new SqlConnection(AppConfig.SqlServerConnection))
             {
                 connection.Open();
 

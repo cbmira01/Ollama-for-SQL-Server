@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using Configuration;
 
 namespace DeploymentManager.Commands
 {
     public static class CheckExternalServices
     {
-        public static void Execute(Dictionary<string, string> settings)
+        public static void Execute()
         {
             Console.WriteLine();
             Console.WriteLine("Checking external services...");
@@ -13,7 +13,7 @@ namespace DeploymentManager.Commands
 
             try
             {
-                if (IsSqlServerReady(settings["SqlServerConnection"])) 
+                if (IsSqlServerReady(AppConfig.SqlServerConnection)) 
                 {
                     Console.WriteLine($"    SQL Server is ready!");
                 }
@@ -25,14 +25,14 @@ namespace DeploymentManager.Commands
 
                 Console.WriteLine();
 
-                if (IsOllamaApiServerReady(settings["ApiUrl"]))
+                if (IsOllamaApiServerReady(AppConfig.ApiUrl))
                 {
                     Console.Write($"    Ollama API server is ready!");
                 }
                 else
                 {
                     Console.WriteLine($"    Ollama API server is NOT ready.");
-                    Console.WriteLine($"    Check your MSI or Docker installation of Ollama, make sure it is serving on {settings["ApiUrl"]}");
+                    Console.WriteLine($"    Check your MSI or Docker installation of Ollama, make sure it is serving on {AppConfig.ApiUrl}");
                 }
 
                 Console.WriteLine();
@@ -70,7 +70,7 @@ namespace DeploymentManager.Commands
 
                 using (var response = (System.Net.HttpWebResponse)request.GetResponse())
                 {
-                    return response.StatusCode == System.Net.HttpStatusCode.OK;
+                    return response.StatusCode == System.Net.HttpStatusCode.OK; // Ollama is available
                 }
             }
             catch (Exception ex)

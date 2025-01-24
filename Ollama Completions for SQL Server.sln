@@ -27,6 +27,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonClrLibrary.Tests", "Tests\JsonClrLibrary.Tests\JsonClrLibrary.Tests.csproj", "{6AB7B6D7-83FE-4925-A93D-6F7E839EBEEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaSqlClr", "Src\OllamaSqlClr\OllamaSqlClr.csproj", "{E6F702FB-05ED-4B2B-8058-2DF844609F9B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{89937183-7B5D-4E2B-BE97-2512B0249D3B} = {89937183-7B5D-4E2B-BE97-2512B0249D3B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaSqlClr.Tests", "Tests\OllamaSqlClr.Tests\OllamaSqlClr.Tests.csproj", "{26C28E76-3F64-4BAD-9408-2744C5CA7B4F}"
 EndProject

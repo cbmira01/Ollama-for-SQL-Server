@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using Configuration;
 
 namespace DeploymentManager.Commands
 {
     public static class RunScript
     {
         // Actions and console colors can be controlled by these keywords from SQL PRINT statements
-        private static readonly Dictionary<string, ConsoleColor> KeywordColors = new Dictionary<string, ConsoleColor>
+        private static readonly Dictionary<string, ConsoleColor> _keywordColors = new Dictionary<string, ConsoleColor>
         {
             { "[ERROR]", ConsoleColor.Red },
             { "[SYMBOL]", ConsoleColor.DarkYellow },
@@ -18,21 +18,25 @@ namespace DeploymentManager.Commands
             { "[STEP]", ConsoleColor.DarkCyan }
         };
 
-        private const int DefaultCommandTimeout = 300; // 5 minutes
-        private static Dictionary<string, string> _settings;
-        private static string _scriptName;
-        private static bool _errorDetected = false;
+        private static bool _errorDetected = false; // error feedback from running SQL script
 
-        public static void Execute(Dictionary<string, string> settings, string scriptName)
+        public static void Execute(string scriptName)
         {
-            if (!PromptUserConfirmation(scriptName))
+            if (!IsReleaseBuildAvailable())
+            {
+                Console.WriteLine();
+                Console.WriteLine("    Release build is not available. Exiting.");
                 return;
+            }
 
-            _settings = settings;
-            _scriptName = scriptName;
+            if (!PromptUserConfirmation(scriptName)) 
+            {
+                return;
+            }
+
             _errorDetected = false;
 
-            var scriptPath = GetScriptPath();
+            var scriptPath = GetScriptPath(scriptName);
             var commands = ParseScriptCommands(scriptPath);
 
             try
@@ -65,9 +69,31 @@ namespace DeploymentManager.Commands
             return true;
         }
 
-        private static string GetScriptPath()
+        private static bool IsReleaseBuildAvailable()
         {
-            var scriptPath = Path.Combine(_settings["ScriptsDirectory"], _scriptName);
+            string releaseArtifactPath = 
+                Path.Combine(
+                    AppConfig.RepoRootDirectory, 
+                    "Src",
+                    "OllamaSqlClr",
+                    "bin", 
+                    "Release", 
+                    "OllamaSqlClr.dll");
+
+            if (File.Exists(releaseArtifactPath))
+            {
+                return true;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"    Release build artifact not found at: {releaseArtifactPath}");
+            return false;
+        }
+
+
+        private static string GetScriptPath(string sn)
+        {
+            var scriptPath = Path.Combine(AppConfig.ScriptsDirectory, sn);
             if (!File.Exists(scriptPath))
             {
                 throw new FileNotFoundException($"The script file \"{scriptPath}\" was not found.");
@@ -86,9 +112,7 @@ namespace DeploymentManager.Commands
 
         private static void ExecuteCommands(string[] commands)
         {
-            var connectionString = _settings["SqlServerConnection"];
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(AppConfig.SqlServerConnection))
             {
                 connection.Open();
 
@@ -127,12 +151,12 @@ namespace DeploymentManager.Commands
             }
         }
 
-        private static string DeclareSymbol(string symbol)
+        private static string DeclareSymbol(string symbolName)
         {
-            var value = _settings[symbol];
+            var value = AppConfig.GetSymbolValue(symbolName);
 
-            var declarePart = $"DECLARE @{symbol} NVARCHAR(MAX) = '{value}';";
-            var printPart = $"PRINT '[SYMBOL]: Supplied by Deployment Manager: {symbol} = ' + @{symbol}";
+            var declarePart = $"DECLARE @{symbolName} NVARCHAR(MAX) = '{value}';";
+            var printPart = $"PRINT '[SYMBOL]: Supplied by Deployment Manager: {symbolName} = ' + @{symbolName}";
             var declaration = $"{declarePart}\n{printPart}\n";
 
             return declaration;
@@ -142,7 +166,7 @@ namespace DeploymentManager.Commands
         {
             using (var command = new SqlCommand(commandText, connection))
             {
-                command.CommandTimeout = DefaultCommandTimeout;
+                command.CommandTimeout = AppConfig.SqlCommandTimeoutSecs;
 
                 // Handle SQL Server messages (PRINT, RAISERROR, etc.)
                 var messageQueue = new Queue<string>();
@@ -180,12 +204,12 @@ namespace DeploymentManager.Commands
                 if (message.Contains("Run the RECONFIGURE statement to install")) continue;
 
                 // Determine if the message contains any of the defined keywords
-                var matchedKeyword = KeywordColors.Keys.FirstOrDefault(k => message.Contains(k));
+                var matchedKeyword = _keywordColors.Keys.FirstOrDefault(k => message.Contains(k));
 
                 if (matchedKeyword != null)
                 {
                     // Assign a color based on the keyword matched in the SQL PRINT
-                    var color = KeywordColors[matchedKeyword];
+                    var color = _keywordColors[matchedKeyword];
                     var prefix = "";
 
                     // Set error flag if it's an error message

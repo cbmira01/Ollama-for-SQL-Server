@@ -2,28 +2,27 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Runtime.Remoting.Contexts;
-using System.Threading;
 using JsonClrLibrary;
+using Configuration;
 
 namespace DeploymentManager.Commands
 {
     public static class ListHostedModels
     {
-        public static void Execute(Dictionary<string, string> settings)
+        public static void Execute()
         {
             Console.WriteLine();
-            Console.WriteLine("List of models hosted on Ollama...");
+            Console.WriteLine("List of models now hosted on Ollama...");
             Console.WriteLine();
 
             try
             {
-                string apiUrl = settings["ApiUrl"];
-                string apiGenerateUrl = $"{apiUrl}/api/generate";
-                string apiTagUrl = $"{apiUrl}/api/tags";
+                string apiUrl = AppConfig.ApiUrl;
+                string generateEndpointUrl = AppConfig.GenerateEndpointUrl;
+                string tagEndpointUrl = AppConfig.TagEndpointUrl;
 
-                // Step 1: Get the list of hosted models
-                var models = GetModels(apiTagUrl);
+                // Step 1: Get list of hosted models
+                var models = GetModels(tagEndpointUrl);
 
                 if (models == null || models.Count == 0)
                 {
@@ -64,7 +63,7 @@ namespace DeploymentManager.Commands
                 }
 
                 // Step 5: Send the prompt to the selected model
-                string response = PostPrompt(apiGenerateUrl, selectedModel, prompt);
+                string response = PostPrompt(generateEndpointUrl, selectedModel, prompt);
 
                 if (!string.IsNullOrEmpty(response))
                 {
@@ -90,7 +89,7 @@ namespace DeploymentManager.Commands
             {
                 var request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "GET";
-                request.Timeout = 100000;
+                request.Timeout = AppConfig.ApiTimeoutMs;
 
                 string responseJson;
                 using (var response = (HttpWebResponse)request.GetResponse())
@@ -132,7 +131,7 @@ namespace DeploymentManager.Commands
 
                 var request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
-                request.Timeout = 100000;
+                request.Timeout = AppConfig.ApiTimeoutMs;
                 request.ContentType = "application/json";
 
                 string postData = JsonHandler.Serialize(requestObject);
