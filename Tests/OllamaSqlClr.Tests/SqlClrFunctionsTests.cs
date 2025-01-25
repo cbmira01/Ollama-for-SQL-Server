@@ -19,31 +19,8 @@ namespace OllamaSqlClr.Tests
             // Mock the service interface
             _mockOllamaService = new Mock<IOllamaService>();
 
-            // Inject the mock service into the static class
-            SqlClrFunctions.SetMockOllamaServiceInstance(_mockOllamaService.Object);
-        }
-
-        [Fact]
-        public void Test01_Configure_ThrowsException_WhenParametersAreNull()
-        {
-            // Arrange
-            string nullSqlConnection = null;
-            string nullApiUrl = null;
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => SqlClrFunctions.Configure(nullSqlConnection, "http://api.url"));
-            Assert.Throws<ArgumentNullException>(() => SqlClrFunctions.Configure("mockConnection", nullApiUrl));
-        }
-
-        [Fact(Skip = "Test disabled because Configure method prevents incomplete configuration.")]
-        public void Test02_Constructor_ThrowsException_WhenNotConfigured()
-        {
-            // Arrange
-            SqlClrFunctions.SetMockOllamaServiceInstance(null); // Reset the service instance
-            SqlClrFunctions.Configure(null, null);
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => SqlClrFunctions.OllamaServiceInstance);
+            // All static call will reference this mock
+            SqlClrFunctions.SetServiceInstance(_mockOllamaService.Object);
         }
 
         [Fact]

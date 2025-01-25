@@ -35,14 +35,12 @@ EXEC sp_configure 'show advanced options', 0;
 RECONFIGURE;
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: Delete this project''s trusted assemblies';
+PRINT '[STEP]: Delete all trusted assemblies for this project';
 -------------------------------------------------------------------------------------
 DECLARE @hash VARBINARY(64);
 
 -- Remove OllamaSqlClr trusted assembly if it exists
-SELECT @hash = [hash]
-FROM sys.trusted_assemblies
-WHERE description = 'OllamaSqlClr';
+SELECT @hash = [hash] FROM sys.trusted_assemblies WHERE description = 'OllamaSqlClr';
 
 IF @hash IS NOT NULL
 BEGIN
@@ -50,9 +48,15 @@ BEGIN
 END
 
 -- Remove JsonClrLibrary if it exists
-SELECT @hash = [hash]
-FROM sys.trusted_assemblies
-WHERE description = 'JsonClrLibrary';
+SELECT @hash = [hash] FROM sys.trusted_assemblies WHERE description = 'JsonClrLibrary';
+
+IF @hash IS NOT NULL
+BEGIN
+    EXEC sys.sp_drop_trusted_assembly @hash = @hash;
+END
+
+-- Remove the Configuration assembly if it exists
+SELECT @hash = [hash] FROM sys.trusted_assemblies WHERE description = 'Configuration';
 
 IF @hash IS NOT NULL
 BEGIN
@@ -64,9 +68,11 @@ PRINT '[STEP]: Define trusted assemblies for this project';
 -------------------------------------------------------------------------------------
 DECLARE @OllamaSqlClrRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\OllamaSqlClr.dll';
 DECLARE @JsonClrLibraryRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\JsonClrLibrary.dll';
+DECLARE @ConfigurationRelease NVARCHAR(200) = 'Src\OllamaSqlClr\bin\Release\Configuration.dll';
 
 DECLARE @OllamaSqlClrAssemblyPath NVARCHAR(MAX) = @RepoRootDirectory + '\' + @OllamaSqlClrRelease;
 DECLARE @JsonClrLibraryAssemblyPath NVARCHAR(MAX) = @RepoRootDirectory + '\' + @JsonClrLibraryRelease;
+DECLARE @ConfigurationAssemblyPath NVARCHAR(MAX) = @RepoRootDirectory + '\' + @ConfigurationRelease;
 
 DECLARE @AssemblyPath NVARCHAR(MAX);
 DECLARE @AssemblyHash VARBINARY(64);
@@ -103,7 +109,21 @@ EXEC sp_executesql @sql, N'@AssemblyHashOut VARBINARY(64) OUTPUT', @AssemblyHash
 EXEC sys.sp_add_trusted_assembly @hash = @AssemblyHash, @description = N'JsonClrLibrary';
 
 -------------------------------------------------------------------------------------
-PRINT '[STEP]: Verify the assembly is now trusted';
+PRINT '[STEP]: Trust the Configuration assembly';
+-------------------------------------------------------------------------------------
+SET @AssemblyPath = @ConfigurationAssemblyPath;
+
+SET @sql = N'
+SELECT @AssemblyHashOut = HASHBYTES(''SHA2_512'', BulkColumn)
+FROM OPENROWSET(BULK ''' + @AssemblyPath + ''', SINGLE_BLOB) AS A;
+';
+
+EXEC sp_executesql @sql, N'@AssemblyHashOut VARBINARY(64) OUTPUT', @AssemblyHashOut=@AssemblyHash OUTPUT;
+
+EXEC sys.sp_add_trusted_assembly @hash = @AssemblyHash, @description = N'Configuration';
+
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: Verify the assemblies are now trusted';
 -------------------------------------------------------------------------------------
 SELECT
     [description],

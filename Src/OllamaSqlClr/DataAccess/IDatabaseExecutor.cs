@@ -5,7 +5,6 @@ namespace OllamaSqlClr.DataAccess
 {
     public interface IDatabaseExecutor
     {
-        string ConnectionString { get; }
 
         DataTable ExecuteQuery(string query);
 

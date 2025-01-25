@@ -1,4 +1,11 @@
-﻿using System;
+﻿
+/********************************************************************
+
+    Use this class to configure all solution projects.
+
+********************************************************************/
+
+using System;
 using System.Configuration;
 using System.IO;
 using System.Reflection;
@@ -12,35 +19,30 @@ namespace Configuration
             return ConfigurationManager.AppSettings[key];
         }
 
-        public static string GetConnectionString(string name)
-        {
-            return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
-        }
-
         // API settings
-        public static string ApiUrl => GetAppSetting("ApiUrl");
+        public static string ApiUrl => "http://127.0.0.1:11434";
         public static string GenerateEndpointUrl => $"{ApiUrl}/api/generate";
         public static string TagEndpointUrl => $"{ApiUrl}/api/tags";
-
-        public static int QueryProductionRetryLimit => 
-            int.TryParse(GetAppSetting("QueryProductionRetryLimit"), out var limit) ? limit : 0;
-
-        public static int ApiTimeoutMs => 
-            int.TryParse(GetAppSetting("ApiTimeoutMs"), out var timeout) ? timeout : 0;
-
-        public static int CacheTimeoutMins => 
-            int.TryParse(GetAppSetting("CacheTimeoutMins"), out var timeout) ? timeout : 0;
+        public static int ApiTimeoutMs => 100000; // 100 seconds
 
         // Connection strings and properties
-        public static string SqlClrContextConnection => GetConnectionString("SqlClrContextConnection");
-        public static string SqlServerConnection => GetConnectionString("SqlServerConnection");
-        public static int SqlCommandTimeoutSecs => 
-            int.TryParse(GetAppSetting("SqlCommandTimeoutSecs"), out var timeout) ? timeout : 0;
+        public static string SqlClrContextConnection => "context connection=true";
+        public static string SqlServerConnection = "Server=localhost;Trusted_Connection=True;";
+        public static int SqlCommandTimeoutSecs => 300; // 5 minutes
 
-        // Locate various deployment directories
+        public static int CacheTimeoutMins => 2;
+        public static int QueryProductionRetryLimit => 3;
+
+        // Location of various deployment directories
         public static string RepoRootDirectory => FindRepoRoot();
         public static string ScriptsDirectory => Path.Combine(RepoRootDirectory, "Src", "DeploymentManager", "Scripts");
         public static string ImagesDirectory => Path.Combine(RepoRootDirectory, "Images");
+
+        // "Sanity check" items (to get an initial completion after deployment)
+        public static string SanityCommment => "Make sure the llama3.2 model is available.";
+        public static string SanityModelName => "llama3.2";
+        public static string SanityPrompt1 => "Would SQL Server, Ollama and Llama3.2 make a good team?";
+        public static string SanityPrompt2 => "Answer me briefly.";
 
         // Helper to find the repository root directory
         private static string FindRepoRoot()
@@ -72,3 +74,4 @@ namespace Configuration
         }
     }
 }
+

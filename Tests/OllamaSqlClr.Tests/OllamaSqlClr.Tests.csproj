@@ -61,6 +61,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Src\Configuration\Configuration.csproj">
+      <Project>{446f3c93-1d76-4111-b151-e9c6d22de6bf}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Src\JsonClrLibrary\JsonClrLibrary.csproj">
       <Project>{09c49120-5019-4b68-a16d-e44ea8f2b521}</Project>
       <Name>JsonClrLibrary</Name>

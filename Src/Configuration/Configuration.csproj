@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{89937183-7B5D-4E2B-BE97-2512B0249D3B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>DeploymentManager</RootNamespace>
-    <AssemblyName>DeploymentManager</AssemblyName>
+    <ProjectGuid>{446F3C93-1D76-4111-B151-E9C6D22DE6BF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Configuration</RootNamespace>
+    <AssemblyName>Configuration</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,30 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\CheckExternalServices.cs" />
-    <Compile Include="Commands\ListHostedModels.cs" />
-    <Compile Include="Commands\LoadImageFiles.cs" />
-    <Compile Include="Commands\RunScript.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="AppConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{446f3c93-1d76-4111-b151-e9c6d22de6bf}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\JsonClrLibrary\JsonClrLibrary.csproj">
-      <Project>{09c49120-5019-4b68-a16d-e44ea8f2b521}</Project>
-      <Name>JsonClrLibrary</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Scripts\check-this-deployment.sql" />
-    <Content Include="Scripts\establish-clr-database.sql" />
-    <Content Include="Scripts\populate-config-and-schema.sql" />
-    <Content Include="Scripts\populate-demo-data.sql" />
-    <Content Include="Scripts\relink-clr-assembly.sql" />
-    <Content Include="Scripts\revert-this-deployment.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

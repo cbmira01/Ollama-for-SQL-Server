@@ -6,7 +6,6 @@ namespace OllamaSqlClr.Tests.Mocks
 {
     public class MockDatabaseExecutor : IDatabaseExecutor
     {
-        string IDatabaseExecutor.ConnectionString => throw new System.NotImplementedException();
 
         public DataTable ExecuteQuery(string query)
         {

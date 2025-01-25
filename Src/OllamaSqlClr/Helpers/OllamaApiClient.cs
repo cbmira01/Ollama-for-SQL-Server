@@ -4,22 +4,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.Remoting.Contexts;
+using Configuration;
 
 namespace OllamaSqlClr.Helpers
 {
     public class OllamaApiClient : IOllamaApiClient
     {
-        public readonly string _apiUrl;
-        private readonly string _apiGenerateUrl;
-        private readonly string _apiTagUrl;
-        private readonly int _timeout;
+        public readonly string _apiUrl = AppConfig.ApiUrl;
+        private readonly string _generateEndpointUrl = AppConfig.GenerateEndpointUrl;
+        private readonly string _tagEndpointUrl = AppConfig.TagEndpointUrl ;
+        private readonly int _timeout = AppConfig.ApiTimeoutMs;
 
-        public OllamaApiClient(string apiUrl)
+        public OllamaApiClient()
         {
-            _apiUrl = apiUrl;
-            _apiGenerateUrl = $"{apiUrl}/api/generate";
-            _apiTagUrl = $"{apiUrl}/api/tags";
-            _timeout = 100000;
         }
 
         public List<KeyValuePair<string, object>> GetModelResponseToPrompt(
@@ -41,12 +38,12 @@ namespace OllamaSqlClr.Helpers
                 JsonBuilder.CreateArray("context", context)
             );
 
-            return MakeApiCall(_apiGenerateUrl, "POST", requestObject);
+            return MakeApiCall(_generateEndpointUrl, "POST", requestObject);
         }
 
         public List<KeyValuePair<string, object>> GetOllamaApiTags()
         {
-            return MakeApiCall(_apiTagUrl, "GET");
+            return MakeApiCall(_tagEndpointUrl, "GET");
         }
 
         public List<KeyValuePair<string, object>> GetModelResponseToImage(
@@ -65,7 +62,7 @@ namespace OllamaSqlClr.Helpers
                 JsonBuilder.CreateArray("context", noContext)
             );
 
-            return MakeApiCall(_apiGenerateUrl, "POST", requestObject);
+            return MakeApiCall(_generateEndpointUrl, "POST", requestObject);
         }
 
         private List<KeyValuePair<string, object>> MakeApiCall(
@@ -81,10 +78,6 @@ namespace OllamaSqlClr.Helpers
             if (requestObject != null)
             {
                 string json = JsonHandler.Serialize(requestObject);
-#if DEBUG
-                Console.WriteLine("Request...");
-                JsonHandler.DumpJson(json);
-#endif
                 using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
                 {
                     writer.Write(json);
@@ -97,10 +90,6 @@ namespace OllamaSqlClr.Helpers
             {
                 responseJson = reader.ReadToEnd();
             }
-#if DEBUG
-            Console.WriteLine("Response...");
-            JsonHandler.DumpJson(responseJson);
-#endif
             return JsonHandler.Deserialize(responseJson);
         }
     }

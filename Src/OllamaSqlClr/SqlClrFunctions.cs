@@ -10,68 +10,12 @@ namespace OllamaSqlClr
 {
     public static class SqlClrFunctions
     {
-        #region Construct Ollama service instance 
+        private static IOllamaService _ollamaServiceInstance = new OllamaService();
 
-        private static string _sqlConnection;
-        private static string _apiUrl;
-
-        // Lazy initialization for the OllamaService instance
-        private static Lazy<IOllamaService> _ollamaServiceInstanceLazy = CreateLazyInstance();
-
-        // Public property to access the lazy-initialized instance
-        public static IOllamaService OllamaServiceInstance => _ollamaServiceInstanceLazy.Value;
-
-        private static readonly object _configLock = new object();
-
-        static SqlClrFunctions()
+        public static void SetServiceInstance(IOllamaService service)
         {
-            // Default configuration for local setup
-            Configure("context connection=true", "http://127.0.0.1:11434");  // TODO: Get this URL from Deployment Manager
+            _ollamaServiceInstance = service;
         }
-
-        public static void Configure(string sqlConnection, string apiUrl)
-        {
-            lock (_configLock)
-            {
-                _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
-                _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
-            }
-        }
-
-        public static void SetMockOllamaServiceInstance(IOllamaService mockService)
-        {
-            // Allow overriding the lazy instance for tests
-            if (mockService == null)
-            {
-                throw new ArgumentNullException(nameof(mockService));
-            }
-            _ollamaServiceInstanceLazy = new Lazy<IOllamaService>(() => mockService);
-        }
-
-
-        // Use during unit testing
-        public static void ResetOllamaServiceConfiguration()
-        {
-            // Reset lazy instance to force re-initialization
-            _ollamaServiceInstanceLazy = CreateLazyInstance();
-        }
-
-        // Creates a new Lazy instance
-        private static Lazy<IOllamaService> CreateLazyInstance()
-        {
-            return new Lazy<IOllamaService>(() =>
-            {
-                if (string.IsNullOrEmpty(_sqlConnection) || string.IsNullOrEmpty(_apiUrl))
-                {
-                    throw new InvalidOperationException("OllamaServiceInstance cannot be initialized without SQL Connection and API URL.");
-                }
-
-                // Create a new OllamaService with the current configuration
-                return new OllamaService(_sqlConnection, _apiUrl);
-            });
-        }
-
-        #endregion
 
         #region Implemented SQL/CLR functions
 
@@ -80,7 +24,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                string result = OllamaServiceInstance.CompletePrompt(modelName.Value, askPrompt.Value, morePrompt.Value);
+                string result = _ollamaServiceInstance.CompletePrompt(modelName.Value, askPrompt.Value, morePrompt.Value);
                 return new SqlString(result);
             }
             catch (Exception ex)
@@ -94,7 +38,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.CompleteMultiplePrompts(modelName.Value, askPrompt.Value, morePrompt.Value, numCompletions.Value);
+                return _ollamaServiceInstance.CompleteMultiplePrompts(modelName.Value, askPrompt.Value, morePrompt.Value, numCompletions.Value);
             }
             catch (Exception ex)
             {
@@ -107,7 +51,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.GetAvailableModels();
+                return _ollamaServiceInstance.GetAvailableModels();
             }
             catch (Exception ex)
             {
@@ -124,7 +68,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.QueryFromPrompt(modelName.Value, prompt.Value);
+                return _ollamaServiceInstance.QueryFromPrompt(modelName.Value, prompt.Value);
             }
             catch (Exception ex)
             {
@@ -137,7 +81,7 @@ namespace OllamaSqlClr
         {
             try
             {
-                return OllamaServiceInstance.ExamineImage(modelName.Value, prompt.Value, imageData.Value);
+                return _ollamaServiceInstance.ExamineImage(modelName.Value, prompt.Value, imageData.Value);
             }
             catch (Exception ex)
             {

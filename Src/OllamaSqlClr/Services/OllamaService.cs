@@ -7,6 +7,7 @@ using OllamaSqlClr.Helpers;
 using OllamaSqlClr.Models;
 using OllamaSqlClr.DataAccess;
 using System.Data;
+using Configuration;
 
 namespace OllamaSqlClr.Services
 {
@@ -14,30 +15,21 @@ namespace OllamaSqlClr.Services
     {
         #region Service class constructor
 
-        private readonly string _sqlConnection;
-        private readonly string _apiUrl;
-
         private readonly IQueryValidator _queryValidator;
         private readonly IQueryLogger _queryLogger;
         private readonly IOllamaApiClient _apiClient;
         private readonly IDatabaseExecutor _databaseExecutor;
 
         public OllamaService(
-            string sqlConnection,
-            string apiUrl,
-
             IQueryValidator queryValidator = null,
             IQueryLogger queryLogger = null,
             IOllamaApiClient apiClient = null,
             IDatabaseExecutor databaseExecutor = null)
         {
-            _sqlConnection = sqlConnection ?? throw new ArgumentNullException(nameof(sqlConnection));
-            _apiUrl = apiUrl ?? throw new ArgumentNullException(nameof(apiUrl));
-
             // Initialize helpers
-            _databaseExecutor = databaseExecutor ?? new DatabaseExecutor(_sqlConnection);
+            _databaseExecutor = databaseExecutor ?? new DatabaseExecutor();
             _queryValidator = queryValidator ?? new QueryValidator();
-            _apiClient = apiClient ?? new OllamaApiClient(_apiUrl);
+            _apiClient = apiClient ?? new OllamaApiClient();
             _queryLogger = queryLogger ?? new QueryLogger(_databaseExecutor);
         }
 
@@ -226,7 +218,7 @@ namespace OllamaSqlClr.Services
             List<int> context = new List<int>();
             string response = "";
 
-            var retryLimit = 3;  // TODO: Configure retries as needed
+            var retryLimit = AppConfig.QueryProductionRetryLimit;
             for (int attempt = 0; attempt < retryLimit; attempt++) 
             {
                 try
@@ -275,7 +267,6 @@ namespace OllamaSqlClr.Services
                 throw new ArgumentNullException(nameof(imageData), "Image data cannot be null.");
             }
 
-            // Convert SqlBytes to Base64 string
             string base64Image = Convert.ToBase64String(imageData);
 
             try
@@ -296,7 +287,7 @@ namespace OllamaSqlClr.Services
 
         private Dictionary<string, string> _keyValueCache;
         private DateTime _lastCacheUpdate;
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(1); // TODO: Configure as needed
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(AppConfig.CacheTimeoutMins);
 
         private void PopulateKeyValueCache()
         {

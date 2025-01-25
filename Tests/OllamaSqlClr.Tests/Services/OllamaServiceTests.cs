@@ -32,10 +32,7 @@ namespace OllamaSqlClr.Tests.Services
             _mockQueryValidator = new Mock<IQueryValidator>();
 
             // Inject mocks into the service
-            var apiUrl = "http://127.0.0.1:11434";
             _ollamaService = new OllamaService(
-                sqlConnection: "mockConnection",
-                apiUrl: apiUrl,
                 queryLogger: _mockQueryLogger.Object,
                 queryValidator: _mockQueryValidator.Object,
                 apiClient: _mockApiClient.Object,
@@ -135,7 +132,7 @@ namespace OllamaSqlClr.Tests.Services
             Assert.Equal("ModelType1", resultList[0].Model);
         }
 
-        [Fact(Skip = "Still trying to figure out how to unit test this method.")]
+        [Fact(Skip = "Figure out how to unit test this method.")]
         public void Test04_QueryFromPrompt_ReturnsProposedQueryAndResults()
         {
             // Arrange
@@ -187,7 +184,7 @@ namespace OllamaSqlClr.Tests.Services
                 });
         }
 
-        [Fact(Skip = "This unit test is in progress.")]
+        [Fact(Skip = "Figure out how to unit test this method.")]
         public void Test05_ExamineImage_ReturnsModelResponse()
         { }
     }
