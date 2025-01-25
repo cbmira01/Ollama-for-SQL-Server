@@ -15,13 +15,18 @@ CREATE TABLE #variables
     VarValue NVARCHAR(200)
 );
 
-PRINT '[CHECK]: Ensure the @RepoRootDirectory symbol is declared for this script.';
+PRINT '[CHECK]: Ensure @RepoRootDirectory is declared for this script.';
+PRINT '[CHECK]: Ensure @SanityComment is declared for this script.';
+PRINT '[CHECK]: Ensure @SanityModelName is declared for this script.';
+PRINT '[CHECK]: Ensure @SanityPrompt1 is declared for this script.';
+PRINT '[CHECK]: Ensure @SanityPrompt2 is declared for this script.';
 
 -- Insert symbol names conveyed from Deployment Manager
 INSERT INTO #variables (VarName, VarValue) VALUES ('@RepoRootDirectory', @RepoRootDirectory);
---INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol1', @Symbol1);
---INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol2', @Symbol2);
---INSERT INTO #variables (VarName, VarValue) VALUES ('@Symbol3', @Symbol3);
+INSERT INTO #variables (VarName, VarValue) VALUES ('@SanityComment', @SanityComment);
+INSERT INTO #variables (VarName, VarValue) VALUES ('@SanityModelName', @SanityModelName);
+INSERT INTO #variables (VarName, VarValue) VALUES ('@SanityPrompt1', @SanityPrompt1);
+INSERT INTO #variables (VarName, VarValue) VALUES ('@SanityPrompt2', @SanityPrompt2);
 
 SELECT * FROM #variables;
 
@@ -186,17 +191,19 @@ GO
 -------------------------------------------------------------------------------------
 PRINT '[STEP]: Sanity check: get a fast completion from a hosted model';
 -------------------------------------------------------------------------------------
-DECLARE @modelName NVARCHAR(200) = 'llama3.2';
-DECLARE @ask NVARCHAR(200) = 'Do Ollama, Llama3.2, and SQL Server make a good team?';
-DECLARE @morePrompt NVARCHAR(200) = 'Tell me in forty words or less!';
+DECLARE @SanityComment NVARCHAR(200) = (SELECT VarValue FROM #variables WHERE VarName = '@SanityComment');
+DECLARE @SanityModelName NVARCHAR(200) = (SELECT VarValue FROM #variables WHERE VarName = '@SanityModelName');
+DECLARE @SanityPrompt1 NVARCHAR(200) = (SELECT VarValue FROM #variables WHERE VarName = '@SanityPrompt1');
+DECLARE @SanityPrompt2 NVARCHAR(200) = (SELECT VarValue FROM #variables WHERE VarName = '@SanityPrompt2');
 
 DECLARE @CRLF VARCHAR(2) = CHAR(13) + CHAR(10);
+PRINT '[CHECK]: ' + @SanityComment;
 PRINT '[CHECK]: Setup for sanity check: ' + @CRLF
-    + '    modelName = ' + @modelName + @CRLF
-    + '    ask = ' + @ask + @CRLF
-    + '    morePrompt = ' + @morePrompt;
+    + '    modelName = ' + @SanityModelName + @CRLF
+    + '    prompt1 = ' + @SanityPrompt1 + @CRLF
+    + '    prompt2 = ' + @SanityPrompt2;
 
-SELECT dbo.CompletePrompt(@modelName, @ask, @morePrompt) as Response;
+SELECT dbo.CompletePrompt(@SanityModelName, @SanityPrompt1, @SanityPrompt2) as Response;
 GO
 
 -------------------------------------------------------------------------------------

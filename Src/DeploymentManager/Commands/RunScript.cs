@@ -9,6 +9,16 @@ namespace DeploymentManager.Commands
 {
     public static class RunScript
     {
+        // Declare all the following symbols available for SQL scripts
+        private static List<string> _declareStatements { get; } = new List<string>
+        {
+            DeclareSymbol("RepoRootDirectory"),
+            DeclareSymbol("SanityComment"),
+            DeclareSymbol("SanityModelName"),
+            DeclareSymbol("SanityPrompt1"),
+            DeclareSymbol("SanityPrompt2")
+        };
+
         // Actions and console colors can be controlled by these keywords from SQL PRINT statements
         private static readonly Dictionary<string, ConsoleColor> _keywordColors = new Dictionary<string, ConsoleColor>
         {
@@ -118,10 +128,7 @@ namespace DeploymentManager.Commands
 
                 try
                 {
-                    var declareStatements = new List<string>();
-                    declareStatements.Add(DeclareSymbol("RepoRootDirectory"));
-
-                    var declareBlock = string.Join(Environment.NewLine, declareStatements);
+                    var declareBlock = string.Join(Environment.NewLine, _declareStatements);
                     commands[0] = declareBlock + Environment.NewLine + commands[0];
 
                     foreach (var command in commands)

@@ -14,11 +14,6 @@ namespace Configuration
 {
     public static class AppConfig
     {
-        public static string GetAppSetting(string key)
-        {
-            return ConfigurationManager.AppSettings[key];
-        }
-
         // API settings
         public static string ApiUrl => "http://127.0.0.1:11434";
         public static string GenerateEndpointUrl => $"{ApiUrl}/api/generate";
@@ -39,7 +34,7 @@ namespace Configuration
         public static string ImagesDirectory => Path.Combine(RepoRootDirectory, "Images");
 
         // "Sanity check" items (to get an initial completion after deployment)
-        public static string SanityCommment => "Make sure the llama3.2 model is available.";
+        public static string SanityComment => "Make sure the llama3.2 model is available.";
         public static string SanityModelName => "llama3.2";
         public static string SanityPrompt1 => "Would SQL Server, Ollama and Llama3.2 make a good team?";
         public static string SanityPrompt2 => "Answer me briefly.";
