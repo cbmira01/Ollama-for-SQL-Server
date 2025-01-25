@@ -7,7 +7,6 @@ namespace OllamaSqlClr.Tests.Mocks
 {
     public class MockOllamaApiClient : IOllamaApiClient
     {
-        public readonly string _apiUrl = AppConfig.ApiUrl;
         private readonly string _generateEndpointUrl = AppConfig.GenerateEndpointUrl;
         private readonly string _tagEndpointUrl = AppConfig.TagEndpointUrl;
         private readonly int _timeout = AppConfig.ApiTimeoutMs;

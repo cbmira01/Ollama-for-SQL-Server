@@ -17,7 +17,6 @@ namespace DeploymentManager.Commands
 
             try
             {
-                string apiUrl = AppConfig.ApiUrl;
                 string generateEndpointUrl = AppConfig.GenerateEndpointUrl;
                 string tagEndpointUrl = AppConfig.TagEndpointUrl;
 
