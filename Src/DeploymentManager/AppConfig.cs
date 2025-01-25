@@ -17,15 +17,19 @@ namespace Configuration
             return ConfigurationManager.ConnectionStrings[name]?.ConnectionString;
         }
 
-        // API settings used everywhere
+        // API settings
         public static string ApiUrl => GetAppSetting("ApiUrl");
         public static string GenerateEndpointUrl => $"{ApiUrl}/api/generate";
         public static string TagEndpointUrl => $"{ApiUrl}/api/tags";
 
         public static int QueryProductionRetryLimit => 
             int.TryParse(GetAppSetting("QueryProductionRetryLimit"), out var limit) ? limit : 0;
+
         public static int ApiTimeoutMs => 
             int.TryParse(GetAppSetting("ApiTimeoutMs"), out var timeout) ? timeout : 0;
+
+        public static int CacheTimeoutMins => 
+            int.TryParse(GetAppSetting("CacheTimeoutMins"), out var timeout) ? timeout : 0;
 
         // Connection strings and properties
         public static string SqlClrContextConnection => GetConnectionString("SqlClrContextConnection");
@@ -38,7 +42,7 @@ namespace Configuration
         public static string ScriptsDirectory => Path.Combine(RepoRootDirectory, "Src", "DeploymentManager", "Scripts");
         public static string ImagesDirectory => Path.Combine(RepoRootDirectory, "Images");
 
-        // Helper method to find the repository root directory
+        // Helper to find the repository root directory
         private static string FindRepoRoot()
         {
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -51,7 +55,7 @@ namespace Configuration
             return currentDir;
         }
 
-        // Helper to allow the script runner to find symbols by string value
+        // Helper to allow symbols to be found by string value
         public static object GetSymbolValue(string symbolName)
         {
             var property = typeof(AppConfig)
