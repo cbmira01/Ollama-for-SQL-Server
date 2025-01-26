@@ -24,7 +24,7 @@ This project was developed on, and deployed to, a machine with these specificati
 
 1. **Database server**: 
    - **SQL Server 2022 Express** Can run self-hosted, which is sufficient to demonstrate this project.
-   - Do not deploy this project to a production server without careful study.
+   - Do not deploy this project to a production database server without careful study.
 
 2. **Server management**: Use **SQL Server Configuration Manager** to manage database services:
    - Start or stop `SQL Server (MSSQLSERVER)` and `SQL Server Agent (MSSQLSERVER)` as needed.
@@ -36,13 +36,13 @@ This project was developed on, and deployed to, a machine with these specificati
 
 ### Install and manage the Ollama API server
 
-1. **Get Ollama**: Ollama can be installed from MSI, or under Docker.
-   - [Get the Ollama installer](https://ollama.com/)
+1. **Get Ollama**: Ollama can be installed via MSI or under Docker.
+   - [Get the Ollama MSI installer](https://ollama.com/)
    - [Get the Ollama Docker image](https://hub.docker.com/r/ollama/ollama)
 
 2. **Run Ollama**
    - Ensure your Ollama instance serves locally on `http://127.0.0.1:11434/`
-   - Ollama API events can be monitored in the console window.
+   - Ollama API events can be monitored in a CLI console window.
 
    Ollama supports the following commands:
    - `ollama help`: Display help.
@@ -80,15 +80,20 @@ or
 git clone https://github.com/cbmira01/Ollama-for-SQL-Server
 ```
 
-2. **Build, test and release**
+2. **Configure**
+   - Open the solution in Visual Studio.
+   - Configuration settings are in the `AppConfig` class in the `Configuration` project.
+   - The project is currently configured for a typical single-workstation deployment.
+
+3. **Build, test and release**
    - Open the solution in Visual Studio.
    - Build the solution in `Debug` configuration.
    - Run the main console program in the `JsonClrLibrary.Tests` project.
    - Run the main console program in the `OllamaSqlClr.Tests` project.
-   - Open the test suite via `Test Explorer`, then run all tests.
+   - Open the test suite via `Test Explorer`; run all the tests discovered there.
    - Build the solution in `Release` configuration.
 
-3. **Deploy to SQL Server**
+4. **Deploy to SQL Server**
    - Open the solution in Visual Studio.
    - Ensure a successful `Release` build has been performed.
    - Ensure `SQL Server` is running.
@@ -98,13 +103,13 @@ git clone https://github.com/cbmira01/Ollama-for-SQL-Server
    - Environment check: You should be able to list and interact with hosted models.
    - Required: Perform all the deployment steps for initial installation, in order.
    - Required: Perform the CLR relink deployment step. Ensure the sanity check runs successfully.
-   - Optional: The current deployment can be optionally checked and reverted.
-   - You can now run demonstration scripts from the DB_Scripts folder.
+   - Optional: The current deployment can be checked or reverted at any time.
+   - You are now ready to run demonstration scripts from the DB_Scripts folder.
 
-4. **Optional**: Demonstrations for image analysis and SQL code generation.
+5. **Optional**: Demonstrations for image analysis and SQL code generation.
    - Complete the deployment steps above.
    - Different large language models excel in various tasks.
-   - For image analysis demonstrations, I recommend you pull the `llava` model.
-   - For demonstrations of SQL code generation, I recommend you pull the `mistral` model.
-   - Your own investigations may lead you to pull and use other large language models.
-
+   - Various LLMs are available from the [Ollama library.](https://ollama.com/library)
+   - For image analysis demonstrations, I recommend the `llava` model.
+   - For demonstrations of SQL code generation, I recommend the `mistral` model.
+   - Your own investigations may lead you to use other large language models.

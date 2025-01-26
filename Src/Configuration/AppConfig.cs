@@ -1,12 +1,11 @@
 ﻿
-/********************************************************************
+/***********************************************************************
 
-    Use this class to configure all solution projects.
+    This class holds configuration settings for all solution projects.
 
-********************************************************************/
+***********************************************************************/
 
 using System;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
 
@@ -22,9 +21,10 @@ namespace Configuration
 
         // Connection strings and properties
         public static string SqlClrContextConnection => "context connection=true";
-        public static string SqlServerConnection = "Server=localhost;Trusted_Connection=True;";
+        public static string SqlServerConnection => "Server=localhost;Trusted_Connection=True;";
         public static int SqlCommandTimeoutSecs => 300; // 5 minutes
 
+        // Service layer settings
         public static int CacheTimeoutMins => 2;
         public static int QueryProductionRetryLimit => 3;
 
@@ -52,7 +52,7 @@ namespace Configuration
             return currentDir;
         }
 
-        // Helper to allow symbols to be found by string value
+        // Helper to allow symbols values to be returned by a string reference
         public static object GetSymbolValue(string symbolName)
         {
             var property = typeof(AppConfig)

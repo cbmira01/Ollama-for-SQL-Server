@@ -33,7 +33,7 @@ Refer to the documentation files:
 + [INSTALLATION](Docs/INSTALLATION.md): How to clone and set up this project
 + [SCRIPTS](Docs/SCRIPTS.md): T-SQL scripts for installation and demonstration
 + [USAGE](Docs/USAGE.md): How to use the defined CLR functions
-+ [JSON-LIBRARY](Docs/JSON-LIBRARY.md): The JSON building and handling library
++ [JSON-LIBRARY](Docs/JSON-LIBRARY.md): JSON building and handling library
 + [TESTING](Docs/TESTING.md): How to test and debug this project
 + [CONTRIBUTING](Docs/CONTRIBUTING.md): How to contribute to this project
 + [ROADMAP](Docs/ROADMAP.md): Future new functions that may be implemented
@@ -45,8 +45,8 @@ Refer to the documentation files:
 - How can LLM capabilities be pulled into SQL Server?
 - How does one interact with Ollama's API surface?
 - How well can LLMs write SQL code from natural-language prompts?
-- How does one write SQL/CLR functions?
-- How does an LLM (ChatGPT) work as a coding companion?
+- How are SQL/CLR functions implemented?
+- How well does an LLM (ChatGPT) work as a coding companion?
 
 ## Notes
 
