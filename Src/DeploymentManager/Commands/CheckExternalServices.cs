@@ -15,31 +15,31 @@ namespace DeploymentManager.Commands
             {
                 if (IsSqlServerReady(AppConfig.SqlServerConnection)) 
                 {
-                    Console.WriteLine($"    SQL Server is ready!");
+                    UI.WriteColoredLine("    SQL Server is ready!", ConsoleColor.Green, newLine: true);
                 }
                 else 
                 {
-                    Console.WriteLine($"    SQL Server is NOT ready.");
-                    Console.WriteLine($"    Via the SQL Server Configuration Manager, make sure MSSQLSERVER and its agent are in a running state.");
+                    UI.WriteColoredLine("    SQL Server is NOT ready.", ConsoleColor.Red, newLine: true);
+                    Console.WriteLine($"        Ensure MSSQLSERVER and its agent are in a running state (via SQL Server Configuration Manager).");
                 }
 
                 Console.WriteLine();
 
                 if (IsOllamaApiServerReady(AppConfig.ApiUrl))
                 {
-                    Console.Write($"    Ollama API server is ready!");
+                    UI.WriteColoredLine("    Ollama API server is ready!", ConsoleColor.Green, newLine: true);
                 }
                 else
                 {
-                    Console.WriteLine($"    Ollama API server is NOT ready.");
-                    Console.WriteLine($"    Check your MSI or Docker installation of Ollama, make sure it is serving on {AppConfig.ApiUrl}");
+                    UI.WriteColoredLine("    Ollama API server is NOT ready.", ConsoleColor.Red, newLine: true);
+                    Console.WriteLine($"        Check your installation of Ollama, ensure it is serving on {AppConfig.ApiUrl}");
                 }
 
                 Console.WriteLine();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                UI.WriteColoredLine($"An error occurred: {ex.Message}", ConsoleColor.Red, newLine: true);
             }
         }
 

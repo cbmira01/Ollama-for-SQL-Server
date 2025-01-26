@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using JsonClrLibrary;
 using Configuration;
+using DeploymentManager;
 
 namespace DeploymentManager.Commands
 {
@@ -25,16 +26,20 @@ namespace DeploymentManager.Commands
 
                 if (models == null || models.Count == 0)
                 {
-                    Console.WriteLine("    No models are currently hosted on Ollama.");
+                    UI.WriteColoredLine("    No models are currently hosted on Ollama.",
+                        ConsoleColor.Red, newLine: true);
+
                     return;
                 }
 
                 // Step 2: Display the list of models
-                Console.WriteLine("    Available Models:");
-                
                 for (int i = 0; i < models.Count; i++)
                 {
-                    Console.WriteLine($"        {i+1}  Name: {models[i].Item1}, Modified: {models[i].Item2}");
+                    UI.WriteColoredLine($"        {i + 1}", ConsoleColor.White, newLine: false);
+                    UI.WriteColoredLine($"  Name:", ConsoleColor.Green, newLine: false);
+                    UI.WriteColoredLine($" {models[i].Item1}", ConsoleColor.White, newLine: false);
+                    UI.WriteColoredLine($"  Modified:", ConsoleColor.Green, newLine: false);
+                    UI.WriteColoredLine($" {models[i].Item2}", ConsoleColor.White, newLine: true);
                 }
 
                 // Step 3: Let the user select a model
@@ -50,9 +55,11 @@ namespace DeploymentManager.Commands
                 Console.WriteLine($"Selected Model: {selectedModel}");
 
                 // Step 4: Compose a prompt
-                Console.WriteLine();
                 string defaultPrompt = "Who are you and what can you do? Answer briefly.";
-                Console.WriteLine($"Default prompt: \"{defaultPrompt}\"");
+
+                Console.WriteLine();
+                UI.WriteColoredLine($"Default prompt: \"{defaultPrompt}\"", ConsoleColor.Yellow, newLine: true);
+
                 Console.Write("Enter your prompt (or press Enter to use the default prompt): ");
                 string prompt = Console.ReadLine();
 
@@ -64,14 +71,16 @@ namespace DeploymentManager.Commands
                 // Step 5: Send the prompt to the selected model
                 string response = PostPrompt(generateEndpointUrl, selectedModel, prompt);
 
+                Console.WriteLine();
+
                 if (!string.IsNullOrEmpty(response))
                 {
-                    Console.Write("Model Response: ");
+                    UI.WriteColoredLine("Model Response: ", ConsoleColor.Green, newLine: false);
                     Console.WriteLine(response);
                 }
                 else
                 {
-                    Console.WriteLine("No response received from the model.");
+                    UI.WriteColoredLine("No response received from the model.", ConsoleColor.Red, newLine: true);
                 }
 
                 Console.WriteLine();
