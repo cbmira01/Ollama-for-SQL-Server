@@ -4,12 +4,13 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Configuration;
+using DeploymentManager;
 
 namespace DeploymentManager.Commands
 {
     public static class RunScript
     {
-        // Declare all the following symbols available for SQL scripts
+        // Declare the following symbols available for SQL scripts
         private static List<string> _declareStatements { get; } = new List<string>
         {
             DeclareSymbol("RepoRootDirectory"),
@@ -28,6 +29,12 @@ namespace DeploymentManager.Commands
             { "[STEP]", ConsoleColor.DarkCyan }
         };
 
+        // Private list of messages from SQL Server to skip
+        private static List<string> _nonHelpfulMessages = new List<string>
+        {
+            "Run the RECONFIGURE statement to install"
+        };
+
         private static bool _errorDetected = false; // error feedback from running SQL script
 
         public static void Execute(string scriptName)
@@ -35,11 +42,15 @@ namespace DeploymentManager.Commands
             if (!IsReleaseBuildAvailable())
             {
                 Console.WriteLine();
-                Console.WriteLine("    Release build is not available. Exiting.");
+                Console.WriteLine("    The RELEASE build is not available. Exiting.");
+
                 return;
             }
 
-            if (!PromptUserConfirmation(scriptName)) 
+            Console.WriteLine();
+            Console.WriteLine($"You are about to run SQL script \"{scriptName}\"");
+
+            if (!UI.PromptUserConfirmation())
             {
                 return;
             }
@@ -65,20 +76,6 @@ namespace DeploymentManager.Commands
             }
         }
 
-        private static bool PromptUserConfirmation(string scriptName)
-        {
-            Console.WriteLine();
-            Console.Write($"You are about to run SQL script \"{scriptName}\"... Continue?  N // ");
-            var response = Console.ReadLine()?.Trim().ToUpper() ?? "N";
-
-            if (response != "Y")
-            {
-                Console.WriteLine("Operation cancelled.");
-                return false;
-            }
-            return true;
-        }
-
         private static bool IsReleaseBuildAvailable()
         {
             string releaseArtifactPath = 
@@ -96,7 +93,10 @@ namespace DeploymentManager.Commands
             }
 
             Console.WriteLine();
-            Console.WriteLine($"    Release build artifact not found at: {releaseArtifactPath}");
+            UI.WriteColoredLine(
+                $"    Release build artifact not found at: {releaseArtifactPath}", 
+                ConsoleColor.Red, newLine:true);
+
             return false;
         }
 
@@ -138,7 +138,11 @@ namespace DeploymentManager.Commands
                         // Stop processing if an error was detected
                         if (_errorDetected)
                         {
-                            WriteColoredLine("Skipping remaining commands due to previous error", ConsoleColor.Yellow);
+                            Console.WriteLine();
+                            UI.WriteColoredLine(
+                                "Skipping remaining commands because of a previous error", 
+                                ConsoleColor.Yellow, newLine:true);
+
                             return;
                         }
 
@@ -148,7 +152,8 @@ namespace DeploymentManager.Commands
                     if (!_errorDetected)
                     {
                         Console.WriteLine();
-                        Console.WriteLine("All commands executed successfully.");
+                        UI.WriteColoredLine("All commands executed successfully.",
+                            ConsoleColor.Green, newLine: true);
                     }
                 }
                 catch
@@ -208,7 +213,10 @@ namespace DeploymentManager.Commands
                 var message = mQ.Dequeue();
 
                 // Filter out non-helpful messages
-                if (message.Contains("Run the RECONFIGURE statement to install")) continue;
+                if (_nonHelpfulMessages.Any(skipText => message.Contains(skipText)))
+                {
+                    continue;
+                }
 
                 // Determine if the message contains any of the defined keywords
                 var matchedKeyword = _keywordColors.Keys.FirstOrDefault(k => message.Contains(k));
@@ -225,54 +233,47 @@ namespace DeploymentManager.Commands
                         _errorDetected = true;
                     }
 
-                    WriteColoredLine(message, color, prefix);
+                    Console.WriteLine();
+                    UI.WriteColoredLine(message, color, prefix, newLine:true);
                 }
                 else
                 {
                     // Default case for informational messages
-                    WriteColoredLine(message, ConsoleColor.DarkGray, "[INFO]: ");
+                    Console.WriteLine();
+                    UI.WriteColoredLine(message, ConsoleColor.DarkGray, "[INFO]: ", newLine:true);
                 }
             }
         }
 
         private static void ProcessDataResults(SqlDataReader reader)
         {
-            WriteColoredLine("=== Result Set ===", ConsoleColor.Yellow);
+            Console.WriteLine();
+            UI.WriteColoredLine("=== Result Set ===", ConsoleColor.Yellow, newLine: true);
 
             while (reader.Read())
             {
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write($"{reader.GetName(i)}: ");
-                    Console.ResetColor();
-                    Console.Write($"{reader[i]}  ");
+                    UI.WriteColoredLine($"{reader.GetName(i)}: ", ConsoleColor.Green, newLine:false);
+                    UI.WriteColoredLine($"{reader[i]}  ", ConsoleColor.White, newLine: false);
                 }
                 Console.WriteLine();
             }
         }
 
-        private static void WriteColoredLine(string message, ConsoleColor color, string prefix = "")
-        {
-            Console.WriteLine();
-            Console.ForegroundColor = color;
-            Console.WriteLine($"{prefix}{message}");
-            Console.ResetColor();
-        }
-
         private static void LogSqlError(SqlException ex)
         {
             Console.WriteLine();
-            Console.WriteLine("SQL error occurred while running the script:");
-            Console.WriteLine($"Error Number: {ex.Number}");
-            Console.WriteLine($"Error Message: {ex.Message}");
-            Console.WriteLine($"Line Number: {ex.LineNumber}");
+            UI.WriteColoredLine("An SQL error occurred while running the script:", ConsoleColor.Red, newLine: true);
+            Console.WriteLine($"    Error Number: {ex.Number}");
+            Console.WriteLine($"    Error Message: {ex.Message}");
+            Console.WriteLine($"    Line Number: {ex.LineNumber}");
         }
 
         private static void LogError(Exception ex)
         {
             Console.WriteLine();
-            Console.WriteLine($"An error occurred while running the script: {ex.Message}");
+            UI.WriteColoredLine($"An error occurred while running the script: {ex.Message}", ConsoleColor.Red, newLine: true);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Configuration;
+using DeploymentManager;
 
 namespace DeploymentManager.Commands
 {
@@ -13,10 +14,12 @@ namespace DeploymentManager.Commands
             var imagesDirectory = AppConfig.ImagesDirectory;
 
             Console.WriteLine();
-            Console.WriteLine($"    Load JPG, PNG and GIF images from {imagesDirectory}");
+            Console.WriteLine($"Load JPG, PNG and GIF images from {imagesDirectory}");
 
-            if (!PromptUserConfirmation())
+            if (!UI.PromptUserConfirmation())
+            {
                 return;
+            }
 
             Console.WriteLine();
 
@@ -24,13 +27,17 @@ namespace DeploymentManager.Commands
             {
                 if (!Directory.Exists(imagesDirectory))
                 {
-                    WriteLineInColor($"Directory not found: {imagesDirectory}", ConsoleColor.Red);
+                    UI.WriteColoredLine($"Directory not found: {imagesDirectory}",
+                        ConsoleColor.Red, newLine: true);
+
                     return;
                 }
 
                 if (!CheckDatabaseAndCreateTable())
                 {
-                    WriteLineInColor("Creation of the Images table failed. Has the [AI_Lab] database been established?", ConsoleColor.Red);
+                    UI.WriteColoredLine("Creation of the Images table failed. Has the [AI_Lab] database been established?",
+                        ConsoleColor.Red, newLine: true);
+
                     return;
                 }
 
@@ -41,7 +48,8 @@ namespace DeploymentManager.Commands
 
                 if (imageFiles.Length == 0)
                 {
-                    WriteLineInColor($"No image files found in the directory {imagesDirectory}", ConsoleColor.Red);
+                    UI.WriteColoredLine($"No image files found in the directory {imagesDirectory}",
+                        ConsoleColor.Red, newLine: true);
                     return;
                 }
 
@@ -54,22 +62,26 @@ namespace DeploymentManager.Commands
                         byte[] fileData = File.ReadAllBytes(filePath);
 
                         InsertImage(fileName, fileData);
-                        WriteLineInColor($"    Successfully inserted: {fileName}", ConsoleColor.DarkYellow);
+                        UI.WriteColoredLine($"    Successfully inserted: {fileName}", 
+                            ConsoleColor.DarkYellow, newLine: true);
 
                         numSuccess++;
                     }
                     catch (Exception ex)
                     {
-                        WriteLineInColor($"Failed to process file {filePath}: {ex.Message}", ConsoleColor.Red);
+                        UI.WriteColoredLine($"Failed to process file {filePath}: {ex.Message}", 
+                            ConsoleColor.Red, newLine: true);
                     }
                 }
 
                 Console.WriteLine();
-                Console.WriteLine($"        {numSuccess} image files successfully loaded.");
+                UI.WriteColoredLine($"        {numSuccess} image files successfully loaded.",
+                    ConsoleColor.Green, newLine: true);
             }
             catch (Exception ex)
             {
-                WriteLineInColor($"An error occurred: {ex.Message}", ConsoleColor.Red);
+                UI.WriteColoredLine($"An error occurred: {ex.Message}", 
+                    ConsoleColor.Red, newLine: true);
             }
         }
 
@@ -138,34 +150,5 @@ namespace DeploymentManager.Commands
                 }
             }
         }
-
-        private static bool PromptUserConfirmation()
-        {
-            Console.Write($"        Continue?  N // ");
-            var response = Console.ReadLine()?.Trim().ToUpper() ?? "N";
-
-            if (response != "Y")
-            {
-                Console.WriteLine("Operation cancelled.");
-                return false;
-            }
-            return true;
-        }
-
-        private static void WriteLineInColor(string message, ConsoleColor color)
-        {
-            var previousColor = Console.ForegroundColor;
-
-            try
-            {
-                Console.ForegroundColor = color;
-                Console.WriteLine(message);
-            }
-            finally
-            {
-                Console.ForegroundColor = previousColor;
-            }
-        }
-
     }
 }
