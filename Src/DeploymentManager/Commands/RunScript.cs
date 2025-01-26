@@ -23,6 +23,7 @@ namespace DeploymentManager.Commands
         // Actions and console colors can be controlled by these keywords from SQL PRINT statements
         private static readonly Dictionary<string, ConsoleColor> _keywordColors = new Dictionary<string, ConsoleColor>
         {
+            { "[WARNING]", ConsoleColor.Yellow },
             { "[ERROR]", ConsoleColor.Red },
             { "[SYMBOL]", ConsoleColor.DarkYellow },
             { "[CHECK]", ConsoleColor.DarkYellow },

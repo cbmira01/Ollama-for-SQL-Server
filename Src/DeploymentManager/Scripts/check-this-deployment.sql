@@ -45,9 +45,9 @@ JOIN sys.assemblies asm ON mod.assembly_id = asm.assembly_id
 --WHERE obj.type IN ('FN', 'TF', 'IF'); -- FN = Scalar function, TF = Table-valued function, IF = Inline function
 GO
 
-----------------------------------------------------------------------------------------------
-PRINT '[STEP]: Dump of the database schema (required for code-generation demonstrations)';
-----------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: Database schema, required for code-generation demonstrations';
+-------------------------------------------------------------------------------------
 IF OBJECT_ID(N'KeyValuePairs', N'U') IS NOT NULL
 BEGIN
     IF EXISTS (
@@ -64,12 +64,42 @@ BEGIN
     END
     ELSE
     BEGIN
-        PRINT '[ERROR]: The schemaJson key does not exist.';
+        PRINT '[WARNING]: The schemaJson key does not exist.';
     END
 END
 ELSE
 BEGIN
     PRINT '[ERROR]: The KeyValuePairs table does not exist.';
+END
+GO
+
+-------------------------------------------------------------------------------------
+PRINT '[STEP]: Check existence of demonstration tables';
+-------------------------------------------------------------------------------------
+DECLARE @Tables TABLE (TableName NVARCHAR(128));
+INSERT INTO @Tables (TableName) VALUES 
+		('Images'), 
+		('Sales'), 
+		('Customers'), 
+		('Items'),
+		('support_emails');
+
+DECLARE @TableName NVARCHAR(128);
+
+WHILE EXISTS (SELECT 1 FROM @Tables)
+BEGIN
+    SELECT TOP 1 @TableName = TableName FROM @Tables;
+
+    IF OBJECT_ID(@TableName, 'U') IS NOT NULL
+    BEGIN
+        PRINT '[CHECK]: Table ' + @TableName + ' exists.';
+    END
+    ELSE
+    BEGIN
+        PRINT '[WARNING]: Table ' + @TableName + ' does not exist.';
+    END
+
+    DELETE FROM @Tables WHERE TableName = @TableName;
 END
 GO
 
