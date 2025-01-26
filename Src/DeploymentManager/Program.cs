@@ -12,43 +12,42 @@ namespace DeploymentManager
             {
                 Console.Clear();
                 Console.WriteLine();
-                Console.WriteLine("===== Ollama Completions for SQL Server =====");
-                Console.WriteLine("============ Deployment Manager =============");
+                UI.WriteColoredLine("===== Ollama Completions for SQL Server =====", ConsoleColor.Cyan, newLine: true);
+                UI.WriteColoredLine("============ Deployment Manager =============", ConsoleColor.Cyan, newLine: true);
 
                 Console.WriteLine();
-                Console.WriteLine("Current configuration settings:");
-                Console.WriteLine();
-                Console.WriteLine($"    ApiUrl:  \"{AppConfig.ApiUrl}\"");
-                Console.WriteLine($"    QueryProductionRetryLimit:  \"{AppConfig.QueryProductionRetryLimit}\"");
-                Console.WriteLine($"    ApiTimeoutMs:  \"{AppConfig.ApiTimeoutMs}\"");
-                Console.WriteLine($"    SqlClrContextConnection:  \"{AppConfig.SqlClrContextConnection}\"");
-                Console.WriteLine($"    SqlServerConnection:  \"{AppConfig.SqlServerConnection}\"");
-                Console.WriteLine($"    RepoRootDirectory:  \"{AppConfig.RepoRootDirectory}\"");
-                Console.WriteLine($"    ScriptsDirectory:  \"{AppConfig.ScriptsDirectory}\"");
-                Console.WriteLine($"    ImagesDirectory:  \"{AppConfig.ImagesDirectory}\"");
+                UI.WriteColoredLine("Current configuration settings", ConsoleColor.Cyan, newLine: true);
+                WriteSymbolInColor("ApiUrl");
+                WriteSymbolInColor("QueryProductionRetryLimit");
+                WriteSymbolInColor("ApiTimeoutMs");
+                WriteSymbolInColor("SqlClrContextConnection");
+                WriteSymbolInColor("SqlServerConnection");
+                WriteSymbolInColor("RepoRootDirectory");
+                WriteSymbolInColor("ScriptsDirectory");
+                WriteSymbolInColor("ImagesDirectory");
 
                 Console.WriteLine();
-                Console.WriteLine("Choose an option:");
+                UI.WriteColoredLine("Choose an option:", ConsoleColor.Cyan, newLine: true);
                 Console.WriteLine();
-                Console.WriteLine("         --- Environment checks ---");
+                UI.WriteColoredLine("         --- Environment checks ---", ConsoleColor.Yellow, newLine: true);
                 Console.WriteLine("   1. Check external services");
                 Console.WriteLine("   2. List models hosted on Ollama");
                 Console.WriteLine();
-                Console.WriteLine("         --- Perform for initial installation ---");
+                UI.WriteColoredLine("         --- Perform for initial installation ---", ConsoleColor.Yellow, newLine: true);
                 Console.WriteLine("   3. Establish the 'AI_Lab' database, its tables and CLR permissions");
                 Console.WriteLine("   4. Populate complex prompts and database schema");
                 Console.WriteLine("   5. Populate demonstration tables");
                 Console.WriteLine("   6. Populate the images table");
                 Console.WriteLine();
-                Console.WriteLine("         --- Perform after every RELEASE build ---");
+                UI.WriteColoredLine("         --- Perform after every RELEASE build ---", ConsoleColor.Yellow, newLine: true);
                 Console.WriteLine("   7. Relink CLR assembly, recreate functions, run sanity check");
                 Console.WriteLine();
-                Console.WriteLine("         --- Check or revert current deployment ---");
+                UI.WriteColoredLine("         --- Check or revert current deployment ---", ConsoleColor.Yellow, newLine: true);
                 Console.WriteLine("   8. Check the current deployment");
-                Console.WriteLine("   9. Revert the current deployment (drop everything)");
+                Console.WriteLine("   9. Revert the current deployment, drop the [AI_Lab] database");
                 Console.WriteLine();
                 Console.WriteLine("   0. Exit");
-                Console.Write("Enter your choice: ");
+                UI.WriteColoredLine("Enter your choice: ", ConsoleColor.Cyan, newLine: false);
 
                 string choice = Console.ReadLine();
 
@@ -104,6 +103,15 @@ namespace DeploymentManager
                 Console.WriteLine("Press any key to return to the main menu...");
                 Console.ReadKey();
             }
+        }
+
+        private static void WriteSymbolInColor(string symbolName)
+        {
+            var symbolValue = AppConfig.GetSymbolValue(symbolName);
+
+            UI.WriteColoredLine($"    {symbolName}:", ConsoleColor.Green, newLine: false);
+            Console.SetCursorPosition(30, Console.CursorTop);
+            UI.WriteColoredLine($"  {symbolValue}", ConsoleColor.White, newLine: true);
         }
     }
 }
