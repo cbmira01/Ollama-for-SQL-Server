@@ -44,17 +44,16 @@
 - **AskAllModels**
   - What would the TVF fill-row schema for this feaure look like?
   - Would this query be too slow? GPU context has to be dumped and recreated when models are switched.
-  - Would being able to specify a subset list of models be useful?
+  - Would ability to specify a subset list of models be useful?
+
+  - **JSON requests and replies**
+  - Can models be asked to frame their replies in JSON (aside from the API response)?
+  - How are agents, roles and tools specified to models?
+  - How are tools actions requested by the model to be handled?
 
 ---
 
 ### Improvements and maintenance
-
-- **Project configuration**
-  - A number of unexposed settings are cropping up.
-  - New features may need highly tweaked LLM prompts.
-  - Needs configuration: console programs, CLR service layer, SQL queries.
-  - Configure at build time, or via SQL queries?
 
 - **Ollama context field deprecated**: With Ollama 0.5.4 (Dec 2024), the context field in 
 requests has been deprecated. Currently, the `CompleteMultiplePrompts` function
