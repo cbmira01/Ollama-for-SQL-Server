@@ -17,6 +17,7 @@ namespace DeploymentManager
 
                 Console.WriteLine();
                 UI.WriteColoredLine("Current configuration settings", ConsoleColor.Cyan, newLine: true);
+                Console.WriteLine();
                 WriteSymbolInColor("ApiUrl");
                 WriteSymbolInColor("QueryProductionRetryLimit");
                 WriteSymbolInColor("ApiTimeoutMs");
@@ -107,11 +108,16 @@ namespace DeploymentManager
 
         private static void WriteSymbolInColor(string symbolName)
         {
-            var symbolValue = AppConfig.GetSymbolValue(symbolName);
+            var pad = 30;
+            var symbolValue = AppConfig.GetSymbolValue(symbolName).ToString();
 
-            UI.WriteColoredLine($"    {symbolName}:", ConsoleColor.Green, newLine: false);
-            Console.SetCursorPosition(30, Console.CursorTop);
-            UI.WriteColoredLine($"  {symbolValue}", ConsoleColor.White, newLine: true);
+            // Print symbolName right-justified in a field of 35 characters
+            string formattedSymbolName = symbolName.PadLeft(pad);
+            UI.WriteColoredLine(formattedSymbolName, ConsoleColor.Green, newLine: false);
+
+            // Move cursor to position 38 and print symbolValue
+            Console.SetCursorPosition(pad+1, Console.CursorTop);
+            UI.WriteColoredLine(symbolValue, ConsoleColor.White, newLine: true);
         }
     }
 }
