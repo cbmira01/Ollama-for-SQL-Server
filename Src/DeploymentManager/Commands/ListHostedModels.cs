@@ -112,8 +112,7 @@ namespace DeploymentManager.Commands
 
                 for (var i = 0; i < modelCount; i++)
                 {
-                    var fullName = JsonHandler.GetStringByPath(result, $"models[{i}].name");
-                    var name = fullName.Split(':')[0];
+                    var name = JsonHandler.GetStringByPath(result, $"models[{i}].name");
                     var modifiedAt = JsonHandler.GetStringByPath(result, $"models[{i}].modified_at");
                     availableModels.Add((name, modifiedAt));
                 }
