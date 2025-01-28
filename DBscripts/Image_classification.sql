@@ -55,7 +55,24 @@ SELECT
 FROM Images;
 GO
 
---------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------
+-- Run a prompt against the same image in JPG, GIF and PNG format
+---------------------------------------------------------------------------------
+USE [AI_Lab];
+
+-- Choose a prompt
+DECLARE @Prompt NVARCHAR(100) = 'Do you recognize words in this image?';
+DECLARE @ModelName NVARCHAR(100) = 'llava';
+
+SELECT 
+    --NEWID() AS RequestGUID,
+    ImageData,
+    FileName,
+    dbo.ExamineImage(@ModelName, @Prompt, ImageData) AS Result
+FROM Images WHERE FileName LIKE '%dream%';
+GO
+
+-----------------------------------------------------------------------------------
 -- Run a prompt against all images using a cursor, send output to the Messages panel
 --------------------------------------------------------------------------------------
 USE [AI_Lab];
