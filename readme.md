@@ -4,7 +4,7 @@
 
 `Ollama Completions for SQL Server` brings the power of Large Language Models (LLMs) directly 
 to SQL Server workflows. By leveraging SQL/CLR functions, users can seamlessly interact with 
-LLMs locally-hosted hosted on Ollama, such as `llama3.2`, `zephyr`, and `mistral`.
+LLMs locally hosted on Ollama, such as `llama3.2`, `zephyr`, and `mistral`.
 
 With this project, you can perform advanced natural language processing (NLP) tasks directly 
 within SQL Server, including:
